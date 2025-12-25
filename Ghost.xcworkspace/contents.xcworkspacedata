@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "container:Ghost/Ghost.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:CoreContracts/CoreContracts.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:AppFoundation/AppFoundation.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:TabBar/TabBar.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:StaticExamples/StaticExamples.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:Builder/Builder.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:Settings/Settings.xcodeproj">
+   </FileRef>
+</Workspace>
