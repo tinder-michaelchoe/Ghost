@@ -103,7 +103,7 @@ extension SceneDelegate {
             await coordinator.runPhase(.sceneConnect)
             
             // Get main view contribution (direct access to UI manager)
-            let mainViewContributions = await coordinator.uiManager.getContributions(for: AppUISurface.mainView)
+            let mainViewContributions = coordinator.uiManager.contributions(for: AppUISurface.mainView)
             
             guard let mainViewContribution = mainViewContributions.first else {
                 print("⚠️ No main view contribution found")
@@ -119,7 +119,7 @@ extension SceneDelegate {
                 print("✅ SceneDelegate: View controller built: \(type(of: rootViewController))")
             } else if let swiftUIContrib = mainViewContribution as? SwiftUIViewContribution {
                 print("✅ SceneDelegate: Using SwiftUIViewContribution")
-                let swiftUIView = swiftUIContrib.makeSwiftUIView(context: context).build()
+                let swiftUIView = swiftUIContrib.makeSwiftUIView(context: context)
                 rootViewController = UIHostingController(rootView: swiftUIView)
             } else {
                 print("⚠️ No view builder for main view")

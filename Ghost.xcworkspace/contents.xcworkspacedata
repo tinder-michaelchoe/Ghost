@@ -8,21 +8,24 @@
       location = "container:CoreContracts/CoreContracts.xcodeproj">
    </FileRef>
    <FileRef
-      location = "container:FeatureFlags/FeatureFlags.xcodeproj">
+      location = "container:AppFeatureFlags/AppFeatureFlags.xcodeproj">
    </FileRef>
    <FileRef
       location = "container:AppFoundation/AppFoundation.xcodeproj">
    </FileRef>
    <FileRef
-      location = "container:TabBar/TabBar.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "container:StaticExamples/StaticExamples.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "container:Builder/Builder.xcodeproj">
    </FileRef>
    <FileRef
+      location = "container:CladsRenderer/CladsRenderer.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:TabBar/TabBar.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "container:Settings/Settings.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:StaticExamples/StaticExamples.xcodeproj">
    </FileRef>
 </Workspace>

@@ -11,11 +11,11 @@ import CoreContracts
 /// Manages UI contribution registration and querying.
 /// Handles UIProvider registration and provides UI contribution access.
 final class UIManager {
-    private let registry: UIRegistryImpl
+    private let registry: UIRegistry
     private var providers: [UIProvider] = []
     
     init() {
-        self.registry = UIRegistryImpl()
+        self.registry = UIRegistry()
     }
     
     /// Register UI providers.
@@ -31,12 +31,12 @@ final class UIManager {
     /// Get contributions for a UI surface.
     /// - Parameter surface: The UI surface to get contributions for
     /// - Returns: Array of view contributions for the surface
-    func getContributions<T: UISurface>(for surface: T) async -> [any ViewContribution] {
-        await registry.getContributions(for: surface)
+    func contributions<T: UISurface>(for surface: T) -> [any ViewContribution] {
+        registry.contributions(for: surface)
     }
     
     /// Get the UI registry implementation (for direct access if needed).
-    var uiRegistry: UIRegistryImpl {
+    var uiRegistry: UIRegistry {
         registry
     }
 }

@@ -19,12 +19,6 @@ public enum AppUISurface: UISurface {
     case mainView
 }
 
-/// Type-erased SwiftUI view builder.
-public struct AnySwiftUIView {
-    public let build: () -> AnyView
-    public init(_ build: @escaping () -> AnyView) { self.build = build }
-}
-
 /// Type-erased UIViewController builder without imposing UIKit dependency on signatures.
 public struct AnyViewController {
     public let build: () -> Any

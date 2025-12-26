@@ -36,8 +36,8 @@ struct HomeTabContribution: UIKitViewContribution, TabBarItemProviding {
 public final class BuilderUIProvider: UIProvider {
     public init() {}
     
-    public func registerUI(_ registry: UIRegistry) async {
+    public func registerUI(_ registry: UIRegistryContributing) async {
         let contribution = HomeTabContribution()
-        await registry.contributeAsync(to: TabBarUISurface.builder, item: contribution)
+        registry.contribute(to: TabBarUISurface.builder, item: contribution)
     }
 }

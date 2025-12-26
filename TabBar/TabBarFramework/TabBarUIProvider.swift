@@ -13,7 +13,7 @@ import UIKit
 public final class TabBarUIProvider: UIProvider {
     public init() {}
     
-    public func registerUI(_ registry: UIRegistry) async {
+    public func registerUI(_ registry: UIRegistryContributing) async {
         // Cast to get UIRegistryContributions for TabBarController
         guard let uiRegistryContributions = registry as? UIRegistryContributions else {
             print("⚠️ UIRegistry does not support contributions querying")
@@ -47,8 +47,8 @@ public final class TabBarUIProvider: UIProvider {
             }
         }
         
-        // Use async version to ensure contribution is registered before querying
-        await registry.contributeAsync(to: AppUISurface.mainView, item: contribution)
+        // Register contribution synchronously
+        registry.contribute(to: AppUISurface.mainView, item: contribution)
         print("✅ TabBarUIProvider: Contribution registered to AppUISurface.mainView")
     }
 }

@@ -6,8 +6,11 @@
 //
 
 /// Registry for UI contributions.
-public protocol UIRegistry {
+/// Provides synchronous interface for registering UI contributions.
+public protocol UIRegistryContributing {
+    /// Register a UI contribution to a surface.
+    /// - Parameters:
+    ///   - surface: The UI surface to contribute to
+    ///   - item: The view contribution to register
     func contribute<T: UISurface>(to surface: T, item: some ViewContribution)
-    /// Async version for use during initialization to ensure contributions are registered.
-    func contributeAsync<T: UISurface>(to surface: T, item: some ViewContribution) async
 }

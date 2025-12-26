@@ -40,7 +40,7 @@ final class TabBarController: UITabBarController {
         var allContributions: [any ViewContribution] = []
         
         for surface in tabSurfaces {
-            let contributions = await uiRegistry.getContributions(for: surface)
+            let contributions = uiRegistry.contributions(for: surface)
             allContributions.append(contentsOf: contributions)
         }
         
@@ -56,7 +56,7 @@ final class TabBarController: UITabBarController {
             }
             // Handle SwiftUI contributions
             else if let swiftUIContrib = contribution as? SwiftUIViewContribution {
-                let swiftUIView = swiftUIContrib.makeSwiftUIView(context: context).build()
+                let swiftUIView = swiftUIContrib.makeSwiftUIView(context: context)
                 viewController = UIHostingController(rootView: swiftUIView)
             } else {
                 print("⚠️ No view builder for contribution \(contribution.id.rawValue)")

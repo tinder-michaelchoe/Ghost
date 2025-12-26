@@ -9,49 +9,41 @@ import Foundation
 import CoreContracts
 
 /// Thread-safe storage for UI contributions.
-actor UIRegistry {
+/// Uses a serial DispatchQueue for thread safety, providing synchronous interface.
+final class UIRegistry: UIRegistryContributing, UIRegistryContributions {
+    private let queue = DispatchQueue(label: "com.ghost.uiregistry")
     private var contributions: [AnyHashable: [any ViewContribution]] = [:]
     
-    func contribute<T: UISurface>(to surface: T, item: any ViewContribution) {
-        contributions[AnyHashable(surface), default: []].append(item)
-    }
+    init() {}
     
-    func getContributions<T: UISurface>(for surface: T) -> [any ViewContribution] {
-        contributions[AnyHashable(surface), default: []]
-    }
+    // MARK: - UIRegistry
     
-    func getAllContributions() -> [AnyHashable: [any ViewContribution]] {
-        contributions
-    }
-}
-
-/// Implementation of UIRegistry protocol that collects UI contributions.
-final class UIRegistryImpl: CoreContracts.UIRegistry {
-    private let registry: UIRegistry
-    
-    init() {
-        self.registry = UIRegistry()
-    }
-    
+    /// Register a UI contribution to a surface (synchronous).
+    /// - Parameters:
+    ///   - surface: The UI surface to contribute to
+    ///   - item: The view contribution to register
     func contribute<T: UISurface>(to surface: T, item: some ViewContribution) {
-        Task {
-            await registry.contribute(to: surface, item: item)
+        queue.sync {
+            contributions[AnyHashable(surface), default: []].append(item)
         }
     }
     
-    /// Async version for use during initialization
-    func contributeAsync<T: UISurface>(to surface: T, item: some ViewContribution) async {
-        await registry.contribute(to: surface, item: item)
+    // MARK: - UIRegistryContributions
+    
+    /// Get all contributions for a UI surface (synchronous).
+    /// - Parameter surface: The UI surface to get contributions for
+    /// - Returns: Array of view contributions for the surface
+    func contributions<T: UISurface>(for surface: T) -> [any ViewContribution] {
+        queue.sync {
+            contributions[AnyHashable(surface), default: []]
+        }
     }
     
-    func getContributions<T: UISurface>(for surface: T) async -> [any ViewContribution] {
-        await registry.getContributions(for: surface)
-    }
-    
-    func getAllContributions() async -> [AnyHashable: [any ViewContribution]] {
-        await registry.getAllContributions()
+    /// Get all contributions across all surfaces (synchronous).
+    /// - Returns: Dictionary mapping surfaces to their contributions
+    func allContributions() -> [AnyHashable: [any ViewContribution]] {
+        queue.sync {
+            contributions
+        }
     }
 }
-
-// Make UIRegistryImpl conform to UIRegistryContributions for TabBarController
-extension UIRegistryImpl: UIRegistryContributions {}

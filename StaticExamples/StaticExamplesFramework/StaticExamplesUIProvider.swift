@@ -25,10 +25,8 @@ struct HomeTabContribution: SwiftUIViewContribution, TabBarItemProviding {
         self.tabBarIconSystemName = iconSystemName
     }
     
-    func makeSwiftUIView(context: AppContext) -> AnySwiftUIView {
-        AnySwiftUIView {
-            AnyView(StaticExamplesView())
-        }
+    func makeSwiftUIView(context: AppContext) -> AnyView {
+        AnyView(StaticExamplesView())
     }
 }
 
@@ -36,8 +34,8 @@ struct HomeTabContribution: SwiftUIViewContribution, TabBarItemProviding {
 public final class StaticExamplesUIProvider: UIProvider {
     public init() {}
     
-    public func registerUI(_ registry: UIRegistry) async {
+    public func registerUI(_ registry: UIRegistryContributing) async {
         let contribution = HomeTabContribution()
-        await registry.contributeAsync(to: TabBarUISurface.home, item: contribution)
+        registry.contribute(to: TabBarUISurface.home, item: contribution)
     }
 }

@@ -6,7 +6,7 @@
 //
 
 import CoreContracts
-import FeatureFlags
+import AppFeatureFlags
 
 /// Manifest for bootstrap services.
 /// These services are registered synchronously during app launch.
@@ -17,7 +17,7 @@ enum BootstrapManifest {
     /// This is separate from the Manifest protocol to prevent other modules from adding bootstrap services.
     static var bootstrapServiceProviders: [ServiceProvider.Type] {
         [
-            FeatureFlagServiceProvider.self
+            AppFeatureFlagServiceProvider.self
         ]
     }
 }

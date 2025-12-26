@@ -1,0 +1,901 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		800AE8B92EFE2E7200F18C75 /* CladsRendererFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE8AE2EFE2E7200F18C75 /* CladsRendererFramework.framework */; };
+		800AE8C32EFE2E7200F18C75 /* CladsRendererFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE8AE2EFE2E7200F18C75 /* CladsRendererFramework.framework */; };
+		800AE8C42EFE2E7200F18C75 /* CladsRendererFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE8AE2EFE2E7200F18C75 /* CladsRendererFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		800AE79B2EFE26CB00F18C75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 800AE78C2EFE26C900F18C75;
+			remoteInfo = CladsRenderer;
+		};
+		800AE7A52EFE26CB00F18C75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 800AE78C2EFE26C900F18C75;
+			remoteInfo = CladsRenderer;
+		};
+		800AE8BA2EFE2E7200F18C75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 800AE8AD2EFE2E7200F18C75;
+			remoteInfo = CladsRendererFramework;
+		};
+		800AE8BC2EFE2E7200F18C75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 800AE78C2EFE26C900F18C75;
+			remoteInfo = CladsRenderer;
+		};
+		800AE8C12EFE2E7200F18C75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 800AE8AD2EFE2E7200F18C75;
+			remoteInfo = CladsRendererFramework;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		800AE8C52EFE2E7200F18C75 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				800AE8C42EFE2E7200F18C75 /* CladsRendererFramework.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		800AE78D2EFE26C900F18C75 /* CladsRenderer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CladsRenderer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		800AE79A2EFE26CB00F18C75 /* CladsRendererTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CladsRendererTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		800AE7A42EFE26CB00F18C75 /* CladsRendererUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CladsRendererUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		800AE8AE2EFE2E7200F18C75 /* CladsRendererFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CladsRendererFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		800AE8B82EFE2E7200F18C75 /* CladsRendererFrameworkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CladsRendererFrameworkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		800AE78F2EFE26C900F18C75 /* CladsRenderer */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CladsRenderer;
+			sourceTree = "<group>";
+		};
+		800AE79D2EFE26CB00F18C75 /* CladsRendererTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CladsRendererTests;
+			sourceTree = "<group>";
+		};
+		800AE7A72EFE26CB00F18C75 /* CladsRendererUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CladsRendererUITests;
+			sourceTree = "<group>";
+		};
+		800AE8AF2EFE2E7200F18C75 /* CladsRendererFramework */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CladsRendererFramework;
+			sourceTree = "<group>";
+		};
+		800AE8BE2EFE2E7200F18C75 /* CladsRendererFrameworkTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CladsRendererFrameworkTests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		800AE78A2EFE26C900F18C75 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				800AE8C32EFE2E7200F18C75 /* CladsRendererFramework.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE7972EFE26CB00F18C75 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE7A12EFE26CB00F18C75 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE8AB2EFE2E7200F18C75 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE8B52EFE2E7200F18C75 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				800AE8B92EFE2E7200F18C75 /* CladsRendererFramework.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		800AE7842EFE26C900F18C75 = {
+			isa = PBXGroup;
+			children = (
+				800AE78F2EFE26C900F18C75 /* CladsRenderer */,
+				800AE79D2EFE26CB00F18C75 /* CladsRendererTests */,
+				800AE7A72EFE26CB00F18C75 /* CladsRendererUITests */,
+				800AE8AF2EFE2E7200F18C75 /* CladsRendererFramework */,
+				800AE8BE2EFE2E7200F18C75 /* CladsRendererFrameworkTests */,
+				800AE78E2EFE26C900F18C75 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		800AE78E2EFE26C900F18C75 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				800AE78D2EFE26C900F18C75 /* CladsRenderer.app */,
+				800AE79A2EFE26CB00F18C75 /* CladsRendererTests.xctest */,
+				800AE7A42EFE26CB00F18C75 /* CladsRendererUITests.xctest */,
+				800AE8AE2EFE2E7200F18C75 /* CladsRendererFramework.framework */,
+				800AE8B82EFE2E7200F18C75 /* CladsRendererFrameworkTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		800AE8A92EFE2E7200F18C75 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		800AE78C2EFE26C900F18C75 /* CladsRenderer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 800AE7AE2EFE26CB00F18C75 /* Build configuration list for PBXNativeTarget "CladsRenderer" */;
+			buildPhases = (
+				800AE7892EFE26C900F18C75 /* Sources */,
+				800AE78A2EFE26C900F18C75 /* Frameworks */,
+				800AE78B2EFE26C900F18C75 /* Resources */,
+				800AE8C52EFE2E7200F18C75 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				800AE8C22EFE2E7200F18C75 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				800AE78F2EFE26C900F18C75 /* CladsRenderer */,
+			);
+			name = CladsRenderer;
+			packageProductDependencies = (
+			);
+			productName = CladsRenderer;
+			productReference = 800AE78D2EFE26C900F18C75 /* CladsRenderer.app */;
+			productType = "com.apple.product-type.application";
+		};
+		800AE7992EFE26CB00F18C75 /* CladsRendererTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 800AE7B12EFE26CB00F18C75 /* Build configuration list for PBXNativeTarget "CladsRendererTests" */;
+			buildPhases = (
+				800AE7962EFE26CB00F18C75 /* Sources */,
+				800AE7972EFE26CB00F18C75 /* Frameworks */,
+				800AE7982EFE26CB00F18C75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				800AE79C2EFE26CB00F18C75 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				800AE79D2EFE26CB00F18C75 /* CladsRendererTests */,
+			);
+			name = CladsRendererTests;
+			packageProductDependencies = (
+			);
+			productName = CladsRendererTests;
+			productReference = 800AE79A2EFE26CB00F18C75 /* CladsRendererTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		800AE7A32EFE26CB00F18C75 /* CladsRendererUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 800AE7B42EFE26CB00F18C75 /* Build configuration list for PBXNativeTarget "CladsRendererUITests" */;
+			buildPhases = (
+				800AE7A02EFE26CB00F18C75 /* Sources */,
+				800AE7A12EFE26CB00F18C75 /* Frameworks */,
+				800AE7A22EFE26CB00F18C75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				800AE7A62EFE26CB00F18C75 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				800AE7A72EFE26CB00F18C75 /* CladsRendererUITests */,
+			);
+			name = CladsRendererUITests;
+			packageProductDependencies = (
+			);
+			productName = CladsRendererUITests;
+			productReference = 800AE7A42EFE26CB00F18C75 /* CladsRendererUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		800AE8AD2EFE2E7200F18C75 /* CladsRendererFramework */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 800AE8CA2EFE2E7200F18C75 /* Build configuration list for PBXNativeTarget "CladsRendererFramework" */;
+			buildPhases = (
+				800AE8A92EFE2E7200F18C75 /* Headers */,
+				800AE8AA2EFE2E7200F18C75 /* Sources */,
+				800AE8AB2EFE2E7200F18C75 /* Frameworks */,
+				800AE8AC2EFE2E7200F18C75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				800AE8AF2EFE2E7200F18C75 /* CladsRendererFramework */,
+			);
+			name = CladsRendererFramework;
+			packageProductDependencies = (
+			);
+			productName = CladsRendererFramework;
+			productReference = 800AE8AE2EFE2E7200F18C75 /* CladsRendererFramework.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		800AE8B72EFE2E7200F18C75 /* CladsRendererFrameworkTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 800AE8CB2EFE2E7200F18C75 /* Build configuration list for PBXNativeTarget "CladsRendererFrameworkTests" */;
+			buildPhases = (
+				800AE8B42EFE2E7200F18C75 /* Sources */,
+				800AE8B52EFE2E7200F18C75 /* Frameworks */,
+				800AE8B62EFE2E7200F18C75 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				800AE8BB2EFE2E7200F18C75 /* PBXTargetDependency */,
+				800AE8BD2EFE2E7200F18C75 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				800AE8BE2EFE2E7200F18C75 /* CladsRendererFrameworkTests */,
+			);
+			name = CladsRendererFrameworkTests;
+			packageProductDependencies = (
+			);
+			productName = CladsRendererFrameworkTests;
+			productReference = 800AE8B82EFE2E7200F18C75 /* CladsRendererFrameworkTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		800AE7852EFE26C900F18C75 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2620;
+				LastUpgradeCheck = 2620;
+				TargetAttributes = {
+					800AE78C2EFE26C900F18C75 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					800AE7992EFE26CB00F18C75 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 800AE78C2EFE26C900F18C75;
+					};
+					800AE7A32EFE26CB00F18C75 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 800AE78C2EFE26C900F18C75;
+					};
+					800AE8AD2EFE2E7200F18C75 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					800AE8B72EFE2E7200F18C75 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 800AE78C2EFE26C900F18C75;
+					};
+				};
+			};
+			buildConfigurationList = 800AE7882EFE26C900F18C75 /* Build configuration list for PBXProject "CladsRenderer" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 800AE7842EFE26C900F18C75;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 800AE78E2EFE26C900F18C75 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				800AE78C2EFE26C900F18C75 /* CladsRenderer */,
+				800AE7992EFE26CB00F18C75 /* CladsRendererTests */,
+				800AE7A32EFE26CB00F18C75 /* CladsRendererUITests */,
+				800AE8AD2EFE2E7200F18C75 /* CladsRendererFramework */,
+				800AE8B72EFE2E7200F18C75 /* CladsRendererFrameworkTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		800AE78B2EFE26C900F18C75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE7982EFE26CB00F18C75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE7A22EFE26CB00F18C75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE8AC2EFE2E7200F18C75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE8B62EFE2E7200F18C75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		800AE7892EFE26C900F18C75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE7962EFE26CB00F18C75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE7A02EFE26CB00F18C75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE8AA2EFE2E7200F18C75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		800AE8B42EFE2E7200F18C75 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		800AE79C2EFE26CB00F18C75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 800AE78C2EFE26C900F18C75 /* CladsRenderer */;
+			targetProxy = 800AE79B2EFE26CB00F18C75 /* PBXContainerItemProxy */;
+		};
+		800AE7A62EFE26CB00F18C75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 800AE78C2EFE26C900F18C75 /* CladsRenderer */;
+			targetProxy = 800AE7A52EFE26CB00F18C75 /* PBXContainerItemProxy */;
+		};
+		800AE8BB2EFE2E7200F18C75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 800AE8AD2EFE2E7200F18C75 /* CladsRendererFramework */;
+			targetProxy = 800AE8BA2EFE2E7200F18C75 /* PBXContainerItemProxy */;
+		};
+		800AE8BD2EFE2E7200F18C75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 800AE78C2EFE26C900F18C75 /* CladsRenderer */;
+			targetProxy = 800AE8BC2EFE2E7200F18C75 /* PBXContainerItemProxy */;
+		};
+		800AE8C22EFE2E7200F18C75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 800AE8AD2EFE2E7200F18C75 /* CladsRendererFramework */;
+			targetProxy = 800AE8C12EFE2E7200F18C75 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		800AE7AC2EFE26CB00F18C75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		800AE7AD2EFE26CB00F18C75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		800AE7AF2EFE26CB00F18C75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsRenderer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		800AE7B02EFE26CB00F18C75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsRenderer;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		800AE7B22EFE26CB00F18C75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsRendererTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CladsRenderer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CladsRenderer";
+			};
+			name = Debug;
+		};
+		800AE7B32EFE26CB00F18C75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsRendererTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CladsRenderer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CladsRenderer";
+			};
+			name = Release;
+		};
+		800AE7B52EFE26CB00F18C75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsRendererUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CladsRenderer;
+			};
+			name = Debug;
+		};
+		800AE7B62EFE26CB00F18C75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsRendererUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = CladsRenderer;
+			};
+			name = Release;
+		};
+		800AE8C62EFE2E7200F18C75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsRendererFramework;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		800AE8C72EFE2E7200F18C75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsRendererFramework;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		800AE8C82EFE2E7200F18C75 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsRendererFrameworkTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CladsRenderer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CladsRenderer";
+			};
+			name = Debug;
+		};
+		800AE8C92EFE2E7200F18C75 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsRendererFrameworkTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CladsRenderer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CladsRenderer";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		800AE7882EFE26C900F18C75 /* Build configuration list for PBXProject "CladsRenderer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				800AE7AC2EFE26CB00F18C75 /* Debug */,
+				800AE7AD2EFE26CB00F18C75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		800AE7AE2EFE26CB00F18C75 /* Build configuration list for PBXNativeTarget "CladsRenderer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				800AE7AF2EFE26CB00F18C75 /* Debug */,
+				800AE7B02EFE26CB00F18C75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		800AE7B12EFE26CB00F18C75 /* Build configuration list for PBXNativeTarget "CladsRendererTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				800AE7B22EFE26CB00F18C75 /* Debug */,
+				800AE7B32EFE26CB00F18C75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		800AE7B42EFE26CB00F18C75 /* Build configuration list for PBXNativeTarget "CladsRendererUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				800AE7B52EFE26CB00F18C75 /* Debug */,
+				800AE7B62EFE26CB00F18C75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		800AE8CA2EFE2E7200F18C75 /* Build configuration list for PBXNativeTarget "CladsRendererFramework" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				800AE8C62EFE2E7200F18C75 /* Debug */,
+				800AE8C72EFE2E7200F18C75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		800AE8CB2EFE2E7200F18C75 /* Build configuration list for PBXNativeTarget "CladsRendererFrameworkTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				800AE8C82EFE2E7200F18C75 /* Debug */,
+				800AE8C92EFE2E7200F18C75 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 800AE7852EFE26C900F18C75 /* Project object */;
+}

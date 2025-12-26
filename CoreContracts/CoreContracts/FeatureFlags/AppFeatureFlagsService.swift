@@ -5,6 +5,6 @@
 //  Created by mexicanpizza on 12/25/25.
 //
 
-public protocol FeatureFlagsService {
+public protocol AppFeatureFlagsService {
     
 }
