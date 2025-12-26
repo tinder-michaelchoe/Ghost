@@ -43,7 +43,7 @@ extension StaticExamplesView {
                 print("Did press year end review example")
             }),
             ListRow(id: 2, title: "Simple Navigation", action: {
-                print("Did press basic example")
+                print("Did press simple navigation")
             }),
         ]
     }

@@ -33,10 +33,7 @@ struct HomeTabContribution: UIKitViewContribution, TabBarItemProviding {
 }
 
 /// UI provider that contributes a TabBarController to the mainView surface.
-public final class BuilderUIProvider: UIProvider, ModuleIdentity {
-    public static let id: String = "com.ghost.staticExamples"
-    public static let dependencies: [any ModuleIdentity.Type] = []
-    
+public final class BuilderUIProvider: UIProvider {
     public init() {}
     
     public func registerUI(_ registry: UIRegistry) async {

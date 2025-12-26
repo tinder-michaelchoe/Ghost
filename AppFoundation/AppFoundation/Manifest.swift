@@ -30,13 +30,5 @@ public enum AppFoundationModules: Manifest {
             AnalyticsServiceProvider.self
         ]
     }
-    
-    /// Returns all modules with identity (for dependency resolution).
-    public static var modulesWithIdentity: [any ModuleIdentity.Type] {
-        [
-            LoggingServiceProvider.self,
-            AnalyticsServiceProvider.self
-        ]
-    }
 }
 

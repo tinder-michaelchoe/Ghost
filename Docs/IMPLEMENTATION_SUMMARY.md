@@ -8,30 +8,25 @@ This implementation replaces the monolithic `AppPlugin` protocol with separate, 
 
 ### Core Protocols (in CoreContracts)
 
-1. **`ModuleIdentity`** (Optional)
-   - Provides `id: String` and `dependencies: [any ModuleIdentity.Type]`
-   - Used for dependency resolution and ordering
-   - Modules only conform if they need identity/dependencies
-
-2. **`ServiceProvider`**
+1. **`ServiceProvider`**
    - `registerServices(_ registry: ServiceRegistry)`
-   - For modules that register services
+   - For providers that register services
+   - Services resolve dependencies at runtime via `AppContext`
 
-3. **`UIProvider`**
-   - `registerUI(_ registry: UIRegistry)`
-   - For modules that contribute UI (tabs, settings, etc.)
+2. **`UIProvider`**
+   - `registerUI(_ registry: UIRegistry) async`
+   - For providers that contribute UI (tabs, settings, etc.)
 
-4. **`LifecycleParticipant`**
+3. **`LifecycleParticipant`**
    - `run(phase: LifecyclePhase, context: AppContext) async`
-   - For modules that need to participate in lifecycle phases
+   - For providers that need to participate in lifecycle phases
 
-### Module Examples
+### Provider Examples
 
-#### Service-Only Module
+#### Service-Only Provider
 ```swift
-public final class LoggingServiceProvider: ServiceProvider, LifecycleParticipant, ModuleIdentity {
-    public static let id: String = "com.ghost.logging"
-    public static let dependencies: [any ModuleIdentity.Type] = []
+public final class LoggingServiceProvider: ServiceProvider, LifecycleParticipant {
+    public init() {}
     
     public func registerServices(_ registry: ServiceRegistry) {
         registry.register(LoggingService.self, factory: { _ in
@@ -45,16 +40,29 @@ public final class LoggingServiceProvider: ServiceProvider, LifecycleParticipant
 }
 ```
 
-#### UI-Only Module
+#### UI-Only Provider
 ```swift
-public final class HomeUIProvider: UIProvider, ModuleIdentity {
-    public static let id: String = "com.ghost.home"
-    public static let dependencies: [any ModuleIdentity.Type] = [
-        LoggingServiceProvider.self
-    ]
+public final class HomeUIProvider: UIProvider {
+    public init() {}
     
-    public func registerUI(_ registry: UIRegistry) {
+    public func registerUI(_ registry: UIRegistry) async {
         // Register UI contributions
+        // Can resolve services via context if needed
+    }
+}
+```
+
+#### Service with Dependencies
+```swift
+public final class AnalyticsServiceProvider: ServiceProvider {
+    public init() {}
+    
+    public func registerServices(_ registry: ServiceRegistry) {
+        registry.register(AnalyticsService.self, factory: { context in
+            // Resolve dependencies at runtime
+            let logger = await context.services.resolve(LoggingService.self)!
+            return AnalyticsServiceImpl(logger: logger)
+        })
     }
 }
 ```
@@ -83,13 +91,28 @@ enum ModuleManifest {
 }
 ```
 
-### ModuleManager
+### AppCoordinator and Managers
 
-The `ModuleManager` replaces `PluginManager` and:
-- Accepts separate arrays for each provider type
-- Handles dependency resolution for modules with `ModuleIdentity`
-- Registers contributions in parallel using TaskGroup
-- Manages lifecycle phases for `LifecycleParticipant` modules
+The app uses a coordinator pattern with specialized managers:
+
+**AppCoordinator** orchestrates initialization:
+- Handles initialization sequence: services → context → UI → lifecycle
+- Exposes managers for runtime access
+- Manages AppContext lifecycle
+
+**ServiceManager** manages service registration and resolution:
+- Registers ServiceProvider instances
+- Provides service resolution via ServiceContainer
+
+**UIManager** manages UI contribution registration and querying:
+- Registers UIProvider instances
+- Provides UI contribution queries
+
+**LifecycleManager** manages lifecycle participant execution:
+- Registers LifecycleParticipant instances
+- Executes lifecycle phases
+
+Services handle their own dependencies at runtime via `AppContext`.
 
 ### Benefits
 
@@ -104,23 +127,25 @@ The `ModuleManager` replaces `PluginManager` and:
 ### Migration Complete
 
 - Old `AppPlugin` protocol has been removed
-- All modules now use the separate protocols
-- `PluginManager` replaced by `ModuleManager`
-- `PluginManifest` replaced by `ModuleManifest`
+- All providers now use the separate protocols
+- `PluginManager` replaced by `AppCoordinator` with specialized managers
+- `PluginManifest` replaced by `AppManifest`
+- `ModuleIdentity` removed - services resolve dependencies at runtime
 
 ## Files Created/Modified
 
 ### CoreContracts
-- `ModuleIdentity.swift` - Identity and dependency protocol
 - `ServiceProvider.swift` - Service registration protocol
 - `UIProvider.swift` - UI contribution protocol
 - `LifecycleParticipant.swift` - Lifecycle participation protocol
 
 ### Ghost App
-- `ModuleManager.swift` - New manager using separate protocols
-- `ModuleManifest.swift` - Manifest aggregating all modules
-- `HomeUIProvider.swift` - Example UI-only module
-- `SceneDelegate.swift` - Updated to use ModuleManager
+- `AppCoordinator.swift` - Orchestrates initialization and exposes managers
+- `ServiceManager.swift` - Manages service registration and resolution
+- `UIManager.swift` - Manages UI contribution registration and querying
+- `LifecycleManager.swift` - Manages lifecycle participant execution
+- `AppManifest.swift` - Manifest aggregating all providers
+- `SceneDelegate.swift` - Updated to use AppCoordinator
 
 ### AppFoundation
 - `AppFoundation+ModuleProvider.swift` - Module discovery for AppFoundation

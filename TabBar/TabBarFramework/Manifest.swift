@@ -25,11 +25,4 @@ public enum TabBarManifest: Manifest {
     public static var lifecycleParticipants: [LifecycleParticipant.Type] {
         []
     }
-    
-    /// Returns all modules with identity (for dependency resolution).
-    public static var modulesWithIdentity: [any ModuleIdentity.Type] {
-        [
-            TabBarUIProvider.self
-        ]
-    }
 }

@@ -12,84 +12,103 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    private let moduleManager: ModuleManager = ModuleManager()
+    private var coordinator: AppCoordinator?
+    
+    /// Reference to AppDelegate to access bootstrap coordinator.
+    private var appDelegate: AppDelegate? {
+        UIApplication.shared.delegate as? AppDelegate
+    }
+    
+    /// Collection of SceneDelegate listeners discovered from manifests.
+    private lazy var listenerCollection: SceneDelegateListenerCollection = {
+        var collection = SceneDelegateListenerCollection()
+        
+        // Register all listeners from AppManifest
+        let listenerTypes = AppManifest.sceneDelegateListeners
+        for listenerType in listenerTypes {
+            let listener = listenerType.init()
+            collection.add(handler: listener)
+        }
+        
+        return collection
+    }()
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
-        // Initialize module system asynchronously
+        print("🎬 SceneDelegate: scene willConnectTo")
+        
+        // Step 1: Get ServiceManager from BootstrapCoordinator (with bootstrap services already registered)
+        let serviceManager = appDelegate?.bootstrapServiceManager ?? ServiceManager()
+        print("✅ SceneDelegate: Got ServiceManager from BootstrapCoordinator")
+        
+        // Step 2: Create AppCoordinator with bootstrap ServiceManager
+        coordinator = AppCoordinator(serviceManager: serviceManager)
+        print("✅ SceneDelegate: Created AppCoordinator")
+        
+        // Step 3: Initialize module system asynchronously
         Task {
             await initializeApp(windowScene: windowScene)
         }
+        
+        // Step 4: Notify SceneDelegate listeners (after AppCoordinator is created)
+        _ = listenerCollection.notifyWillConnect(scene, session: session, options: connectionOptions)
+        print("✅ SceneDelegate: Notified listeners")
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
+        // Notify all listeners
+        listenerCollection.notifyDidDisconnect(scene)
     }
     
     func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+        // Notify all listeners
+        listenerCollection.notifyDidBecomeActive(scene)
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
+        // Notify all listeners
+        listenerCollection.notifyWillResignActive(scene)
     }
     
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
+        // Notify all listeners
+        listenerCollection.notifyWillEnterForeground(scene)
     }
     
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
+        // Notify all listeners
+        listenerCollection.notifyDidEnterBackground(scene)
     }
 }
 
 extension SceneDelegate {
     private func initializeApp(windowScene: UIWindowScene) async {
+        guard let coordinator = coordinator else {
+            print("❌ SceneDelegate: AppCoordinator not available")
+            return
+        }
+        
         do {
-            // Register all modules from manifest
-            try await moduleManager.registerModules(
-                serviceProviders: ModuleManifest.serviceProviders,
-                uiProviders: ModuleManifest.uiProviders,
-                lifecycleParticipants: ModuleManifest.lifecycleParticipants
-            )
+            // Initialize app through coordinator (orchestrates: services → context → UI → lifecycle)
+            let context = try await coordinator.initialize(manifest: AppManifest.self)
             
-            // Run lifecycle phases
-            await moduleManager.runPhase(.prewarm)
-            await moduleManager.runPhase(.launch)
-            
-            // Get context and UI registry
-            guard let context = moduleManager.getContext() else {
-                print("⚠️ Failed to get app context")
-                return
-            }
-            
-            let uiRegistry = moduleManager.getUIRegistry()
+            // Run lifecycle phases (coordinator manages context internally)
+            await coordinator.runPhase(.prewarm)
+            await coordinator.runPhase(.launch)
             
             // Build UI
-            await moduleManager.runPhase(.sceneConnect)
+            await coordinator.runPhase(.sceneConnect)
             
-            // Get main view contribution
-            print("🔍 SceneDelegate: Querying for AppUISurface.mainView contributions...")
-            let mainViewContributions = await uiRegistry.getContributions(for: AppUISurface.mainView)
-            print("🔍 SceneDelegate: Found \(mainViewContributions.count) contribution(s) for AppUISurface.mainView")
+            // Get main view contribution (direct access to UI manager)
+            let mainViewContributions = await coordinator.uiManager.getContributions(for: AppUISurface.mainView)
             
             guard let mainViewContribution = mainViewContributions.first else {
                 print("⚠️ No main view contribution found")
                 return
             }
-            
-            print("✅ SceneDelegate: Building view controller from contribution: \(mainViewContribution.id.rawValue)")
             
             var rootViewController: UIViewController?
             // Build the main view controller from contribution
@@ -114,7 +133,7 @@ extension SceneDelegate {
             }
             
             // Run post-UI phase
-            await moduleManager.runPhase(.postUI)
+            await coordinator.runPhase(.postUI)
             
             print("✅ App initialized successfully")
         } catch {

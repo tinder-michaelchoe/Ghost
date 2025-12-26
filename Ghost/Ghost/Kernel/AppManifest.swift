@@ -15,7 +15,7 @@ import TabBarFramework
 
 /// Central manifest of all modules in the app.
 /// This aggregates modules from AppFoundation and app-specific modules.
-enum ModuleManifest: Manifest {
+enum AppManifest: Manifest {
     
     private static let allManifests: [Manifest.Type] = [
         AppFoundationModules.self,
@@ -28,13 +28,9 @@ enum ModuleManifest: Manifest {
     /// All service providers from all sources.
     static var serviceProviders: [ServiceProvider.Type] {
         var providers: [ServiceProvider.Type] = []
-        
-        // Add service providers from AppFoundation
-        providers.append(contentsOf: AppFoundationModules.serviceProviders)
-        
-        // Add app-specific service providers
-        // providers.append(contentsOf: [])
-        
+        Self.allManifests.forEach { manifest in
+            providers += manifest.serviceProviders
+        }
         return providers
     }
     
@@ -50,14 +46,28 @@ enum ModuleManifest: Manifest {
     /// All lifecycle participants from all sources.
     static var lifecycleParticipants: [LifecycleParticipant.Type] {
         var participants: [LifecycleParticipant.Type] = []
-        
-        // Add lifecycle participants from AppFoundation
-        participants.append(contentsOf: AppFoundationModules.lifecycleParticipants)
-        
-        // Add app-specific lifecycle participants
-        // participants.append(contentsOf: [])
-        
+        Self.allManifests.forEach { manifest in
+            participants += manifest.lifecycleParticipants
+        }
         return participants
+    }
+    
+    /// All AppDelegate listeners from all sources.
+    static var appDelegateListeners: [AppDelegateListener.Type] {
+        var listeners: [AppDelegateListener.Type] = []
+        Self.allManifests.forEach { manifest in
+            listeners += manifest.appDelegateListeners
+        }
+        return listeners
+    }
+    
+    /// All SceneDelegate listeners from all sources.
+    static var sceneDelegateListeners: [SceneDelegateListener.Type] {
+        var listeners: [SceneDelegateListener.Type] = []
+        Self.allManifests.forEach { manifest in
+            listeners += manifest.sceneDelegateListeners
+        }
+        return listeners
     }
 }
 

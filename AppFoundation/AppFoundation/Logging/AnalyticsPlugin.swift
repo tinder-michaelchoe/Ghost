@@ -9,12 +9,7 @@ import CoreContracts
 
 /// Analytics module that provides analytics service and starts in postUI phase.
 /// Conforms to ServiceProvider (registers services) and LifecycleParticipant (starts in postUI).
-public final class AnalyticsServiceProvider: ServiceProvider, LifecycleParticipant, ModuleIdentity {
-    public static let id: String = "com.ghost.analytics"
-    public static let dependencies: [any ModuleIdentity.Type] = [
-        LoggingServiceProvider.self
-    ]
-    
+public final class AnalyticsServiceProvider: ServiceProvider, LifecycleParticipant {
     public init() {}
     
     public func registerServices(_ registry: ServiceRegistry) {
@@ -32,7 +27,7 @@ public final class AnalyticsServiceProvider: ServiceProvider, LifecycleParticipa
     
     public func run(phase: LifecyclePhase, context: AppContext) async {
         if phase == .postUI {
-            if let analytics = await context.services.resolve(AnalyticsService.self) {
+            if let analytics = context.services.resolve(AnalyticsService.self) {
                 analytics.start()
                 analytics.track("app_launched", parameters: nil)
             }

@@ -19,6 +19,8 @@
 		800AE3E42EFD129900F18C75 /* SettingsFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE3E22EFD129900F18C75 /* SettingsFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		800AE5072EFD18B900F18C75 /* BuilderFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE5062EFD18B900F18C75 /* BuilderFramework.framework */; };
 		800AE5082EFD18B900F18C75 /* BuilderFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE5062EFD18B900F18C75 /* BuilderFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		800AE7822EFE02B800F18C75 /* FeatureFlags.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE7812EFE02B800F18C75 /* FeatureFlags.framework */; };
+		800AE7832EFE02B800F18C75 /* FeatureFlags.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE7812EFE02B800F18C75 /* FeatureFlags.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +49,7 @@
 			files = (
 				800AE26A2EFCB33200F18C75 /* AppFoundation.framework in Embed Frameworks */,
 				800AE5082EFD18B900F18C75 /* BuilderFramework.framework in Embed Frameworks */,
+				800AE7832EFE02B800F18C75 /* FeatureFlags.framework in Embed Frameworks */,
 				800AE3E42EFD129900F18C75 /* SettingsFramework.framework in Embed Frameworks */,
 				800AE26C2EFCB33200F18C75 /* CoreContracts.framework in Embed Frameworks */,
 				800AE2C92EFCDB1300F18C75 /* StaticExamplesFramework.framework in Embed Frameworks */,
@@ -67,6 +70,8 @@
 		800AE2C72EFCDB1300F18C75 /* StaticExamplesFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = StaticExamplesFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		800AE3E22EFD129900F18C75 /* SettingsFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SettingsFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		800AE5062EFD18B900F18C75 /* BuilderFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = BuilderFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		800AE6622EFDF37100F18C75 /* Bootstrap.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Bootstrap.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		800AE7812EFE02B800F18C75 /* FeatureFlags.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FeatureFlags.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -107,6 +112,7 @@
 			files = (
 				800AE2692EFCB33200F18C75 /* AppFoundation.framework in Frameworks */,
 				800AE5072EFD18B900F18C75 /* BuilderFramework.framework in Frameworks */,
+				800AE7822EFE02B800F18C75 /* FeatureFlags.framework in Frameworks */,
 				800AE3E32EFD129900F18C75 /* SettingsFramework.framework in Frameworks */,
 				800AE26B2EFCB33200F18C75 /* CoreContracts.framework in Frameworks */,
 				800AE2C82EFCDB1300F18C75 /* StaticExamplesFramework.framework in Frameworks */,
@@ -155,6 +161,8 @@
 		800AE2652EFCB33200F18C75 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				800AE7812EFE02B800F18C75 /* FeatureFlags.framework */,
+				800AE6622EFDF37100F18C75 /* Bootstrap.framework */,
 				800AE5062EFD18B900F18C75 /* BuilderFramework.framework */,
 				800AE3E22EFD129900F18C75 /* SettingsFramework.framework */,
 				800AE2C72EFCDB1300F18C75 /* StaticExamplesFramework.framework */,
