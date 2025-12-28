@@ -3,32 +3,73 @@
 //  CladsRendererFramework
 //
 //  Resolves a Document (AST) into a RenderTree (IR).
-//  Handles style inheritance, data binding, and reference validation.
+//  Orchestrates resolution by delegating to specialized resolvers.
 //
 
 import Foundation
 import SwiftUI
 
+// MARK: - Resolution Result
+
+/// Result of resolving a document, including both render tree and view tree
+public struct ResolutionResult {
+    public let renderTree: RenderTree
+    public let viewTreeRoot: ViewNode
+    public let treeUpdater: ViewTreeUpdater
+
+    public init(renderTree: RenderTree, viewTreeRoot: ViewNode, treeUpdater: ViewTreeUpdater) {
+        self.renderTree = renderTree
+        self.viewTreeRoot = viewTreeRoot
+        self.treeUpdater = treeUpdater
+    }
+}
+
 // MARK: - Resolver
 
-/// Resolves a Document into a RenderTree
+/// Resolves a Document into a RenderTree.
+///
+/// The Resolver orchestrates the resolution process by delegating to specialized resolvers:
+/// - `ComponentResolverRegistry` for component resolution
+/// - `LayoutResolver` for container layouts
+/// - `SectionLayoutResolver` for section-based layouts
+/// - `ActionResolver` for action definitions
+///
+/// Example:
+/// ```swift
+/// let resolver = Resolver(document: document)
+/// let renderTree = try resolver.resolve()
+/// ```
 public struct Resolver {
-    private let styleResolver: StyleResolver
-    private let document: Document
+    private let document: Document.Definition
+    private let componentRegistry: ComponentResolverRegistry
+    private let actionResolver: ActionResolver
 
-    public init(document: Document) {
+    // MARK: - Initialization
+
+    public init(
+        document: Document.Definition,
+        componentRegistry: ComponentResolverRegistry = .default
+    ) {
         self.document = document
-        self.styleResolver = StyleResolver(styles: document.styles)
+        self.componentRegistry = componentRegistry
+        self.actionResolver = ActionResolver()
     }
 
-    /// Resolve the document into a render tree
+    // MARK: - Public API
+
+    /// Resolve the document into a render tree (without dependency tracking)
     @MainActor
     public func resolve() throws -> RenderTree {
         let stateStore = StateStore()
         stateStore.initialize(from: document.state)
 
-        let actions = try resolveActions(document.actions ?? [:])
-        let rootNode = try resolveRoot(document.root, stateStore: stateStore)
+        let context = ResolutionContext.withoutTracking(
+            document: document,
+            stateStore: stateStore
+        )
+
+        let actions = actionResolver.resolveAll(document.actions)
+        let rootNode = try resolveRoot(document.root, context: context)
 
         return RenderTree(
             root: rootNode,
@@ -37,273 +78,140 @@ public struct Resolver {
         )
     }
 
+    /// Resolve the document with full dependency tracking
+    @MainActor
+    public func resolveWithTracking() throws -> ResolutionResult {
+        let stateStore = StateStore()
+        stateStore.initialize(from: document.state)
+
+        let treeUpdater = ViewTreeUpdater()
+        let tracker = treeUpdater.dependencyTracker
+
+        let context = ResolutionContext.withTracking(
+            document: document,
+            stateStore: stateStore,
+            tracker: tracker
+        )
+
+        let actions = actionResolver.resolveAll(document.actions)
+        let (rootNode, viewNode) = try resolveRootWithTracking(document.root, context: context)
+
+        let renderTree = RenderTree(
+            root: rootNode,
+            stateStore: stateStore,
+            actions: actions
+        )
+
+        // Set up the view tree and attach to state store
+        treeUpdater.setRoot(viewNode)
+        treeUpdater.attach(to: stateStore)
+
+        return ResolutionResult(
+            renderTree: renderTree,
+            viewTreeRoot: viewNode,
+            treeUpdater: treeUpdater
+        )
+    }
+
     // MARK: - Root Resolution
 
     @MainActor
-    private func resolveRoot(_ root: RootComponent, stateStore: StateStore) throws -> RootNode {
+    private func resolveRoot(_ root: Document.RootComponent, context: ResolutionContext) throws -> RootNode {
         let backgroundColor: Color? = root.backgroundColor.map { Color(hex: $0) }
-        let style = styleResolver.resolve(root.styleId)
-        let children = try root.children.map { try resolveNode($0, stateStore: stateStore) }
+        let colorScheme = ColorSchemeConverter.convert(root.colorScheme)
+        let style = context.styleResolver.resolve(root.styleId)
+
+        let layoutResolver = LayoutResolver(componentRegistry: componentRegistry)
+        let children = try root.children.map { child -> RenderNode in
+            try resolveNode(child, context: context, layoutResolver: layoutResolver).renderNode
+        }
 
         return RootNode(
             backgroundColor: backgroundColor,
             edgeInsets: root.edgeInsets,
+            colorScheme: colorScheme,
             style: style,
             children: children
         )
     }
 
+    @MainActor
+    private func resolveRootWithTracking(
+        _ root: Document.RootComponent,
+        context: ResolutionContext
+    ) throws -> (RootNode, ViewNode) {
+        let backgroundColor: Color? = root.backgroundColor.map { Color(hex: $0) }
+        let colorScheme = ColorSchemeConverter.convert(root.colorScheme)
+        let style = context.styleResolver.resolve(root.styleId)
+
+        // Create view node for root
+        let viewNode = ViewNode(
+            id: "root",
+            nodeType: .root(RootNodeData(
+                backgroundColor: root.backgroundColor,
+                colorScheme: colorScheme,
+                style: style
+            ))
+        )
+
+        // Update context with root as parent
+        let childContext = context.withParent(viewNode)
+        let layoutResolver = LayoutResolver(componentRegistry: componentRegistry)
+
+        // Resolve children with tracking
+        var renderChildren: [RenderNode] = []
+        var viewChildren: [ViewNode] = []
+
+        for child in root.children {
+            let result = try resolveNode(child, context: childContext, layoutResolver: layoutResolver)
+            renderChildren.append(result.renderNode)
+            if let childViewNode = result.viewNode {
+                viewChildren.append(childViewNode)
+            }
+        }
+
+        viewNode.children = viewChildren
+
+        let rootRenderNode = RootNode(
+            backgroundColor: backgroundColor,
+            edgeInsets: root.edgeInsets,
+            colorScheme: colorScheme,
+            style: style,
+            children: renderChildren
+        )
+
+        return (rootRenderNode, viewNode)
+    }
+
     // MARK: - Node Resolution
 
     @MainActor
-    private func resolveNode(_ node: LayoutNode, stateStore: StateStore) throws -> RenderNode {
+    private func resolveNode(
+        _ node: Document.LayoutNode,
+        context: ResolutionContext,
+        layoutResolver: LayoutResolver
+    ) throws -> NodeResolutionResult {
         switch node {
         case .layout(let layout):
-            return .container(try resolveLayout(layout, stateStore: stateStore))
+            return try layoutResolver.resolve(layout, context: context)
+
+        case .sectionLayout(let sectionLayout):
+            let sectionResolver = SectionLayoutResolver(componentRegistry: componentRegistry)
+            return try sectionResolver.resolve(sectionLayout, context: context)
+
         case .component(let component):
-            return try resolveComponent(component, stateStore: stateStore)
+            let result = try componentRegistry.resolve(component, context: context)
+            return NodeResolutionResult(renderNode: result.renderNode, viewNode: result.viewNode)
+
         case .spacer:
-            return .spacer
-        }
-    }
-
-    // MARK: - Layout Resolution
-
-    @MainActor
-    private func resolveLayout(_ layout: Layout, stateStore: StateStore) throws -> ContainerNode {
-        let axis: Axis
-        let alignment: ContainerAlignment
-
-        switch layout.type {
-        case .vstack:
-            axis = .vertical
-            alignment = resolveHorizontalAlignment(layout.horizontalAlignment)
-        case .hstack:
-            axis = .horizontal
-            alignment = resolveVerticalAlignment(layout.alignment?.vertical)
-        case .zstack:
-            axis = .vertical  // ZStack doesn't really have an axis
-            alignment = .center
-        }
-
-        let padding = resolvePadding(layout.padding)
-        let children = try layout.children.map { try resolveNode($0, stateStore: stateStore) }
-
-        return ContainerNode(
-            id: nil,
-            axis: axis,
-            alignment: alignment,
-            spacing: layout.spacing ?? 0,
-            padding: padding,
-            style: ResolvedStyle(),
-            children: children
-        )
-    }
-
-    private func resolveHorizontalAlignment(_ alignment: HorizontalAlignment?) -> ContainerAlignment {
-        switch alignment {
-        case .leading: return .leading
-        case .trailing: return .trailing
-        case .center, .none: return .center
-        }
-    }
-
-    private func resolveVerticalAlignment(_ alignment: VerticalAlignment?) -> ContainerAlignment {
-        switch alignment {
-        case .top: return .top
-        case .bottom: return .bottom
-        case .center, .none: return .center
-        }
-    }
-
-    private func resolvePadding(_ padding: Padding?) -> ResolvedPadding {
-        guard let padding = padding else { return ResolvedPadding() }
-        return ResolvedPadding(
-            top: padding.resolvedTop,
-            bottom: padding.resolvedBottom,
-            leading: padding.resolvedLeading,
-            trailing: padding.resolvedTrailing
-        )
-    }
-
-    // MARK: - Component Resolution
-
-    @MainActor
-    private func resolveComponent(_ component: Component, stateStore: StateStore) throws -> RenderNode {
-        let style = styleResolver.resolve(component.styleId)
-        let content = resolveContent(component, stateStore: stateStore)
-
-        switch component.type {
-        case .label:
-            return .text(TextNode(
-                id: component.id,
-                content: content,
-                style: style
-            ))
-
-        case .button:
-            let onTap = component.actions?.onTap
-            return .button(ButtonNode(
-                id: component.id,
-                label: component.label ?? content,
-                style: style,
-                fillWidth: component.fillWidth ?? false,
-                onTap: onTap
-            ))
-
-        case .textfield:
-            return .textField(TextFieldNode(
-                id: component.id,
-                placeholder: component.placeholder ?? "",
-                style: style,
-                bindingPath: component.bind
-            ))
-
-        case .image:
-            let source = resolveImageSource(component)
-            return .image(ImageNode(
-                id: component.id,
-                source: source,
-                style: style
-            ))
-        }
-    }
-
-    @MainActor
-    private func resolveContent(_ component: Component, stateStore: StateStore) -> String {
-        // First check for dataSourceId
-        if let dataSourceId = component.dataSourceId,
-           let dataSource = document.dataSources?[dataSourceId] {
-            switch dataSource.type {
-            case .static:
-                return dataSource.value ?? ""
-            case .binding:
-                if let path = dataSource.path {
-                    return stateStore.get(path) as? String ?? ""
-                }
+            let viewNode: ViewNode?
+            if context.isTracking {
+                viewNode = ViewNode(id: UUID().uuidString, nodeType: .spacer)
+                viewNode?.parent = context.parentViewNode
+            } else {
+                viewNode = nil
             }
-        }
-
-        // Fall back to label
-        return component.label ?? ""
-    }
-
-    private func resolveImageSource(_ component: Component) -> ImageSource {
-        // Check the data property for image source
-        if let data = component.data {
-            switch data.type {
-            case .static:
-                if let value = data.value {
-                    // Check for system: prefix for SF Symbols
-                    if value.hasPrefix("system:") {
-                        return .system(name: String(value.dropFirst(7)))
-                    }
-                    // Check for url: prefix
-                    if value.hasPrefix("url:"), let url = URL(string: String(value.dropFirst(4))) {
-                        return .url(url)
-                    }
-                    // Default to asset
-                    return .asset(name: value)
-                }
-            case .binding:
-                break  // Dynamic images not supported yet
-            }
-        }
-        return .system(name: "questionmark")
-    }
-
-    // MARK: - Action Resolution
-
-    private func resolveActions(_ actions: [String: [String: Any]]) throws -> [String: ActionDefinition] {
-        var resolved: [String: ActionDefinition] = [:]
-        for (id, actionDict) in actions {
-            resolved[id] = try resolveAction(actionDict)
-        }
-        return resolved
-    }
-
-    private func resolveAction(_ dict: [String: Any]) throws -> ActionDefinition {
-        guard let type = dict["type"] as? String else {
-            throw ResolutionError.invalidAction("Missing 'type' field")
-        }
-
-        switch type {
-        case "dismiss":
-            return .dismiss
-
-        case "setState":
-            guard let path = dict["path"] as? String else {
-                throw ResolutionError.invalidAction("setState missing 'path'")
-            }
-            let value = resolveStateValue(dict["value"])
-            return .setState(path: path, value: value)
-
-        case "showAlert":
-            let title = dict["title"] as? String ?? "Alert"
-            let message = resolveAlertMessage(dict["message"])
-            let buttons = resolveAlertButtons(dict["buttons"] as? [[String: Any]] ?? [])
-            return .showAlert(config: AlertActionConfig(title: title, message: message, buttons: buttons))
-
-        case "sequence":
-            guard let steps = dict["steps"] as? [[String: Any]] else {
-                throw ResolutionError.invalidAction("sequence missing 'steps'")
-            }
-            let resolvedSteps = try steps.map { try resolveAction($0) }
-            return .sequence(steps: resolvedSteps)
-
-        case "navigate":
-            guard let destination = dict["destination"] as? String else {
-                throw ResolutionError.invalidAction("navigate missing 'destination'")
-            }
-            let presentationStr = dict["presentation"] as? String ?? "push"
-            let presentation = NavigationPresentation(rawValue: presentationStr) ?? .push
-            return .navigate(destination: destination, presentation: presentation)
-
-        default:
-            return .custom(type: type, parameters: dict)
-        }
-    }
-
-    private func resolveStateValue(_ value: Any?) -> StateSetValue {
-        guard let value = value else { return .literal(0) }
-
-        if let dict = value as? [String: Any],
-           let expr = dict["$expr"] as? String {
-            return .expression(expr)
-        }
-
-        return .literal(value)
-    }
-
-    private func resolveAlertMessage(_ value: Any?) -> AlertMessage? {
-        guard let value = value else { return nil }
-
-        if let string = value as? String {
-            return .static(string)
-        }
-
-        if let dict = value as? [String: Any],
-           let type = dict["type"] as? String,
-           type == "binding",
-           let template = dict["template"] as? String {
-            return .template(template)
-        }
-
-        return nil
-    }
-
-    private func resolveAlertButtons(_ buttons: [[String: Any]]) -> [AlertButtonConfig] {
-        return buttons.map { dict in
-            let label = dict["label"] as? String ?? "OK"
-            let styleStr = dict["style"] as? String ?? "default"
-            let style: AlertButtonStyle
-            switch styleStr {
-            case "cancel": style = .cancel
-            case "destructive": style = .destructive
-            default: style = .default
-            }
-            let action = dict["action"] as? String
-            return AlertButtonConfig(label: label, style: style, action: action)
+            return NodeResolutionResult(renderNode: .spacer, viewNode: viewNode)
         }
     }
 }

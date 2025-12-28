@@ -74,6 +74,9 @@ public struct DebugRenderer: Renderer {
         case .container(let container):
             return renderContainer(container, indent: indent)
 
+        case .sectionLayout(let sectionLayout):
+            return renderSectionLayout(sectionLayout, indent: indent)
+
         case .text(let text):
             var props: [String] = []
             if let id = text.id { props.append("id: \(id)") }
@@ -105,8 +108,79 @@ public struct DebugRenderer: Renderer {
             let propsStr = props.joined(separator: ", ")
             return "\(prefix)image (\(propsStr))"
 
+        case .gradient(let gradient):
+            var props: [String] = []
+            if let id = gradient.id { props.append("id: \(id)") }
+            props.append("colors: \(gradient.colors.count)")
+            props.append("from: \(gradient.startPoint)")
+            props.append("to: \(gradient.endPoint)")
+            let propsStr = props.joined(separator: ", ")
+            return "\(prefix)gradient (\(propsStr))"
+
         case .spacer:
             return "\(prefix)spacer"
+        }
+    }
+
+    private func renderSectionLayout(_ sectionLayout: SectionLayoutNode, indent: Int) -> String {
+        let prefix = String(repeating: "  ", count: indent)
+        var lines: [String] = []
+
+        var props: [String] = []
+        if let id = sectionLayout.id { props.append("id: \(id)") }
+        props.append("sections: \(sectionLayout.sections.count)")
+        if sectionLayout.sectionSpacing > 0 { props.append("spacing: \(Int(sectionLayout.sectionSpacing))") }
+
+        let propsStr = props.isEmpty ? "" : " (\(props.joined(separator: ", ")))"
+        lines.append("\(prefix)sectionLayout\(propsStr)")
+
+        for section in sectionLayout.sections {
+            lines.append(renderSection(section, indent: indent + 1))
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    private func renderSection(_ section: IR.Section, indent: Int) -> String {
+        let prefix = String(repeating: "  ", count: indent)
+        var lines: [String] = []
+
+        var props: [String] = []
+        if let id = section.id { props.append("id: \(id)") }
+        props.append("layout: \(sectionTypeDescription(section.layoutType))")
+        props.append("children: \(section.children.count)")
+        if section.stickyHeader { props.append("stickyHeader") }
+
+        let propsStr = props.isEmpty ? "" : " (\(props.joined(separator: ", ")))"
+        lines.append("\(prefix)section\(propsStr)")
+
+        if let header = section.header {
+            lines.append("\(prefix)  header:")
+            lines.append(renderNode(header, indent: indent + 2))
+        }
+
+        for child in section.children {
+            lines.append(renderNode(child, indent: indent + 2))
+        }
+
+        if let footer = section.footer {
+            lines.append("\(prefix)  footer:")
+            lines.append(renderNode(footer, indent: indent + 2))
+        }
+
+        return lines.joined(separator: "\n")
+    }
+
+    private func sectionTypeDescription(_ type: IR.SectionType) -> String {
+        switch type {
+        case .horizontal: return "horizontal"
+        case .list: return "list"
+        case .grid(let columns):
+            switch columns {
+            case .fixed(let count): return "grid(fixed: \(count))"
+            case .adaptive(let minWidth): return "grid(adaptive: \(Int(minWidth)))"
+            }
+        case .flow: return "flow"
         }
     }
 
@@ -114,14 +188,20 @@ public struct DebugRenderer: Renderer {
         let prefix = String(repeating: "  ", count: indent)
         var lines: [String] = []
 
-        let axisName = container.axis == .vertical ? "vstack" : "hstack"
+        let layoutName: String
+        switch container.layoutType {
+        case .vstack: layoutName = "vstack"
+        case .hstack: layoutName = "hstack"
+        case .zstack: layoutName = "zstack"
+        }
+
         var props: [String] = []
         if let id = container.id { props.append("id: \(id)") }
         if container.spacing > 0 { props.append("spacing: \(Int(container.spacing))") }
-        props.append("align: \(container.alignment)")
+        props.append("align: \(alignmentDescription(container.alignment))")
 
         let propsStr = props.isEmpty ? "" : " (\(props.joined(separator: ", ")))"
-        lines.append("\(prefix)\(axisName)\(propsStr)")
+        lines.append("\(prefix)\(layoutName)\(propsStr)")
 
         for child in container.children {
             lines.append(renderNode(child, indent: indent + 1))
@@ -130,9 +210,22 @@ public struct DebugRenderer: Renderer {
         return lines.joined(separator: "\n")
     }
 
+    private func alignmentDescription(_ alignment: SwiftUI.Alignment) -> String {
+        if alignment == .center { return "center" }
+        if alignment == .leading { return "leading" }
+        if alignment == .trailing { return "trailing" }
+        if alignment == .top { return "top" }
+        if alignment == .bottom { return "bottom" }
+        if alignment == .topLeading { return "topLeading" }
+        if alignment == .topTrailing { return "topTrailing" }
+        if alignment == .bottomLeading { return "bottomLeading" }
+        if alignment == .bottomTrailing { return "bottomTrailing" }
+        return "custom"
+    }
+
     // MARK: - Helpers
 
-    private func imageSourceDescription(_ source: ImageSource) -> String {
+    private func imageSourceDescription(_ source: ImageNode.Source) -> String {
         switch source {
         case .system(let name): return "system(\(name))"
         case .asset(let name): return "asset(\(name))"

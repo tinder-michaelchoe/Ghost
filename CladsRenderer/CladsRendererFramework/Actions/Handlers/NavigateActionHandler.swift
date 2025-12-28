@@ -18,9 +18,9 @@ public struct NavigateActionHandler: ActionHandler, Initializable {
             return
         }
 
-        let presentation: NavigationPresentation?
+        let presentation: Document.NavigationPresentation?
         if let presentationString = parameters.string("presentation") {
-            presentation = NavigationPresentation(rawValue: presentationString)
+            presentation = Document.NavigationPresentation(rawValue: presentationString)
         } else {
             presentation = nil
         }

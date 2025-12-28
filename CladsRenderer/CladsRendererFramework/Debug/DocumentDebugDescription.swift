@@ -7,7 +7,7 @@ import Foundation
 
 // MARK: - Document Debug Description
 
-extension Document: CustomDebugStringConvertible {
+extension Document.Definition: CustomDebugStringConvertible {
     public var debugDescription: String {
         var lines: [String] = []
 
@@ -46,8 +46,7 @@ extension Document: CustomDebugStringConvertible {
             lines.append("")
             lines.append("Actions:")
             for (key, action) in actions.sorted(by: { $0.key < $1.key }) {
-                let type = action["type"] as? String ?? "unknown"
-                lines.append("  \(key): \(type)")
+                lines.append("  \(key): \(action.debugTypeName)")
             }
         }
 
@@ -60,7 +59,7 @@ extension Document: CustomDebugStringConvertible {
     }
 
     /// Build a tree representation of style inheritance
-    private func buildStyleTree(_ styles: [String: Style]) -> [String] {
+    private func buildStyleTree(_ styles: [String: Document.Style]) -> [String] {
         var lines: [String] = []
 
         // Build parent -> children map
@@ -107,7 +106,7 @@ extension Document: CustomDebugStringConvertible {
 
 // MARK: - RootComponent Debug
 
-extension RootComponent {
+extension Document.RootComponent {
     func debugDescription(indent: Int) -> String {
         let prefix = String(repeating: "  ", count: indent)
         var lines: [String] = []
@@ -132,13 +131,15 @@ extension RootComponent {
 
 // MARK: - LayoutNode Debug
 
-extension LayoutNode {
+extension Document.LayoutNode {
     func debugDescription(indent: Int) -> String {
         let prefix = String(repeating: "  ", count: indent)
 
         switch self {
         case .layout(let layout):
             return layout.debugDescription(indent: indent)
+        case .sectionLayout(let sectionLayout):
+            return sectionLayout.debugDescription(indent: indent)
         case .component(let component):
             return component.debugDescription(indent: indent)
         case .spacer:
@@ -149,7 +150,7 @@ extension LayoutNode {
 
 // MARK: - Layout Debug
 
-extension Layout {
+extension Document.Layout {
     func debugDescription(indent: Int) -> String {
         let prefix = String(repeating: "  ", count: indent)
         var lines: [String] = []
@@ -171,9 +172,76 @@ extension Layout {
     }
 }
 
+// MARK: - SectionLayout Debug
+
+extension Document.SectionLayout {
+    func debugDescription(indent: Int) -> String {
+        let prefix = String(repeating: "  ", count: indent)
+        var lines: [String] = []
+
+        var desc = "sectionLayout"
+        var props: [String] = []
+        if let id = id { props.append("id: \(id)") }
+        if let spacing = sectionSpacing { props.append("spacing: \(Int(spacing))") }
+        props.append("sections: \(sections.count)")
+        if !props.isEmpty {
+            desc += " (\(props.joined(separator: ", ")))"
+        }
+        lines.append(prefix + desc)
+
+        for section in sections {
+            lines.append(section.debugDescription(indent: indent + 1))
+        }
+
+        return lines.joined(separator: "\n")
+    }
+}
+
+extension Document.SectionDefinition {
+    func debugDescription(indent: Int) -> String {
+        let prefix = String(repeating: "  ", count: indent)
+        var lines: [String] = []
+
+        var desc = "section"
+        var props: [String] = []
+        if let id = id { props.append("id: \(id)") }
+        props.append("layout: \(layout.rawValue)")
+        if let staticChildren = children { props.append("children: \(staticChildren.count)") }
+        if let ds = dataSource { props.append("dataSource: \(ds)") }
+        if stickyHeader == true { props.append("stickyHeader") }
+        if !props.isEmpty {
+            desc += " (\(props.joined(separator: ", ")))"
+        }
+        lines.append(prefix + desc)
+
+        if let header = header {
+            lines.append(prefix + "  header:")
+            lines.append(header.debugDescription(indent: indent + 2))
+        }
+
+        if let staticChildren = children {
+            for child in staticChildren {
+                lines.append(child.debugDescription(indent: indent + 1))
+            }
+        }
+
+        if let template = itemTemplate {
+            lines.append(prefix + "  itemTemplate:")
+            lines.append(template.debugDescription(indent: indent + 2))
+        }
+
+        if let footer = footer {
+            lines.append(prefix + "  footer:")
+            lines.append(footer.debugDescription(indent: indent + 2))
+        }
+
+        return lines.joined(separator: "\n")
+    }
+}
+
 // MARK: - Component Debug
 
-extension Component {
+extension Document.Component {
     func debugDescription(indent: Int) -> String {
         let prefix = String(repeating: "  ", count: indent)
 
@@ -193,7 +261,7 @@ extension Component {
 
 // MARK: - StateValue Debug
 
-extension StateValue {
+extension Document.StateValue {
     var debugValue: String {
         switch self {
         case .intValue(let v): return "\(v)"
@@ -207,7 +275,7 @@ extension StateValue {
 
 // MARK: - DataSource Debug
 
-extension DataSource {
+extension Document.DataSource {
     var debugValue: String {
         switch type {
         case .static:
@@ -217,6 +285,27 @@ extension DataSource {
             return "static(nil)"
         case .binding:
             return "binding(\(path ?? "?"))"
+        }
+    }
+}
+
+// MARK: - Action Debug
+
+extension Document.Action {
+    var debugTypeName: String {
+        switch self {
+        case .dismiss:
+            return "dismiss"
+        case .setState(let action):
+            return "setState(path: \(action.path))"
+        case .showAlert(let action):
+            return "showAlert(title: \(action.title))"
+        case .navigate(let action):
+            return "navigate(destination: \(action.destination))"
+        case .sequence(let action):
+            return "sequence(steps: \(action.steps.count))"
+        case .custom(let action):
+            return "custom(\(action.type))"
         }
     }
 }

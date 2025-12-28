@@ -8,9 +8,9 @@ import SwiftUI
 // MARK: - Layout Builder
 
 struct LayoutView: View {
-    let layout: Layout
+    let layout: Document.Layout
     let styleResolver: StyleResolver
-    let dataSources: [String: DataSource]?
+    let dataSources: [String: Document.DataSource]?
     @EnvironmentObject var stateStore: StateStore
     @EnvironmentObject var context: ActionContext
 
@@ -61,7 +61,7 @@ struct LayoutView: View {
         .applyPadding(layout.padding)
     }
 
-    private func buildAlignment(_ alignment: Alignment?) -> SwiftUI.Alignment {
+    private func buildAlignment(_ alignment: Document.Alignment?) -> SwiftUI.Alignment {
         let h = alignment?.horizontal ?? .center
         let v = alignment?.vertical ?? .center
 
@@ -79,7 +79,7 @@ struct LayoutView: View {
     }
 
     @ViewBuilder
-    private func buildChild(_ node: LayoutNode) -> some View {
+    private func buildChild(_ node: Document.LayoutNode) -> some View {
         switch node {
         case .layout(let childLayout):
             LayoutView(
@@ -87,6 +87,10 @@ struct LayoutView: View {
                 styleResolver: styleResolver,
                 dataSources: dataSources
             )
+
+        case .sectionLayout:
+            // SectionLayout is handled by the resolved IR pipeline (SwiftUIRenderer)
+            EmptyView()
 
         case .component(let component):
             ComponentView(
@@ -104,9 +108,9 @@ struct LayoutView: View {
 // MARK: - Component Builder
 
 struct ComponentView: View {
-    let component: Component
+    let component: Document.Component
     let styleResolver: StyleResolver
-    let dataSources: [String: DataSource]?
+    let dataSources: [String: Document.DataSource]?
     @EnvironmentObject var stateStore: StateStore
     @EnvironmentObject var context: ActionContext
 
@@ -130,6 +134,10 @@ struct ComponentView: View {
         case .image:
             // Placeholder for image component
             EmptyView()
+
+        case .gradient:
+            // Gradient is handled by the new pipeline (SwiftUIRenderer)
+            EmptyView()
         }
     }
 
@@ -147,7 +155,7 @@ struct ComponentView: View {
         return component.label ?? ""
     }
 
-    private func resolveDataReference(_ ref: DataReference) -> String {
+    private func resolveDataReference(_ ref: Document.DataReference) -> String {
         switch ref.type {
         case .static:
             return ref.value ?? ""
@@ -159,10 +167,14 @@ struct ComponentView: View {
                 return stateStore.interpolate(template)
             }
             return ""
+        case .localBinding:
+            // Local binding is handled at resolution time, not here
+            // Return empty for now - local state requires ViewNode context
+            return ref.path.map { "[\($0)]" } ?? ""
         }
     }
 
-    private func resolveDataSource(_ dataSource: DataSource) -> String {
+    private func resolveDataSource(_ dataSource: Document.DataSource) -> String {
         switch dataSource.type {
         case .static:
             return dataSource.value ?? ""
@@ -178,7 +190,7 @@ struct ComponentView: View {
 // MARK: - Padding Extension
 
 extension View {
-    func applyPadding(_ padding: Padding?) -> some View {
+    func applyPadding(_ padding: Document.Padding?) -> some View {
         guard let padding = padding else { return AnyView(self) }
 
         return AnyView(
@@ -193,7 +205,7 @@ extension View {
 
 // MARK: - Alignment Conversions
 
-extension HorizontalAlignment {
+extension Document.HorizontalAlignment {
     func toSwiftUIHorizontal() -> SwiftUI.HorizontalAlignment {
         switch self {
         case .leading: return .leading
@@ -203,7 +215,7 @@ extension HorizontalAlignment {
     }
 }
 
-extension VerticalAlignment {
+extension Document.VerticalAlignment {
     func toSwiftUIVertical() -> SwiftUI.VerticalAlignment {
         switch self {
         case .top: return .top

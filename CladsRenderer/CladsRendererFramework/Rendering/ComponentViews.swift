@@ -8,8 +8,8 @@ import SwiftUI
 // MARK: - Label Component
 
 struct LabelView: View {
-    let component: Component
-    let style: ResolvedStyle
+    let component: Document.Component
+    let style: IR.Style
     let text: String
 
     var body: some View {
@@ -21,14 +21,14 @@ struct LabelView: View {
 // MARK: - Button Component
 
 struct ButtonView: View {
-    let component: Component
-    let style: ResolvedStyle
+    let component: Document.Component
+    let style: IR.Style
     @EnvironmentObject var context: ActionContext
 
     var body: some View {
         Button(action: {
-            if let actionId = component.actions?.onTap {
-                context.execute(actionId)
+            if let binding = component.actions?.onTap {
+                context.execute(binding)
             }
         }) {
             Text(component.label ?? "")
@@ -45,8 +45,8 @@ struct ButtonView: View {
 // MARK: - TextField Component
 
 struct TextFieldView: View {
-    let component: Component
-    let style: ResolvedStyle
+    let component: Document.Component
+    let style: IR.Style
     @EnvironmentObject var stateStore: StateStore
 
     var body: some View {
@@ -64,14 +64,14 @@ struct TextFieldView: View {
 // MARK: - Style Modifiers
 
 extension View {
-    func applyTextStyle(_ style: ResolvedStyle) -> some View {
+    func applyTextStyle(_ style: IR.Style) -> some View {
         self
             .font(style.font)
             .foregroundColor(style.textColor)
             .multilineTextAlignment(style.textAlignment ?? .leading)
     }
 
-    func applyContainerStyle(_ style: ResolvedStyle) -> some View {
+    func applyContainerStyle(_ style: IR.Style) -> some View {
         self
             .padding(.top, style.paddingTop ?? 0)
             .padding(.bottom, style.paddingBottom ?? 0)

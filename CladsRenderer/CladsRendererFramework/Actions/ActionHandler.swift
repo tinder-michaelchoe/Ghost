@@ -72,5 +72,5 @@ public protocol ActionExecutionContext: AnyObject {
     func presentAlert(_ config: AlertConfiguration)
 
     /// Navigate to another view
-    func navigate(to destination: String, presentation: NavigationPresentation?)
+    func navigate(to destination: String, presentation: Document.NavigationPresentation?)
 }

@@ -23,7 +23,7 @@ public struct ShowAlertActionHandler: ActionHandler, Initializable {
             for buttonDict in buttonArray {
                 let label = buttonDict["label"] as? String ?? "OK"
                 let styleString = buttonDict["style"] as? String ?? "default"
-                let style: AlertButtonStyle
+                let style: Document.AlertButtonStyle
                 switch styleString {
                 case "cancel": style = .cancel
                 case "destructive": style = .destructive
@@ -40,7 +40,7 @@ public struct ShowAlertActionHandler: ActionHandler, Initializable {
         }
 
         if buttons.isEmpty {
-            buttons = [AlertConfiguration.Button(label: "OK", style: .default, action: nil)]
+            buttons = [AlertConfiguration.Button(label: "OK", style: Document.AlertButtonStyle.default, action: nil)]
         }
 
         let config = AlertConfiguration(
