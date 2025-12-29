@@ -31,7 +31,7 @@ struct ButtonView: View {
                 context.execute(binding)
             }
         }) {
-            Text(component.label ?? "")
+            Text(component.text ?? "")
                 .applyTextStyle(style)
                 .frame(maxWidth: component.fillWidth == true ? .infinity : nil)
                 .frame(height: style.height)
@@ -69,6 +69,8 @@ extension View {
             .font(style.font)
             .foregroundColor(style.textColor)
             .multilineTextAlignment(style.textAlignment ?? .leading)
+            .lineLimit(nil)
+            .fixedSize(horizontal: false, vertical: true)
     }
 
     func applyContainerStyle(_ style: IR.Style) -> some View {

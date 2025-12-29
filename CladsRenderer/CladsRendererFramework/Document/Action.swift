@@ -26,6 +26,7 @@ extension Document {
     public enum Action: Codable {
         case dismiss
         case setState(SetStateAction)
+        case toggleState(ToggleStateAction)
         case showAlert(ShowAlertAction)
         case navigate(NavigateAction)
         case sequence(SequenceAction)
@@ -40,6 +41,7 @@ extension Document {
         private enum ActionType: String, Codable {
             case dismiss
             case setState
+            case toggleState
             case showAlert
             case navigate
             case sequence
@@ -57,6 +59,8 @@ extension Document {
                     self = .dismiss
                 case .setState:
                     self = .setState(try SetStateAction(from: decoder))
+                case .toggleState:
+                    self = .toggleState(try ToggleStateAction(from: decoder))
                 case .showAlert:
                     self = .showAlert(try ShowAlertAction(from: decoder))
                 case .navigate:
@@ -76,6 +80,8 @@ extension Document {
                 var container = encoder.container(keyedBy: CodingKeys.self)
                 try container.encode(ActionType.dismiss, forKey: .type)
             case .setState(let action):
+                try action.encode(to: encoder)
+            case .toggleState(let action):
                 try action.encode(to: encoder)
             case .showAlert(let action):
                 try action.encode(to: encoder)
@@ -124,6 +130,39 @@ extension Document {
             try container.encode("setState", forKey: .type)
             try container.encode(path, forKey: .path)
             try container.encode(value, forKey: .value)
+        }
+    }
+}
+
+// MARK: - ToggleStateAction
+
+extension Document {
+    /// Toggles a boolean value in the state store.
+    ///
+    /// JSON:
+    /// ```json
+    /// { "type": "toggleState", "path": "selected.technology" }
+    /// ```
+    public struct ToggleStateAction: Codable {
+        public let path: String
+
+        public init(path: String) {
+            self.path = path
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case type, path
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            path = try container.decode(String.self, forKey: .path)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode("toggleState", forKey: .type)
+            try container.encode(path, forKey: .path)
         }
     }
 }

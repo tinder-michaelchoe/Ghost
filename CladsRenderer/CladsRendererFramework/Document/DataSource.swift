@@ -20,11 +20,13 @@ extension Document {
         public let type: Kind
         public let value: String?
         public let path: String?
+        public let template: String?
 
-        public init(type: Kind, value: String? = nil, path: String? = nil) {
+        public init(type: Kind, value: String? = nil, path: String? = nil, template: String? = nil) {
             self.type = type
             self.value = value
             self.path = path
+            self.template = template
         }
     }
 }

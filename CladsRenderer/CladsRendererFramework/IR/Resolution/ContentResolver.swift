@@ -7,6 +7,34 @@
 
 import Foundation
 
+/// Result of content resolution, including binding info for reactive updates
+public struct ContentResolutionResult {
+    /// The resolved content string
+    public let content: String
+
+    /// If set, the content should be read dynamically from StateStore at this path
+    public let bindingPath: String?
+
+    /// If set, this template should be interpolated with StateStore values (e.g., "Hello ${name}")
+    public let bindingTemplate: String?
+
+    /// Whether this content is dynamic and should be observed for changes
+    public var isDynamic: Bool {
+        bindingPath != nil || bindingTemplate != nil
+    }
+
+    public init(content: String, bindingPath: String? = nil, bindingTemplate: String? = nil) {
+        self.content = content
+        self.bindingPath = bindingPath
+        self.bindingTemplate = bindingTemplate
+    }
+
+    /// Create a static content result (no binding)
+    public static func `static`(_ content: String) -> ContentResolutionResult {
+        ContentResolutionResult(content: content)
+    }
+}
+
 /// Resolves content strings from components, handling data sources and bindings.
 public struct ContentResolver {
 
@@ -15,13 +43,13 @@ public struct ContentResolver {
     ///   - component: The component to resolve content for
     ///   - context: The resolution context
     ///   - viewNode: The view node for dependency tracking (optional)
-    /// - Returns: The resolved content string
+    /// - Returns: The resolved content with binding info
     @MainActor
     public static func resolve(
         _ component: Document.Component,
         context: ResolutionContext,
         viewNode: ViewNode? = nil
-    ) -> String {
+    ) -> ContentResolutionResult {
         // Check for dataSourceId (uses DataSource type)
         if let dataSourceId = component.dataSourceId,
            let dataSource = context.document.dataSources?[dataSourceId] {
@@ -33,7 +61,7 @@ public struct ContentResolver {
             return resolveFromDataReference(data, context: context, viewNode: viewNode)
         }
 
-        return component.label ?? ""
+        return .static(component.text ?? "")
     }
 
     // MARK: - Private Helpers
@@ -43,18 +71,27 @@ public struct ContentResolver {
         _ dataSource: Document.DataSource,
         context: ResolutionContext,
         viewNode: ViewNode?
-    ) -> String {
+    ) -> ContentResolutionResult {
         switch dataSource.type {
         case .static:
-            return dataSource.value ?? ""
+            return .static(dataSource.value ?? "")
 
         case .binding:
             if let path = dataSource.path {
                 context.tracker?.recordRead(path)
-                return context.stateStore.get(path) as? String ?? ""
+                let content = context.stateStore.get(path) as? String ?? ""
+                return ContentResolutionResult(content: content, bindingPath: path)
+            }
+            if let template = dataSource.template {
+                let paths = extractTemplatePaths(template)
+                for path in paths {
+                    context.tracker?.recordRead(path)
+                }
+                let content = context.stateStore.interpolate(template)
+                return ContentResolutionResult(content: content, bindingTemplate: template)
             }
         }
-        return ""
+        return .static("")
     }
 
     @MainActor
@@ -62,31 +99,35 @@ public struct ContentResolver {
         _ data: Document.DataReference,
         context: ResolutionContext,
         viewNode: ViewNode?
-    ) -> String {
+    ) -> ContentResolutionResult {
         switch data.type {
         case .static:
-            return data.value ?? ""
+            return .static(data.value ?? "")
 
         case .binding:
             if let path = data.path {
                 context.tracker?.recordRead(path)
-                return context.stateStore.get(path) as? String ?? ""
+                let content = context.stateStore.get(path) as? String ?? ""
+                return ContentResolutionResult(content: content, bindingPath: path)
             }
             if let template = data.template {
                 let paths = extractTemplatePaths(template)
                 for path in paths {
                     context.tracker?.recordRead(path)
                 }
-                return context.stateStore.interpolate(template)
+                let content = context.stateStore.interpolate(template)
+                return ContentResolutionResult(content: content, bindingTemplate: template)
             }
 
         case .localBinding:
             if let path = data.path {
                 context.tracker?.recordLocalRead(path)
-                return viewNode?.getLocalState(path) as? String ?? ""
+                let content = viewNode?.getLocalState(path) as? String ?? ""
+                // Local bindings don't use global state store observation
+                return .static(content)
             }
         }
-        return ""
+        return .static("")
     }
 
     /// Extracts state paths from a template string like "Hello ${user.name}!"

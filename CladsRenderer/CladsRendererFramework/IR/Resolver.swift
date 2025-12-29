@@ -128,9 +128,10 @@ public struct Resolver {
 
         return RootNode(
             backgroundColor: backgroundColor,
-            edgeInsets: root.edgeInsets,
+            edgeInsets: EdgeInsetsConverter.convert(root.edgeInsets),
             colorScheme: colorScheme,
             style: style,
+            actions: RootActions(from: root.actions),
             children: children
         )
     }
@@ -174,9 +175,10 @@ public struct Resolver {
 
         let rootRenderNode = RootNode(
             backgroundColor: backgroundColor,
-            edgeInsets: root.edgeInsets,
+            edgeInsets: EdgeInsetsConverter.convert(root.edgeInsets),
             colorScheme: colorScheme,
             style: style,
+            actions: RootActions(from: root.actions),
             children: renderChildren
         )
 
@@ -237,3 +239,33 @@ public enum ResolutionError: Error, LocalizedError {
         }
     }
 }
+
+// MARK: - Edge Insets Converter
+
+/// Converts Document.EdgeInsets to IR.EdgeInsets
+enum EdgeInsetsConverter {
+    static func convert(_ documentInsets: Document.EdgeInsets?) -> IR.EdgeInsets? {
+        guard let insets = documentInsets else { return nil }
+
+        let top = insets.top.map { convert($0) }
+        let bottom = insets.bottom.map { convert($0) }
+        let leading = insets.leading.map { convert($0) }
+        let trailing = insets.trailing.map { convert($0) }
+
+        // Return nil if no edges are set
+        if top == nil && bottom == nil && leading == nil && trailing == nil {
+            return nil
+        }
+
+        return IR.EdgeInsets(top: top, bottom: bottom, leading: leading, trailing: trailing)
+    }
+
+    private static func convert(_ inset: Document.EdgeInset) -> IR.EdgeInset {
+        let positioning: IR.Positioning = switch inset.positioning {
+        case .safeArea: .safeArea
+        case .absolute: .absolute
+        }
+        return IR.EdgeInset(positioning: positioning, value: inset.value)
+    }
+}
+

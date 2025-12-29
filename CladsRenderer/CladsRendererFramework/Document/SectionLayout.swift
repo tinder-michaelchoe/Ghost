@@ -34,11 +34,10 @@ extension Document {
     /// Definition of a single section within a SectionLayout
     public struct SectionDefinition: Codable {
         public let id: String?
-        public let layout: SectionType
+        public let layout: SectionLayoutConfig
         public let header: LayoutNode?
         public let footer: LayoutNode?
         public let stickyHeader: Bool?
-        public let config: SectionConfig?
 
         // Static children
         public let children: [LayoutNode]?
@@ -49,11 +48,10 @@ extension Document {
 
         public init(
             id: String? = nil,
-            layout: SectionType,
+            layout: SectionLayoutConfig,
             header: LayoutNode? = nil,
             footer: LayoutNode? = nil,
             stickyHeader: Bool? = nil,
-            config: SectionConfig? = nil,
             children: [LayoutNode]? = nil,
             dataSource: String? = nil,
             itemTemplate: LayoutNode? = nil
@@ -63,7 +61,6 @@ extension Document {
             self.header = header
             self.footer = footer
             self.stickyHeader = stickyHeader
-            self.config = config
             self.children = children
             self.dataSource = dataSource
             self.itemTemplate = itemTemplate
@@ -71,24 +68,26 @@ extension Document {
     }
 }
 
-// MARK: - Section Type
+// MARK: - Section Layout Config
 
 extension Document {
-    /// The layout type for a section
-    public enum SectionType: String, Codable {
-        case horizontal  // Horizontally scrolling row
-        case list        // Vertical list (table-like)
-        case grid        // Grid layout
-        case flow        // Flow/wrapping layout
-    }
-}
+    /// Layout configuration for a section, combining type and settings
+    ///
+    /// JSON example:
+    /// ```json
+    /// {
+    ///   "type": "flow",
+    ///   "itemSpacing": 10,
+    ///   "lineSpacing": 12,
+    ///   "alignment": "leading"
+    /// }
+    /// ```
+    public struct SectionLayoutConfig: Codable {
+        // Layout type
+        public let type: SectionType
 
-// MARK: - Section Config
-
-extension Document {
-    /// Configuration options for a section
-    public struct SectionConfig: Codable {
-        // Common
+        // Common settings
+        public let alignment: SectionAlignment?
         public let itemSpacing: CGFloat?
         public let lineSpacing: CGFloat?
         public let contentInsets: Padding?
@@ -104,6 +103,8 @@ extension Document {
         public let showsDividers: Bool?
 
         public init(
+            type: SectionType,
+            alignment: SectionAlignment? = nil,
             itemSpacing: CGFloat? = nil,
             lineSpacing: CGFloat? = nil,
             contentInsets: Padding? = nil,
@@ -112,6 +113,8 @@ extension Document {
             columns: ColumnConfig? = nil,
             showsDividers: Bool? = nil
         ) {
+            self.type = type
+            self.alignment = alignment
             self.itemSpacing = itemSpacing
             self.lineSpacing = lineSpacing
             self.contentInsets = contentInsets
@@ -120,6 +123,29 @@ extension Document {
             self.columns = columns
             self.showsDividers = showsDividers
         }
+    }
+}
+
+// MARK: - Section Alignment
+
+extension Document {
+    /// Horizontal alignment option for section content
+    public enum SectionAlignment: String, Codable {
+        case leading
+        case center
+        case trailing
+    }
+}
+
+// MARK: - Section Type
+
+extension Document {
+    /// The layout type for a section
+    public enum SectionType: String, Codable {
+        case horizontal  // Horizontally scrolling row
+        case list        // Vertical list (table-like)
+        case grid        // Grid layout
+        case flow        // Flow/wrapping layout
     }
 }
 

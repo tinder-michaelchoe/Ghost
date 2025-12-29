@@ -205,7 +205,7 @@ extension Document.SectionDefinition {
         var desc = "section"
         var props: [String] = []
         if let id = id { props.append("id: \(id)") }
-        props.append("layout: \(layout.rawValue)")
+        props.append("layout: \(layout.type.rawValue)")
         if let staticChildren = children { props.append("children: \(staticChildren.count)") }
         if let ds = dataSource { props.append("dataSource: \(ds)") }
         if stickyHeader == true { props.append("stickyHeader") }
@@ -250,7 +250,7 @@ extension Document.Component {
         if let id = id { props.append("id: \(id)") }
         if let styleId = styleId { props.append("style: \(styleId)") }
         if let dataSourceId = dataSourceId { props.append("data: \(dataSourceId)") }
-        if let label = label { props.append("label: \"\(label)\"") }
+        if let text = text { props.append("text: \"\(text)\"") }
         if !props.isEmpty {
             desc += " (\(props.joined(separator: ", ")))"
         }
@@ -298,6 +298,8 @@ extension Document.Action {
             return "dismiss"
         case .setState(let action):
             return "setState(path: \(action.path))"
+        case .toggleState(let action):
+            return "toggleState(path: \(action.path))"
         case .showAlert(let action):
             return "showAlert(title: \(action.title))"
         case .navigate(let action):

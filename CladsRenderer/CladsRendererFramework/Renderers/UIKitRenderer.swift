@@ -72,13 +72,30 @@ final class RenderTreeUIView: UIView {
         contentStack.translatesAutoresizingMaskIntoConstraints = false
         addSubview(contentStack)
 
-        // Apply edge insets
-        let insets = tree.root.edgeInsets?.directionalInsets ?? .zero
+        // Apply edge insets with positioning-aware constraints
+        let edgeInsets = tree.root.edgeInsets
+
         NSLayoutConstraint.activate([
-            contentStack.topAnchor.constraint(equalTo: safeAreaLayoutGuide.topAnchor, constant: insets.top),
-            contentStack.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -insets.bottom),
-            contentStack.leadingAnchor.constraint(equalTo: safeAreaLayoutGuide.leadingAnchor, constant: insets.leading),
-            contentStack.trailingAnchor.constraint(equalTo: safeAreaLayoutGuide.trailingAnchor, constant: -insets.trailing)
+            // Top constraint
+            contentStack.topAnchor.constraint(
+                equalTo: anchorGuide(for: edgeInsets?.top).topAnchor,
+                constant: edgeInsets?.top?.value ?? 0
+            ),
+            // Bottom constraint
+            contentStack.bottomAnchor.constraint(
+                equalTo: anchorGuide(for: edgeInsets?.bottom).bottomAnchor,
+                constant: -(edgeInsets?.bottom?.value ?? 0)
+            ),
+            // Leading constraint
+            contentStack.leadingAnchor.constraint(
+                equalTo: anchorGuide(for: edgeInsets?.leading).leadingAnchor,
+                constant: edgeInsets?.leading?.value ?? 0
+            ),
+            // Trailing constraint
+            contentStack.trailingAnchor.constraint(
+                equalTo: anchorGuide(for: edgeInsets?.trailing).trailingAnchor,
+                constant: -(edgeInsets?.trailing?.value ?? 0)
+            )
         ])
 
         // Add children using the registry
@@ -86,6 +103,34 @@ final class RenderTreeUIView: UIView {
             let childView = context.render(child)
             contentStack.addArrangedSubview(childView)
         }
+    }
+
+    /// Returns the appropriate layout guide based on the edge inset's positioning mode
+    private func anchorGuide(for inset: IR.EdgeInset?) -> UILayoutGuide {
+        switch inset?.positioning ?? .safeArea {
+        case .safeArea:
+            return safeAreaLayoutGuide
+        case .absolute:
+            return frameLayoutGuide
+        }
+    }
+
+    /// A layout guide that represents the view's frame (ignoring safe area)
+    private var frameLayoutGuide: UILayoutGuide {
+        // Create a layout guide that matches the view's bounds
+        if let existing = layoutGuides.first(where: { $0.identifier == "frameLayoutGuide" }) {
+            return existing
+        }
+        let guide = UILayoutGuide()
+        guide.identifier = "frameLayoutGuide"
+        addLayoutGuide(guide)
+        NSLayoutConstraint.activate([
+            guide.topAnchor.constraint(equalTo: topAnchor),
+            guide.bottomAnchor.constraint(equalTo: bottomAnchor),
+            guide.leadingAnchor.constraint(equalTo: leadingAnchor),
+            guide.trailingAnchor.constraint(equalTo: trailingAnchor)
+        ])
+        return guide
     }
 }
 

@@ -239,6 +239,8 @@ public struct DebugRenderer: Renderer {
             return "dismiss"
         case .setState(let path, let value):
             return "setState(\(path), \(stateValueDescription(value)))"
+        case .toggleState(let path):
+            return "toggleState(\(path))"
         case .showAlert(let config):
             return "showAlert(\"\(config.title)\")"
         case .sequence(let steps):

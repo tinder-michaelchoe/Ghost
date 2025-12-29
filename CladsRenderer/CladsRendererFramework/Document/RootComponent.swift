@@ -12,6 +12,7 @@ extension Document {
     /// The root container for all UI elements
     /// Sits at the top of the component tree and configures screen-level properties
     public struct RootComponent: Codable {
+        
         /// Background color for the entire screen (hex string)
         public let backgroundColor: String?
 
@@ -24,6 +25,9 @@ extension Document {
         /// Color scheme preference: "light", "dark", or "system" (default)
         public let colorScheme: String?
 
+        /// Lifecycle and other action bindings for the root
+        public let actions: RootActions?
+
         /// Child nodes contained within the root
         public let children: [LayoutNode]
 
@@ -32,13 +36,29 @@ extension Document {
             edgeInsets: EdgeInsets? = nil,
             styleId: String? = nil,
             colorScheme: String? = nil,
+            actions: RootActions? = nil,
             children: [LayoutNode] = []
         ) {
             self.backgroundColor = backgroundColor
             self.edgeInsets = edgeInsets
             self.styleId = styleId
             self.colorScheme = colorScheme
+            self.actions = actions
             self.children = children
+        }
+    }
+    
+    /// Action bindings for the root component (lifecycle hooks)
+    public struct RootActions: Codable {
+        public let onAppear: Component.ActionBinding?
+        public let onDisappear: Component.ActionBinding?
+
+        public init(
+            onAppear: Component.ActionBinding? = nil,
+            onDisappear: Component.ActionBinding? = nil
+        ) {
+            self.onAppear = onAppear
+            self.onDisappear = onDisappear
         }
     }
 }
@@ -46,7 +66,70 @@ extension Document {
 // MARK: - Edge Insets
 
 extension Document {
-    /// Configuration for edge insets behavior (safe area or absolute)
+    /// Positioning reference for edge insets
+    public enum Positioning: String, Codable {
+        /// Position relative to safe area boundaries (default)
+        case safeArea
+        /// Position relative to absolute screen edges (ignores safe area)
+        case absolute
+    }
+}
+
+extension Document {
+    /// Configuration for a single edge inset
+    public struct EdgeInset: Codable, Equatable {
+        public let positioning: Positioning
+        public let value: CGFloat
+
+        public init(positioning: Positioning = .safeArea, value: CGFloat) {
+            self.positioning = positioning
+            self.value = value
+        }
+
+        // Support shorthand: just a number defaults to safeArea positioning
+        public init(from decoder: Decoder) throws {
+            // Try as single value (number) first - defaults to safeArea
+            if let container = try? decoder.singleValueContainer(),
+               let value = try? container.decode(CGFloat.self) {
+                self.positioning = .safeArea
+                self.value = value
+                return
+            }
+
+            // Try as object with positioning and value
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            self.positioning = try container.decodeIfPresent(Positioning.self, forKey: .positioning) ?? .safeArea
+            self.value = try container.decode(CGFloat.self, forKey: .value)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            // Use shorthand for safeArea with value
+            if positioning == .safeArea {
+                var container = encoder.singleValueContainer()
+                try container.encode(value)
+            } else {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                try container.encode(positioning, forKey: .positioning)
+                try container.encode(value, forKey: .value)
+            }
+        }
+
+        private enum CodingKeys: String, CodingKey {
+            case positioning, value
+        }
+    }
+}
+
+extension Document {
+    /// Configuration for edge insets on all four edges
+    ///
+    /// Example JSON:
+    /// ```json
+    /// {
+    ///   "top": 16,                                    // 16pt from safe area (shorthand)
+    ///   "bottom": { "positioning": "absolute", "value": 0 }  // At absolute bottom
+    /// }
+    /// ```
     public struct EdgeInsets: Codable {
         public let top: EdgeInset?
         public let bottom: EdgeInset?
@@ -63,100 +146,6 @@ extension Document {
             self.bottom = bottom
             self.leading = leading
             self.trailing = trailing
-        }
-
-        /// Converts to NSDirectionalEdgeInsets for UIKit layout
-        public var directionalInsets: NSDirectionalEdgeInsets {
-            NSDirectionalEdgeInsets(
-                top: top?.padding ?? 0,
-                leading: leading?.padding ?? 0,
-                bottom: bottom?.padding ?? 0,
-                trailing: trailing?.padding ?? 0
-            )
-        }
-    }
-}
-
-// MARK: - Edge Inset
-
-extension Document {
-    /// Configuration for a single edge's inset behavior
-    public enum EdgeInset: Codable, Equatable {
-        /// Align to the safe area edge with optional padding
-        case safeArea(padding: CGFloat = 0)
-
-        /// Align to the absolute screen edge with optional padding
-        case absolute(padding: CGFloat = 0)
-
-        /// Get the padding value for this edge inset
-        public var padding: CGFloat {
-            switch self {
-            case .safeArea(let padding): return padding
-            case .absolute(let padding): return padding
-            }
-        }
-
-        /// Check if this is absolute mode
-        public var isAbsolute: Bool {
-            if case .absolute = self { return true }
-            return false
-        }
-
-        // Custom decoding to support shorthand syntax
-        public init(from decoder: Decoder) throws {
-            let container = try decoder.singleValueContainer()
-
-            // Try decoding as a string first (shorthand: "absolute" or "safeArea")
-            if let modeString = try? container.decode(String.self) {
-                switch modeString.lowercased() {
-                case "absolute":
-                    self = .absolute()
-                default:
-                    self = .safeArea()
-                }
-                return
-            }
-
-            // Try decoding as a number (shorthand: padding value with safeArea mode)
-            if let paddingValue = try? container.decode(CGFloat.self) {
-                self = .safeArea(padding: paddingValue)
-                return
-            }
-
-            // Full object syntax
-            let keyedContainer = try decoder.container(keyedBy: CodingKeys.self)
-            let mode = try keyedContainer.decodeIfPresent(String.self, forKey: .mode) ?? "safeArea"
-            let padding = try keyedContainer.decodeIfPresent(CGFloat.self, forKey: .padding) ?? 0
-
-            switch mode.lowercased() {
-            case "absolute":
-                self = .absolute(padding: padding)
-            default:
-                self = .safeArea(padding: padding)
-            }
-        }
-
-        public func encode(to encoder: Encoder) throws {
-            switch self {
-            case .safeArea(let padding) where padding == 0:
-                var container = encoder.singleValueContainer()
-                try container.encode("safeArea")
-            case .absolute(let padding) where padding == 0:
-                var container = encoder.singleValueContainer()
-                try container.encode("absolute")
-            case .safeArea(let padding):
-                var container = encoder.container(keyedBy: CodingKeys.self)
-                try container.encode("safeArea", forKey: .mode)
-                try container.encode(padding, forKey: .padding)
-            case .absolute(let padding):
-                var container = encoder.container(keyedBy: CodingKeys.self)
-                try container.encode("absolute", forKey: .mode)
-                try container.encode(padding, forKey: .padding)
-            }
-        }
-
-        enum CodingKeys: String, CodingKey {
-            case mode, padding
         }
     }
 }

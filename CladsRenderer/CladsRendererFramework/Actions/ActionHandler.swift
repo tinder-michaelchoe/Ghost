@@ -5,6 +5,67 @@
 
 import Foundation
 
+// MARK: - Custom Action Types
+
+/// Closure type for custom actions injected at view creation time.
+///
+/// Use this to provide view-specific action handlers without registering them globally.
+///
+/// Example:
+/// ```swift
+/// CladsRendererView(
+///     document: document,
+///     customActions: [
+///         "submitOrder": { params, context in
+///             let orderId = context.stateStore.get("order.id") as? String
+///             await OrderService.submit(orderId)
+///         }
+///     ]
+/// )
+/// ```
+public typealias ActionClosure = @MainActor (ActionParameters, ActionExecutionContext) async -> Void
+
+/// Delegate protocol for handling custom actions.
+///
+/// Use this when you prefer a single delegate to handle multiple custom actions,
+/// or when you need access to the view controller/view that owns the renderer.
+///
+/// Example:
+/// ```swift
+/// class OrderViewController: UIViewController, CladsActionDelegate {
+///     func cladsRenderer(
+///         handleAction actionId: String,
+///         parameters: ActionParameters,
+///         context: ActionExecutionContext
+///     ) async -> Bool {
+///         switch actionId {
+///         case "submitOrder":
+///             await handleSubmitOrder(parameters, context)
+///             return true
+///         default:
+///             return false
+///         }
+///     }
+/// }
+/// ```
+@MainActor
+public protocol CladsActionDelegate: AnyObject {
+    /// Handle a custom action.
+    ///
+    /// - Parameters:
+    ///   - actionId: The action identifier from the document
+    ///   - parameters: Parameters passed to the action
+    ///   - context: Execution context with state store and callbacks
+    /// - Returns: `true` if the action was handled, `false` to fall through to registry
+    func cladsRenderer(
+        handleAction actionId: String,
+        parameters: ActionParameters,
+        context: ActionExecutionContext
+    ) async -> Bool
+}
+
+// MARK: - Action Handler Protocol
+
 /// Protocol for action handlers that can execute actions
 public protocol ActionHandler {
     /// The action type identifier (e.g., "dismiss", "setState", "showAlert")

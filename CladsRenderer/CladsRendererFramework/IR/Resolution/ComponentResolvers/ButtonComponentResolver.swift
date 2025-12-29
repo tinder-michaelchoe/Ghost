@@ -17,7 +17,8 @@ public struct ButtonComponentResolver: ComponentResolving {
 
     @MainActor
     public func resolve(_ component: Document.Component, context: ResolutionContext) throws -> ComponentResolutionResult {
-        let style = context.styleResolver.resolve(component.styleId)
+        // Resolve button styles
+        let buttonStyles = resolveButtonStyles(component, context: context)
         let nodeId = component.id ?? UUID().uuidString
 
         // Create view node if tracking
@@ -26,8 +27,8 @@ public struct ButtonComponentResolver: ComponentResolving {
             viewNode = ViewNode(
                 id: nodeId,
                 nodeType: .button(ButtonNodeData(
-                    label: component.label ?? "",
-                    style: style,
+                    label: component.text ?? "",
+                    style: buttonStyles.normal,
                     fillWidth: component.fillWidth ?? false,
                     onTapAction: component.actions?.onTap
                 ))
@@ -41,7 +42,7 @@ public struct ButtonComponentResolver: ComponentResolving {
         }
 
         // Resolve content (may record dependencies)
-        let content = ContentResolver.resolve(component, context: context, viewNode: viewNode)
+        let contentResult = ContentResolver.resolve(component, context: context, viewNode: viewNode)
 
         if context.isTracking {
             context.tracker?.endTracking()
@@ -54,13 +55,33 @@ public struct ButtonComponentResolver: ComponentResolving {
 
         let renderNode = RenderNode.button(ButtonNode(
             id: component.id,
-            label: component.label ?? content,
-            style: style,
+            label: component.text ?? contentResult.content,
+            styles: buttonStyles,
+            isSelectedBinding: component.isSelectedBinding,
             fillWidth: component.fillWidth ?? false,
             onTap: component.actions?.onTap
         ))
 
         return ComponentResolutionResult(renderNode: renderNode, viewNode: viewNode)
+    }
+
+    private func resolveButtonStyles(_ component: Document.Component, context: ResolutionContext) -> ButtonStyles {
+        // If component has styles dictionary, resolve each state
+        if let componentStyles = component.styles {
+            let normalStyle = context.styleResolver.resolve(componentStyles.normal ?? component.styleId)
+            let selectedStyle = componentStyles.selected.map { context.styleResolver.resolve($0) }
+            let disabledStyle = componentStyles.disabled.map { context.styleResolver.resolve($0) }
+
+            return ButtonStyles(
+                normal: normalStyle,
+                selected: selectedStyle,
+                disabled: disabledStyle
+            )
+        }
+
+        // Fall back to single styleId
+        let style = context.styleResolver.resolve(component.styleId)
+        return ButtonStyles(normal: style)
     }
 
     private func initializeLocalState(on viewNode: ViewNode, from localState: Document.LocalStateDeclaration) {

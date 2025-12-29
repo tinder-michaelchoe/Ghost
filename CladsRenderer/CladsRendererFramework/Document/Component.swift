@@ -88,13 +88,38 @@ extension Document {
             }
         }
 
+        /// State-based styles for components (buttons, etc.)
+        ///
+        /// JSON example:
+        /// ```json
+        /// {
+        ///   "normal": "pillButton",
+        ///   "selected": "pillButtonSelected",
+        ///   "disabled": "pillButtonDisabled"
+        /// }
+        /// ```
+        public struct ComponentStyles: Codable {
+            public let normal: String?
+            public let selected: String?
+            public let disabled: String?
+
+            public init(normal: String? = nil, selected: String? = nil, disabled: String? = nil) {
+                self.normal = normal
+                self.selected = selected
+                self.disabled = disabled
+            }
+        }
+
         // MARK: - Properties
 
         public let type: Kind
         public let id: String?
         public let styleId: String?
+        public let styles: ComponentStyles?
+        public let padding: Padding?
+        public let isSelectedBinding: String?
         public let dataSourceId: String?
-        public let label: String?
+        public let text: String?
         public let placeholder: String?
         public let bind: String?          // Bind to global state
         public let localBind: String?     // Bind to local state (without "local." prefix)
@@ -105,6 +130,9 @@ extension Document {
         /// Local state declaration for this component
         public let state: LocalStateDeclaration?
 
+        // Image-specific properties
+        public let image: ImageSource?
+
         // Gradient-specific properties
         public let gradientColors: [GradientColorConfig]?
         public let gradientStart: String?  // "top", "bottom", "leading", etc.
@@ -114,8 +142,11 @@ extension Document {
             type: Kind,
             id: String? = nil,
             styleId: String? = nil,
+            styles: ComponentStyles? = nil,
+            padding: Padding? = nil,
+            isSelectedBinding: String? = nil,
             dataSourceId: String? = nil,
-            label: String? = nil,
+            text: String? = nil,
             placeholder: String? = nil,
             bind: String? = nil,
             localBind: String? = nil,
@@ -123,6 +154,7 @@ extension Document {
             actions: Actions? = nil,
             data: DataReference? = nil,
             state: LocalStateDeclaration? = nil,
+            image: ImageSource? = nil,
             gradientColors: [GradientColorConfig]? = nil,
             gradientStart: String? = nil,
             gradientEnd: String? = nil
@@ -130,8 +162,11 @@ extension Document {
             self.type = type
             self.id = id
             self.styleId = styleId
+            self.styles = styles
+            self.padding = padding
+            self.isSelectedBinding = isSelectedBinding
             self.dataSourceId = dataSourceId
-            self.label = label
+            self.text = text
             self.placeholder = placeholder
             self.bind = bind
             self.localBind = localBind
@@ -139,6 +174,7 @@ extension Document {
             self.actions = actions
             self.data = data
             self.state = state
+            self.image = image
             self.gradientColors = gradientColors
             self.gradientStart = gradientStart
             self.gradientEnd = gradientEnd
@@ -187,5 +223,28 @@ extension Document {
         case `static`
         case binding
         case localBinding  // References local state with "local." prefix
+    }
+}
+
+// MARK: - Image Source
+
+extension Document {
+    /// Image source for image components.
+    ///
+    /// JSON examples:
+    /// ```json
+    /// { "system": "star.fill" }                 // SF Symbol
+    /// { "url": "https://example.com/img.png" }  // Remote URL
+    /// ```
+    public struct ImageSource: Codable, Equatable {
+        /// SF Symbol name (mutually exclusive with `url`)
+        public let system: String?
+        /// Remote image URL (mutually exclusive with `system`)
+        public let url: String?
+
+        public init(system: String? = nil, url: String? = nil) {
+            self.system = system
+            self.url = url
+        }
     }
 }

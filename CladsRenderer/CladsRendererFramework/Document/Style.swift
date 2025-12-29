@@ -26,6 +26,9 @@ extension Document {
         public let borderWidth: CGFloat?
         public let borderColor: String?
 
+        // Image
+        public let tintColor: String?
+
         // Sizing
         public let width: CGFloat?
         public let height: CGFloat?
@@ -35,12 +38,7 @@ extension Document {
         public let maxHeight: CGFloat?
 
         // Padding (internal)
-        public let paddingTop: CGFloat?
-        public let paddingBottom: CGFloat?
-        public let paddingLeading: CGFloat?
-        public let paddingTrailing: CGFloat?
-        public let paddingHorizontal: CGFloat?
-        public let paddingVertical: CGFloat?
+        public let padding: Padding?
 
         public init(
             inherits: String? = nil,
@@ -53,18 +51,14 @@ extension Document {
             cornerRadius: CGFloat? = nil,
             borderWidth: CGFloat? = nil,
             borderColor: String? = nil,
+            tintColor: String? = nil,
             width: CGFloat? = nil,
             height: CGFloat? = nil,
             minWidth: CGFloat? = nil,
             minHeight: CGFloat? = nil,
             maxWidth: CGFloat? = nil,
             maxHeight: CGFloat? = nil,
-            paddingTop: CGFloat? = nil,
-            paddingBottom: CGFloat? = nil,
-            paddingLeading: CGFloat? = nil,
-            paddingTrailing: CGFloat? = nil,
-            paddingHorizontal: CGFloat? = nil,
-            paddingVertical: CGFloat? = nil
+            padding: Padding? = nil
         ) {
             self.inherits = inherits
             self.fontFamily = fontFamily
@@ -76,18 +70,14 @@ extension Document {
             self.cornerRadius = cornerRadius
             self.borderWidth = borderWidth
             self.borderColor = borderColor
+            self.tintColor = tintColor
             self.width = width
             self.height = height
             self.minWidth = minWidth
             self.minHeight = minHeight
             self.maxWidth = maxWidth
             self.maxHeight = maxHeight
-            self.paddingTop = paddingTop
-            self.paddingBottom = paddingBottom
-            self.paddingLeading = paddingLeading
-            self.paddingTrailing = paddingTrailing
-            self.paddingHorizontal = paddingHorizontal
-            self.paddingVertical = paddingVertical
+            self.padding = padding
         }
     }
 }

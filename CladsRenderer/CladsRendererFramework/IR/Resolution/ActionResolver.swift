@@ -44,6 +44,9 @@ public struct ActionResolver {
                 value: resolveSetValue(setStateAction.value)
             )
 
+        case .toggleState(let toggleStateAction):
+            return .toggleState(path: toggleStateAction.path)
+
         case .showAlert(let showAlertAction):
             return .showAlert(config: AlertActionConfig(
                 title: showAlertAction.title,

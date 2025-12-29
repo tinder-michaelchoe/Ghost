@@ -80,7 +80,32 @@ public final class CladsUIKitView: UIView {
 
     // MARK: - Initialization
 
-    public init(document: Document.Definition, actionRegistry: ActionRegistry = .shared) {
+    /// Initialize with a document and optional custom action handlers.
+    ///
+    /// - Parameters:
+    ///   - document: The document definition to render
+    ///   - actionRegistry: The global action registry (default: `.shared`)
+    ///   - customActions: View-specific action closures, keyed by action ID
+    ///   - actionDelegate: Delegate for handling custom actions
+    ///
+    /// Example:
+    /// ```swift
+    /// let view = CladsUIKitView(
+    ///     document: document,
+    ///     customActions: [
+    ///         "submitOrder": { params, context in
+    ///             let orderId = context.stateStore.get("order.id") as? String
+    ///             await OrderService.submit(orderId)
+    ///         }
+    ///     ]
+    /// )
+    /// ```
+    public init(
+        document: Document.Definition,
+        actionRegistry: ActionRegistry = .shared,
+        customActions: [String: ActionClosure] = [:],
+        actionDelegate: CladsActionDelegate? = nil
+    ) {
         self.document = document
 
         // Resolve with tracking for efficient updates
@@ -102,7 +127,9 @@ public final class CladsUIKitView: UIView {
         self.actionContext = ActionContext(
             stateStore: stateStore,
             actionDefinitions: document.actions ?? [:],
-            registry: actionRegistry
+            registry: actionRegistry,
+            customActions: customActions,
+            actionDelegate: actionDelegate
         )
 
         super.init(frame: .zero)
@@ -112,11 +139,22 @@ public final class CladsUIKitView: UIView {
         setupActionHandlers()
     }
 
-    public convenience init?(jsonString: String, actionRegistry: ActionRegistry = .shared) {
+    /// Initialize from a JSON string with optional custom action handlers.
+    public convenience init?(
+        jsonString: String,
+        actionRegistry: ActionRegistry = .shared,
+        customActions: [String: ActionClosure] = [:],
+        actionDelegate: CladsActionDelegate? = nil
+    ) {
         guard let document = try? Document.Definition(jsonString: jsonString) else {
             return nil
         }
-        self.init(document: document, actionRegistry: actionRegistry)
+        self.init(
+            document: document,
+            actionRegistry: actionRegistry,
+            customActions: customActions,
+            actionDelegate: actionDelegate
+        )
     }
 
     required init?(coder: NSCoder) {
@@ -699,15 +737,15 @@ public final class CladsUIKitView: UIView {
 
     // MARK: - Helpers
 
-    private func resolveEdgeInsets(_ insets: Document.EdgeInsets?) -> (top: CGFloat, bottom: CGFloat, leading: CGFloat, trailing: CGFloat) {
+    private func resolveEdgeInsets(_ insets: IR.EdgeInsets?) -> (top: CGFloat, bottom: CGFloat, leading: CGFloat, trailing: CGFloat) {
         guard let insets = insets else {
             return (0, 0, 0, 0)
         }
         return (
-            top: insets.top?.padding ?? 0,
-            bottom: insets.bottom?.padding ?? 0,
-            leading: insets.leading?.padding ?? 0,
-            trailing: insets.trailing?.padding ?? 0
+            top: insets.top?.value ?? 0,
+            bottom: insets.bottom?.value ?? 0,
+            leading: insets.leading?.value ?? 0,
+            trailing: insets.trailing?.value ?? 0
         )
     }
 }

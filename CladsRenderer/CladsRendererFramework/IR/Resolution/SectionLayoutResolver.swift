@@ -53,8 +53,8 @@ public struct SectionLayoutResolver: SectionLayoutResolving {
 
     @MainActor
     private func resolveSection(_ section: Document.SectionDefinition, context: ResolutionContext) throws -> IR.Section {
-        let layoutType = resolveSectionType(section.layout, config: section.config)
-        let config = resolveSectionConfig(section.config)
+        let layoutType = resolveSectionType(section.layout)
+        let config = resolveSectionConfig(section.layout)
 
         // Resolve header and footer if present
         let header: RenderNode? = try section.header.map { try resolveNode($0, context: context).renderNode }
@@ -88,14 +88,14 @@ public struct SectionLayoutResolver: SectionLayoutResolving {
 
     // MARK: - Section Type Resolution
 
-    private func resolveSectionType(_ type: Document.SectionType, config: Document.SectionConfig?) -> IR.SectionType {
-        switch type {
+    private func resolveSectionType(_ layout: Document.SectionLayoutConfig) -> IR.SectionType {
+        switch layout.type {
         case .horizontal:
             return .horizontal
         case .list:
             return .list
         case .grid:
-            let columns = resolveSectionColumns(config?.columns)
+            let columns = resolveSectionColumns(layout.columns)
             return .grid(columns: columns)
         case .flow:
             return .flow
@@ -115,19 +115,27 @@ public struct SectionLayoutResolver: SectionLayoutResolving {
         }
     }
 
-    private func resolveSectionConfig(_ config: Document.SectionConfig?) -> IR.SectionConfig {
-        guard let config = config else {
-            return IR.SectionConfig()
-        }
-
+    private func resolveSectionConfig(_ layout: Document.SectionLayoutConfig) -> IR.SectionConfig {
         return IR.SectionConfig(
-            itemSpacing: config.itemSpacing ?? 8,
-            lineSpacing: config.lineSpacing ?? 8,
-            contentInsets: PaddingConverter.convert(config.contentInsets),
-            showsIndicators: config.showsIndicators ?? false,
-            isPagingEnabled: config.isPagingEnabled ?? false,
-            showsDividers: config.showsDividers ?? true
+            alignment: resolveAlignment(layout.alignment),
+            itemSpacing: layout.itemSpacing ?? 8,
+            lineSpacing: layout.lineSpacing ?? 8,
+            contentInsets: PaddingConverter.convert(layout.contentInsets),
+            showsIndicators: layout.showsIndicators ?? false,
+            isPagingEnabled: layout.isPagingEnabled ?? false,
+            showsDividers: layout.showsDividers ?? true
         )
+    }
+
+    private func resolveAlignment(_ alignment: Document.SectionAlignment?) -> SwiftUI.HorizontalAlignment {
+        switch alignment {
+        case .leading, .none:
+            return .leading
+        case .center:
+            return .center
+        case .trailing:
+            return .trailing
+        }
     }
 
     // MARK: - Data-Driven Children

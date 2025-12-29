@@ -27,17 +27,24 @@ struct ContentView: View {
             }
             .navigationTitle("CladsRenderer")
             .sheet(item: $selectedExample) { example in
-                switch example {
-                case .tacoTruck:
-                    TacoTruckExampleView()
-                case .movieNight:
-                    MovieNightExampleView()
-                default:
-                    ExampleSheetView(example: example)
+                Group {
+                    switch example {
+                    case .dadJokes:
+                        DadJokesExampleView()
+                    case .tacoTruck:
+                        TacoTruckExampleView()
+                    case .movieNight:
+                        MovieNightExampleView()
+                    default:
+                        ExampleSheetView(example: example)
+                    }
                 }
+                .modifier(PresentationStyleModifier(style: example.presentation))
             }
             .fullScreenCover(item: $fullScreenExample) { example in
                 switch example {
+                case .dadJokes:
+                    DadJokesExampleView()
                 case .tacoTruck:
                     TacoTruckExampleView()
                 case .movieNight:
@@ -69,11 +76,11 @@ struct ExampleRow: View {
                     .frame(width: 28)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(example.title)
-                        .foregroundStyle(.primary)
+                        .foregroundColor(Color(uiColor: .label))
                     if let subtitle = example.subtitle {
                         Text(subtitle)
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(Color.secondary)
                     }
                 }
                 Spacer()
@@ -116,9 +123,12 @@ enum PresentationStyle: Equatable {
 // MARK: - Example Enum
 
 enum Example: String, CaseIterable, Identifiable {
+    case componentShowcase
     case basic
     case favoritePlaces
     case sectionLayout
+    case interests
+    case dadJokes
     case tacoTruck
     case movieNight
 
@@ -126,9 +136,12 @@ enum Example: String, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
+        case .componentShowcase: return "Component Showcase"
         case .basic: return "Basic Example"
         case .favoritePlaces: return "Favorite Places"
         case .sectionLayout: return "Section Layout"
+        case .interests: return "Interests"
+        case .dadJokes: return "Dad Jokes"
         case .tacoTruck: return "Taco Truck"
         case .movieNight: return "Movie Night"
         }
@@ -136,9 +149,12 @@ enum Example: String, CaseIterable, Identifiable {
 
     var subtitle: String? {
         switch self {
+        case .componentShowcase: return "All component types"
         case .basic: return "Welcome screen with actions"
         case .favoritePlaces: return "Hero image with gradient"
         case .sectionLayout: return "Horizontal, grid, and list"
+        case .interests: return "Flow layout with selectable pills"
+        case .dadJokes: return "Custom actions with REST API"
         case .tacoTruck: return "Typed state, callbacks, binding API"
         case .movieNight: return "UIKit renderer with delegate"
         }
@@ -146,9 +162,12 @@ enum Example: String, CaseIterable, Identifiable {
 
     var icon: String {
         switch self {
+        case .componentShowcase: return "square.stack.3d.up"
         case .basic: return "sparkles"
         case .favoritePlaces: return "mappin.and.ellipse"
         case .sectionLayout: return "square.grid.2x2"
+        case .interests: return "heart.circle"
+        case .dadJokes: return "face.smiling"
         case .tacoTruck: return "fork.knife"
         case .movieNight: return "film"
         }
@@ -156,9 +175,12 @@ enum Example: String, CaseIterable, Identifiable {
 
     var iconColor: Color {
         switch self {
+        case .componentShowcase: return .indigo
         case .basic: return .blue
         case .favoritePlaces: return .green
         case .sectionLayout: return .purple
+        case .interests: return .pink
+        case .dadJokes: return .yellow
         case .tacoTruck: return .orange
         case .movieNight: return .red
         }
@@ -166,9 +188,12 @@ enum Example: String, CaseIterable, Identifiable {
 
     var json: String {
         switch self {
+        case .componentShowcase: return componentShowcaseJSON
         case .basic: return basicExampleJSON
         case .favoritePlaces: return favoritePlacesJSON
         case .sectionLayout: return sectionLayoutJSON
+        case .interests: return interestsJSON
+        case .dadJokes: return dadJokesJSON
         case .tacoTruck: return tacoTruckJSON
         case .movieNight: return movieNightJSON
         }
@@ -176,20 +201,23 @@ enum Example: String, CaseIterable, Identifiable {
 
     var presentation: PresentationStyle {
         switch self {
+        case .componentShowcase: return .fullScreen
         case .basic: return .autoSize
         case .favoritePlaces: return .detent(.medium)
         case .sectionLayout: return .fullScreen
+        case .interests: return .detent(.medium)
+        case .dadJokes: return .detent(.medium)
         case .tacoTruck: return .fullSize
         case .movieNight: return .fullScreen
         }
     }
 
     static var basicExamples: [Example] {
-        [.basic, .favoritePlaces, .sectionLayout]
+        [.componentShowcase, .basic, .favoritePlaces, .sectionLayout, .interests]
     }
 
     static var advancedExamples: [Example] {
-        [.tacoTruck, .movieNight]
+        [.dadJokes, .tacoTruck, .movieNight]
     }
 }
 
@@ -207,7 +235,6 @@ struct ExampleSheetView: View {
                 errorView
             }
         }
-        .modifier(PresentationStyleModifier(style: example.presentation))
     }
 
     private var errorView: some View {
@@ -258,6 +285,340 @@ struct PresentationStyleModifier: ViewModifier {
 }
 
 // MARK: - Example JSON
+
+// MARK: - Component Showcase Example
+
+private let componentShowcaseJSON = """
+{
+  "id": "component-showcase",
+  "version": "1.0",
+
+  "state": {
+    "textFieldValue": "",
+    "buttonTapCount": 0,
+    "isToggled": false
+  },
+
+  "styles": {
+    "screenTitle": {
+      "fontSize": 28,
+      "fontWeight": "bold",
+      "textColor": "#000000",
+      "textAlignment": "leading"
+    },
+    "sectionTitle": {
+      "fontSize": 18,
+      "fontWeight": "semibold",
+      "textColor": "#000000"
+    },
+    "bodyText": {
+      "fontSize": 15,
+      "fontWeight": "regular",
+      "textColor": "#333333"
+    },
+    "captionText": {
+      "fontSize": 13,
+      "fontWeight": "regular",
+      "textColor": "#888888"
+    },
+    "primaryButton": {
+      "fontSize": 16,
+      "fontWeight": "semibold",
+      "backgroundColor": "#007AFF",
+      "textColor": "#FFFFFF",
+      "cornerRadius": 10,
+      "height": 44,
+      "padding": { "horizontal": 20 }
+    },
+    "secondaryButton": {
+      "fontSize": 16,
+      "fontWeight": "medium",
+      "backgroundColor": "#E5E5EA",
+      "textColor": "#000000",
+      "cornerRadius": 10,
+      "height": 44,
+      "padding": { "horizontal": 20 }
+    },
+    "toggleButton": {
+      "fontSize": 14,
+      "fontWeight": "medium",
+      "backgroundColor": "#E5E5EA",
+      "textColor": "#000000",
+      "cornerRadius": 8,
+      "height": 36,
+      "padding": { "horizontal": 16 }
+    },
+    "toggleButtonSelected": {
+      "fontSize": 14,
+      "fontWeight": "semibold",
+      "backgroundColor": "#34C759",
+      "textColor": "#FFFFFF",
+      "cornerRadius": 8,
+      "height": 36,
+      "padding": { "horizontal": 16 }
+    },
+    "textFieldStyle": {
+      "fontSize": 16,
+      "fontWeight": "regular",
+      "textColor": "#000000",
+      "backgroundColor": "#F2F2F7",
+      "cornerRadius": 8,
+      "padding": { "horizontal": 12, "vertical": 12 }
+    },
+    "iconStyle": {
+      "width": 48,
+      "height": 48
+    },
+    "largeIconStyle": {
+      "width": 60,
+      "height": 60
+    },
+    "redIconStyle": {
+      "inherits": "iconStyle",
+      "tintColor": "#FF3B30"
+    },
+    "orangeIconStyle": {
+      "inherits": "iconStyle",
+      "tintColor": "#FF9500"
+    },
+    "blueIconStyle": {
+      "inherits": "iconStyle",
+      "tintColor": "#007AFF"
+    },
+    "urlImageStyle": {
+      "cornerRadius": 12
+    },
+    "cardStyle": {
+      "backgroundColor": "#F2F2F7",
+      "cornerRadius": 12,
+      "padding": { "all": 16 }
+    },
+    "gradientStyle": {
+      "width": 320,
+      "height": 80,
+      "cornerRadius": 12
+    },
+    "gradientLabel": {
+      "fontSize": 16,
+      "fontWeight": "semibold",
+      "textColor": "#FFFFFF"
+    },
+    "closeButton": {
+      "fontSize": 15,
+      "fontWeight": "regular",
+      "textColor": "#007AFF"
+    }
+  },
+
+  "actions": {
+    "incrementCount": {
+      "type": "setState",
+      "path": "buttonTapCount",
+      "value": { "$expr": "${buttonTapCount} + 1" }
+    },
+    "close": {
+      "type": "dismiss"
+    }
+  },
+
+  "root": {
+    "backgroundColor": "#FFFFFF",
+    "edgeInsets": {
+      "top": 16
+    },
+    "children": [
+      {
+        "type": "sectionLayout",
+        "sectionSpacing": 32,
+        "sections": [
+          {
+            "id": "header",
+            "layout": { "type": "list", "showsDividers": false, "contentInsets": { "horizontal": 20 } },
+            "children": [
+              {
+                "type": "hstack",
+                "children": [
+                  { "type": "spacer" },
+                  {
+                    "type": "button",
+                    "text": "Close",
+                    "styleId": "closeButton",
+                    "actions": { "onTap": "close" }
+                  }
+                ]
+              },
+              { "type": "label", "text": "Component Showcase", "styleId": "screenTitle" },
+              { "type": "label", "text": "This example demonstrates all available component types in CladsRenderer.", "styleId": "bodyText" }
+            ]
+          },
+          {
+            "id": "labels",
+            "layout": { "type": "list", "showsDividers": false, "itemSpacing": 8, "contentInsets": { "horizontal": 20 } },
+            "header": { "type": "label", "text": "Labels", "styleId": "sectionTitle", "padding": { "bottom": 12 } },
+            "children": [
+              { "type": "label", "text": "This is body text with regular weight.", "styleId": "bodyText" },
+              { "type": "label", "text": "This is caption text, smaller and lighter.", "styleId": "captionText" }
+            ]
+          },
+          {
+            "id": "buttons",
+            "layout": { "type": "list", "showsDividers": false, "itemSpacing": 12, "contentInsets": { "horizontal": 20 } },
+            "header": { "type": "label", "text": "Buttons", "styleId": "sectionTitle", "padding": { "bottom": 12 } },
+            "children": [
+              {
+                "type": "hstack",
+                "spacing": 12,
+                "children": [
+                  {
+                    "type": "button",
+                    "text": "Primary",
+                    "styleId": "primaryButton",
+                    "actions": { "onTap": "incrementCount" }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Secondary",
+                    "styleId": "secondaryButton",
+                    "actions": { "onTap": "incrementCount" }
+                  }
+                ]
+              },
+              {
+                "type": "hstack",
+                "spacing": 8,
+                "children": [
+                  { "type": "label", "text": "Tap count:", "styleId": "captionText" },
+                  { "type": "label", "dataSourceId": "tapCountText", "styleId": "captionText" }
+                ]
+              },
+              {
+                "type": "hstack",
+                "spacing": 12,
+                "children": [
+                  { "type": "label", "text": "Toggle:", "styleId": "bodyText" },
+                  {
+                    "type": "button",
+                    "text": "Off / On",
+                    "styles": { "normal": "toggleButton", "selected": "toggleButtonSelected" },
+                    "isSelectedBinding": "isToggled",
+                    "actions": { "onTap": { "type": "toggleState", "path": "isToggled" } }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "textfield",
+            "layout": { "type": "list", "showsDividers": false, "itemSpacing": 8, "contentInsets": { "horizontal": 20 } },
+            "header": { "type": "label", "text": "Text Field", "styleId": "sectionTitle", "padding": { "bottom": 12 } },
+            "children": [
+              {
+                "type": "textfield",
+                "placeholder": "Enter some text...",
+                "styleId": "textFieldStyle",
+                "bind": "textFieldValue"
+              },
+              {
+                "type": "hstack",
+                "spacing": 8,
+                "children": [
+                  { "type": "label", "text": "You typed:", "styleId": "captionText" },
+                  { "type": "label", "dataSourceId": "textFieldDisplay", "styleId": "captionText" }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "images",
+            "layout": { "type": "list", "showsDividers": false, "contentInsets": { "horizontal": 20 } },
+            "header": { "type": "label", "text": "Images", "styleId": "sectionTitle", "padding": { "bottom": 12 } },
+            "children": [
+              {
+                "type": "hstack",
+                "spacing": 16,
+                "children": [
+                  {
+                    "type": "vstack",
+                    "spacing": 4,
+                    "children": [
+                      { "type": "image", "image": { "system": "star.fill" }, "styleId": "iconStyle" },
+                      { "type": "label", "text": "Default", "styleId": "captionText" }
+                    ]
+                  },
+                  {
+                    "type": "vstack",
+                    "spacing": 4,
+                    "children": [
+                      { "type": "image", "image": { "system": "heart.fill" }, "styleId": "redIconStyle" },
+                      { "type": "label", "text": "Red", "styleId": "captionText" }
+                    ]
+                  },
+                  {
+                    "type": "vstack",
+                    "spacing": 4,
+                    "children": [
+                      { "type": "image", "image": { "system": "bolt.fill" }, "styleId": "orangeIconStyle" },
+                      { "type": "label", "text": "Orange", "styleId": "captionText" }
+                    ]
+                  },
+                  {
+                    "type": "vstack",
+                    "spacing": 4,
+                    "children": [
+                      { "type": "image", "image": { "system": "globe" }, "styleId": "blueIconStyle" },
+                      { "type": "label", "text": "Blue", "styleId": "captionText" }
+                    ]
+                  }
+                ]
+              },
+              { "type": "image", "image": { "url": "https://images.pexels.com/photos/1658967/pexels-photo-1658967.jpeg" }, "styleId": "urlImageStyle" }
+            ]
+          },
+          {
+            "id": "gradient",
+            "layout": { "type": "list", "showsDividers": false, "contentInsets": { "horizontal": 20, "bottom": 40 } },
+            "header": { "type": "label", "text": "Gradient", "styleId": "sectionTitle", "padding": { "bottom": 12 } },
+            "children": [
+              {
+                "type": "zstack",
+                "children": [
+                  {
+                    "type": "gradient",
+                    "gradientColors": [
+                      { "color": "#FF6B6B", "location": 0.0 },
+                      { "color": "#4ECDC4", "location": 0.5 },
+                      { "color": "#45B7D1", "location": 1.0 }
+                    ],
+                    "gradientStart": "leading",
+                    "gradientEnd": "trailing",
+                    "styleId": "gradientStyle"
+                  },
+                  {
+                    "type": "label",
+                    "text": "Gradient Overlay",
+                    "styleId": "gradientLabel"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
+  "dataSources": {
+    "tapCountText": {
+      "type": "binding",
+      "template": "${buttonTapCount}"
+    },
+    "textFieldDisplay": {
+      "type": "binding",
+      "template": "${textFieldValue}"
+    }
+  }
+}
+"""
 
 private let basicExampleJSON = """
 {
@@ -327,7 +688,7 @@ private let basicExampleJSON = """
             "template": "You've pressed this ${notYetCount} time(s)"
           },
           "buttons": [
-            { "label": "OK", "style": "default" }
+            { "text": "OK", "style": "default" }
           ]
         }
       ]
@@ -337,7 +698,7 @@ private let basicExampleJSON = """
   "root": {
     "backgroundColor": "#FFFFFF",
     "edgeInsets": {
-      "bottom": { "mode": "safeArea", "padding": 20 }
+      "bottom": 20
     },
     "children": [
       {
@@ -367,7 +728,7 @@ private let basicExampleJSON = """
               {
                 "type": "button",
                 "id": "gotItButton",
-                "label": "Got it",
+                "text": "Got it",
                 "styleId": "primaryButton",
                 "fillWidth": true,
                 "actions": {
@@ -377,7 +738,7 @@ private let basicExampleJSON = """
               {
                 "type": "button",
                 "id": "notYetButton",
-                "label": "Not yet",
+                "text": "Not yet",
                 "styleId": "secondaryButton",
                 "fillWidth": true,
                 "actions": {
@@ -447,7 +808,7 @@ private let favoritePlacesJSON = """
               {
                 "type": "label",
                 "id": "headerLabel",
-                "label": "Favorite Places",
+                "text": "Favorite Places",
                 "styleId": "headerStyle"
               }
             ]
@@ -524,7 +885,7 @@ private let sectionLayoutJSON = """
           { "type": "spacer" },
           {
             "type": "button",
-            "label": "Close",
+            "text": "Close",
             "styleId": "closeButton",
             "actions": { "onTap": "dismissView" }
           }
@@ -534,7 +895,7 @@ private let sectionLayoutJSON = """
         "type": "hstack",
         "padding": { "horizontal": 16, "bottom": 8 },
         "children": [
-          { "type": "label", "label": "Section Layouts", "styleId": "screenTitle" }
+          { "type": "label", "text": "Section Layouts", "styleId": "screenTitle" }
         ]
       },
       {
@@ -544,102 +905,102 @@ private let sectionLayoutJSON = """
         "sections": [
           {
             "id": "horizontal-section",
-            "layout": "horizontal",
+            "layout": {
+              "type": "horizontal",
+              "itemSpacing": 12,
+              "contentInsets": { "leading": 16, "trailing": 16 },
+              "showsIndicators": false
+            },
             "header": {
               "type": "vstack",
               "alignment": "leading",
               "padding": { "horizontal": 16, "top": 8, "bottom": 8 },
               "children": [
-                { "type": "label", "label": "Horizontal Scroll", "styleId": "sectionHeader" }
+                { "type": "label", "text": "Horizontal Scroll", "styleId": "sectionHeader" }
               ]
-            },
-            "config": {
-              "itemSpacing": 12,
-              "contentInsets": { "leading": 16, "trailing": 16 },
-              "showsIndicators": false
             },
             "children": [
               {
                 "type": "vstack",
                 "spacing": 4,
                 "children": [
-                  { "type": "label", "label": "Item 1", "styleId": "cardTitle" },
-                  { "type": "label", "label": "Description", "styleId": "cardSubtitle" }
+                  { "type": "label", "text": "Item 1", "styleId": "cardTitle" },
+                  { "type": "label", "text": "Description", "styleId": "cardSubtitle" }
                 ]
               },
               {
                 "type": "vstack",
                 "spacing": 4,
                 "children": [
-                  { "type": "label", "label": "Item 2", "styleId": "cardTitle" },
-                  { "type": "label", "label": "Description", "styleId": "cardSubtitle" }
+                  { "type": "label", "text": "Item 2", "styleId": "cardTitle" },
+                  { "type": "label", "text": "Description", "styleId": "cardSubtitle" }
                 ]
               },
               {
                 "type": "vstack",
                 "spacing": 4,
                 "children": [
-                  { "type": "label", "label": "Item 3", "styleId": "cardTitle" },
-                  { "type": "label", "label": "Description", "styleId": "cardSubtitle" }
+                  { "type": "label", "text": "Item 3", "styleId": "cardTitle" },
+                  { "type": "label", "text": "Description", "styleId": "cardSubtitle" }
                 ]
               },
               {
                 "type": "vstack",
                 "spacing": 4,
                 "children": [
-                  { "type": "label", "label": "Item 4", "styleId": "cardTitle" },
-                  { "type": "label", "label": "Description", "styleId": "cardSubtitle" }
+                  { "type": "label", "text": "Item 4", "styleId": "cardTitle" },
+                  { "type": "label", "text": "Description", "styleId": "cardSubtitle" }
                 ]
               },
               {
                 "type": "vstack",
                 "spacing": 4,
                 "children": [
-                  { "type": "label", "label": "Item 5", "styleId": "cardTitle" },
-                  { "type": "label", "label": "Description", "styleId": "cardSubtitle" }
+                  { "type": "label", "text": "Item 5", "styleId": "cardTitle" },
+                  { "type": "label", "text": "Description", "styleId": "cardSubtitle" }
                 ]
               }
             ]
           },
           {
             "id": "grid-section",
-            "layout": "grid",
-            "header": {
-              "type": "vstack",
-              "alignment": "leading",
-              "padding": { "horizontal": 16, "bottom": 8 },
-              "children": [
-                { "type": "label", "label": "Grid Layout", "styleId": "sectionHeader" }
-              ]
-            },
-            "config": {
+            "layout": {
+              "type": "grid",
               "columns": 2,
               "itemSpacing": 12,
               "lineSpacing": 12,
               "contentInsets": { "horizontal": 16 }
             },
-            "children": [
-              { "type": "label", "label": "Grid Item 1", "styleId": "cardTitle" },
-              { "type": "label", "label": "Grid Item 2", "styleId": "cardTitle" },
-              { "type": "label", "label": "Grid Item 3", "styleId": "cardTitle" },
-              { "type": "label", "label": "Grid Item 4", "styleId": "cardTitle" }
-            ]
-          },
-          {
-            "id": "list-section",
-            "layout": "list",
             "header": {
               "type": "vstack",
               "alignment": "leading",
               "padding": { "horizontal": 16, "bottom": 8 },
               "children": [
-                { "type": "label", "label": "List Layout", "styleId": "sectionHeader" }
+                { "type": "label", "text": "Grid Layout", "styleId": "sectionHeader" }
               ]
             },
-            "config": {
+            "children": [
+              { "type": "label", "text": "Grid Item 1", "styleId": "cardTitle" },
+              { "type": "label", "text": "Grid Item 2", "styleId": "cardTitle" },
+              { "type": "label", "text": "Grid Item 3", "styleId": "cardTitle" },
+              { "type": "label", "text": "Grid Item 4", "styleId": "cardTitle" }
+            ]
+          },
+          {
+            "id": "list-section",
+            "layout": {
+              "type": "list",
               "itemSpacing": 0,
               "showsDividers": true,
               "contentInsets": { "horizontal": 16 }
+            },
+            "header": {
+              "type": "vstack",
+              "alignment": "leading",
+              "padding": { "horizontal": 16, "bottom": 8 },
+              "children": [
+                { "type": "label", "text": "List Layout", "styleId": "sectionHeader" }
+              ]
             },
             "children": [
               {
@@ -647,7 +1008,7 @@ private let sectionLayoutJSON = """
                 "spacing": 12,
                 "padding": { "vertical": 12 },
                 "children": [
-                  { "type": "label", "label": "List Item 1", "styleId": "cardTitle" },
+                  { "type": "label", "text": "List Item 1", "styleId": "cardTitle" },
                   { "type": "spacer" }
                 ]
               },
@@ -656,7 +1017,7 @@ private let sectionLayoutJSON = """
                 "spacing": 12,
                 "padding": { "vertical": 12 },
                 "children": [
-                  { "type": "label", "label": "List Item 2", "styleId": "cardTitle" },
+                  { "type": "label", "text": "List Item 2", "styleId": "cardTitle" },
                   { "type": "spacer" }
                 ]
               },
@@ -665,9 +1026,449 @@ private let sectionLayoutJSON = """
                 "spacing": 12,
                 "padding": { "vertical": 12 },
                 "children": [
-                  { "type": "label", "label": "List Item 3", "styleId": "cardTitle" },
+                  { "type": "label", "text": "List Item 3", "styleId": "cardTitle" },
                   { "type": "spacer" }
                 ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+"""
+
+// MARK: - Interests Example (Flow Layout with Selection)
+
+private let interestsJSON = """
+{
+  "id": "interests-picker",
+  "version": "1.0",
+
+  "state": {
+    "selected.technology": false,
+    "selected.sports": false,
+    "selected.music": false,
+    "selected.artDesign": false,
+    "selected.travel": false,
+    "selected.food": false,
+    "selected.gaming": false,
+    "selected.fitness": false,
+    "selected.photography": false,
+    "selected.movies": false,
+    "selected.books": false,
+    "selected.science": false
+  },
+
+  "styles": {
+    "titleStyle": {
+      "fontSize": 28,
+      "fontWeight": "bold",
+      "textColor": "#000000",
+      "textAlignment": "leading"
+    },
+    "subtitleStyle": {
+      "fontSize": 15,
+      "fontWeight": "regular",
+      "textColor": "#666666"
+    },
+    "pillButton": {
+      "fontSize": 15,
+      "fontWeight": "medium",
+      "backgroundColor": "#F2F2F7",
+      "textColor": "#000000",
+      "textAlignment": "center",
+      "cornerRadius": 20,
+      "height": 40,
+      "padding": { 
+        "horizontal": 22,
+        "vertical": 14 
+      }
+    },
+    "pillButtonSelected": {
+      "fontSize": 15,
+      "fontWeight": "semibold",
+      "backgroundColor": "#007AFF",
+      "textColor": "#FFFFFF",
+      "textAlignment": "center",
+      "cornerRadius": 20,
+      "height": 40,
+      "padding": { 
+        "horizontal": 22,
+        "vertical": 14  
+      }
+    }
+  },
+
+  "root": {
+    "backgroundColor": "#FFFFFF",
+    "children": [
+      {
+        "type": "vstack",
+        "spacing": 20,
+        "padding": { "horizontal": 20, "top": 36, "bottom": 20 },
+        "children": [
+          {
+            "type": "vstack",
+            "spacing": 8,
+            "alignment": "leading",
+            "children": [
+              { "type": "label", "text": "Choose Your Interests", "styleId": "titleStyle" },
+              { "type": "label", "text": "Select topics you'd like to follow", "styleId": "subtitleStyle" }
+            ]
+          },
+          {
+            "type": "sectionLayout",
+            "sections": [
+              {
+                "layout": {
+                  "type": "flow",
+                  "itemSpacing": 10,
+                  "lineSpacing": 12
+                },
+                "children": [
+                  {
+                    "type": "button",
+                    "text": "Technology",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.technology",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.technology" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Sports",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.sports",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.sports" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Music",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.music",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.music" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Art & Design",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.artDesign",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.artDesign" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Travel",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.travel",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.travel" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Food",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.food",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.food" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Gaming",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.gaming",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.gaming" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Fitness",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.fitness",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.fitness" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Photography",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.photography",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.photography" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Movies",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.movies",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.movies" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Books",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.books",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.books" } }
+                  },
+                  {
+                    "type": "button",
+                    "text": "Science",
+                    "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
+                    "isSelectedBinding": "selected.science",
+                    "actions": { "onTap": { "type": "toggleState", "path": "selected.science" } }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+"""
+
+// MARK: - Dad Jokes Example (Custom Actions + REST API)
+
+/// Example demonstrating:
+/// - Custom action closures for REST API calls
+/// - State updates from network responses
+/// - Fun reveal animation with punchline
+struct DadJokesExampleView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            if let document = try? Document.Definition(jsonString: dadJokesJSON) {
+                CladsRendererView(
+                    document: document,
+                    customActions: [
+                        // Custom action that fetches a joke from the API
+                        "fetchJoke": { params, context in
+                            // Set loading state
+                            context.stateStore.set("isLoading", value: true)
+                            context.stateStore.set("setup", value: "Loading...")
+                            context.stateStore.set("punchline", value: "")
+                            context.stateStore.set("hiddenPunchline", value: "")
+
+                            do {
+                                // Fetch from icanhazdadjoke API
+                                var request = URLRequest(url: URL(string: "https://icanhazdadjoke.com/")!)
+                                request.setValue("application/json", forHTTPHeaderField: "Accept")
+
+                                let (data, _) = try await URLSession.shared.data(for: request)
+
+                                // Parse response
+                                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                                   let joke = json["joke"] as? String {
+                                    // Split the joke into setup and punchline
+                                    let parts = splitJoke(joke)
+                                    context.stateStore.set("setup", value: parts.setup)
+                                    // Store punchline hidden
+                                    context.stateStore.set("hiddenPunchline", value: parts.punchline)
+                                    context.stateStore.set("punchline", value: "")
+                                    context.stateStore.set("hasJoke", value: true)
+                                }
+                            } catch {
+                                context.stateStore.set("setup", value: "Couldn't fetch a joke.")
+                                context.stateStore.set("punchline", value: "Check your connection and try again.")
+                                context.stateStore.set("hiddenPunchline", value: "")
+                                context.stateStore.set("hasJoke", value: false)
+                            }
+
+                            context.stateStore.set("isLoading", value: false)
+                        },
+
+                        // Reveal the punchline by copying from hidden state
+                        "revealPunchline": { params, context in
+                            if let hidden = context.stateStore.get("hiddenPunchline") as? String,
+                               !hidden.isEmpty {
+                                context.stateStore.set("punchline", value: hidden)
+                                context.stateStore.set("hiddenPunchline", value: "")
+                            }
+                        }
+                    ]
+                )
+                .navigationTitle("Dad Jokes")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button("Close") { dismiss() }
+                    }
+                }
+            } else {
+                Text("Failed to parse JSON")
+                    .foregroundStyle(.red)
+            }
+        }
+    }
+}
+
+/// Split a joke into setup and punchline
+/// Dad jokes often have a question/answer format or a pause before the punchline
+private func splitJoke(_ joke: String) -> (setup: String, punchline: String) {
+    // Try to split on question mark (Q&A jokes)
+    if let questionIndex = joke.firstIndex(of: "?") {
+        let setup = String(joke[...questionIndex])
+        let rest = joke[joke.index(after: questionIndex)...]
+        let punchline = rest.trimmingCharacters(in: .whitespaces)
+        if !punchline.isEmpty {
+            return (setup, punchline)
+        }
+    }
+
+    // Try to split on common pause indicators
+    let pauseIndicators = [" - ", "...", ". ", "! "]
+    for indicator in pauseIndicators {
+        if let range = joke.range(of: indicator, options: .backwards) {
+            let setup = String(joke[..<range.lowerBound]) + (indicator == ". " || indicator == "! " ? String(indicator.first!) : "")
+            let punchline = String(joke[range.upperBound...]).trimmingCharacters(in: .whitespaces)
+            if !punchline.isEmpty && punchline.count > 5 {
+                return (setup, punchline)
+            }
+        }
+    }
+
+    // Fallback: split roughly in half at a space
+    let words = joke.split(separator: " ")
+    if words.count > 4 {
+        let midpoint = words.count / 2
+        let setup = words[..<midpoint].joined(separator: " ") + "..."
+        let punchline = words[midpoint...].joined(separator: " ")
+        return (setup, punchline)
+    }
+
+    // Last resort: just show the whole joke
+    return (joke, "😄")
+}
+
+private let dadJokesJSON = """
+{
+  "id": "dad-jokes",
+  "version": "1.0",
+
+  "state": {
+    "setup": "",
+    "punchline": "",
+    "hiddenPunchline": "",
+    "hasJoke": false,
+    "isLoading": false
+  },
+
+  "styles": {
+    "screenTitle": {
+      "fontSize": 28,
+      "fontWeight": "bold",
+      "textColor": "#1a1a1a"
+    },
+    "jokeSetup": {
+      "fontSize": 20,
+      "fontWeight": "medium",
+      "textColor": "#333333",
+      "textAlignment": "center"
+    },
+    "jokePunchline": {
+      "fontSize": 22,
+      "fontWeight": "bold",
+      "textColor": "#E85D04",
+      "textAlignment": "center"
+    },
+    "placeholderText": {
+      "fontSize": 17,
+      "fontWeight": "regular",
+      "textColor": "#888888",
+      "textAlignment": "center"
+    },
+    "fetchButton": {
+      "fontSize": 17,
+      "fontWeight": "semibold",
+      "backgroundColor": "#007AFF",
+      "textColor": "#FFFFFF",
+      "cornerRadius": 12,
+      "height": 50
+    },
+    "revealButton": {
+      "fontSize": 16,
+      "fontWeight": "medium",
+      "backgroundColor": "#F2F2F7",
+      "textColor": "#007AFF",
+      "cornerRadius": 10,
+      "height": 44
+    },
+    "cardStyle": {
+      "backgroundColor": "#F9F9F9",
+      "cornerRadius": 16
+    }
+  },
+
+  "dataSources": {
+    "setupText": {
+      "type": "binding",
+      "path": "setup"
+    },
+    "punchlineText": {
+      "type": "binding",
+      "path": "punchline"
+    }
+  },
+
+  "root": {
+    "backgroundColor": "#FFFFFF",
+    "actions": {
+      "onAppear": { "type": "fetchJoke" }
+    },
+    "children": [
+      {
+        "type": "vstack",
+        "spacing": 0,
+        "children": [
+          {
+            "type": "vstack",
+            "spacing": 24,
+            "padding": { "horizontal": 20, "top": 20 },
+            "children": [
+              {
+                "type": "vstack",
+                "alignment": "center",
+                "spacing": 24,
+                "padding": { "all": 24 },
+                "styleId": "cardStyle",
+                "children": [
+                  {
+                    "type": "label",
+                    "dataSourceId": "setupText",
+                    "styleId": "jokeSetup"
+                  },
+                  {
+                    "type": "label",
+                    "dataSourceId": "punchlineText",
+                    "styleId": "jokePunchline"
+                  }
+                ]
+              }
+            ]
+          },
+          { "type": "spacer" },
+          {
+            "type": "hstack",
+            "spacing": 12,
+            "padding": { "horizontal": 20, "bottom": 20 },
+            "children": [
+              {
+                "type": "button",
+                "text": "Reveal",
+                "styleId": "revealButton",
+                "fillWidth": true,
+                "actions": { "onTap": "revealPunchline" }
+              },
+              {
+                "type": "button",
+                "text": "New Joke",
+                "styleId": "fetchButton",
+                "fillWidth": true,
+                "actions": {
+                  "onTap": {
+                    "type": "sequence",
+                    "steps": [
+                      { "type": "fetchJoke" }
+                    ]
+                  }
+                }
               }
             ]
           }
@@ -1009,7 +1810,7 @@ private let tacoTruckJSON = """
         "template": "Thanks ${customerName}! Your ${tacoCount} taco(s) and ${burritoCount} burrito(s) with ${selectedProtein} will be ready soon. Total: $${orderTotal}"
       },
       "buttons": [
-        { "label": "Awesome!", "style": "default" }
+        { "text": "Awesome!", "style": "default" }
       ]
     }
   },
@@ -1030,18 +1831,18 @@ private let tacoTruckJSON = """
                 "type": "hstack",
                 "spacing": 12,
                 "children": [
-                  { "type": "label", "label": "🌮", "styleId": "emoji" },
+                  { "type": "label", "text": "🌮", "styleId": "emoji" },
                   {
                     "type": "vstack",
                     "alignment": "leading",
                     "spacing": 4,
                     "children": [
-                      { "type": "label", "label": "Taco Truck", "styleId": "screenTitle" },
-                      { "type": "label", "label": "Fresh & Delicious", "styleId": "menuItemPrice" }
+                      { "type": "label", "text": "Taco Truck", "styleId": "screenTitle" },
+                      { "type": "label", "text": "Fresh & Delicious", "styleId": "menuItemPrice" }
                     ]
                   },
                   { "type": "spacer" },
-                  { "type": "label", "label": "🔥", "styleId": "emoji" }
+                  { "type": "label", "text": "🔥", "styleId": "emoji" }
                 ]
               },
               {
@@ -1049,7 +1850,7 @@ private let tacoTruckJSON = """
                 "alignment": "leading",
                 "spacing": 8,
                 "children": [
-                  { "type": "label", "label": "Your Name", "styleId": "sectionTitle" },
+                  { "type": "label", "text": "Your Name", "styleId": "sectionTitle" },
                   {
                     "type": "textfield",
                     "placeholder": "Enter your name...",
@@ -1063,19 +1864,19 @@ private let tacoTruckJSON = """
                 "alignment": "leading",
                 "spacing": 12,
                 "children": [
-                  { "type": "label", "label": "Menu", "styleId": "sectionTitle" },
+                  { "type": "label", "text": "Menu", "styleId": "sectionTitle" },
                   {
                     "type": "hstack",
                     "spacing": 16,
                     "children": [
-                      { "type": "label", "label": "🌮", "styleId": "emoji" },
+                      { "type": "label", "text": "🌮", "styleId": "emoji" },
                       {
                         "type": "vstack",
                         "alignment": "leading",
                         "spacing": 2,
                         "children": [
-                          { "type": "label", "label": "Street Taco", "styleId": "menuItemTitle" },
-                          { "type": "label", "label": "$4.50 each", "styleId": "menuItemPrice" }
+                          { "type": "label", "text": "Street Taco", "styleId": "menuItemTitle" },
+                          { "type": "label", "text": "$4.50 each", "styleId": "menuItemPrice" }
                         ]
                       },
                       { "type": "spacer" },
@@ -1085,7 +1886,7 @@ private let tacoTruckJSON = """
                         "children": [
                           {
                             "type": "button",
-                            "label": "−",
+                            "text": "−",
                             "styleId": "countButton",
                             "actions": { "onTap": "decrementTaco" }
                           },
@@ -1096,7 +1897,7 @@ private let tacoTruckJSON = """
                           },
                           {
                             "type": "button",
-                            "label": "+",
+                            "text": "+",
                             "styleId": "countButton",
                             "actions": { "onTap": "incrementTaco" }
                           }
@@ -1108,14 +1909,14 @@ private let tacoTruckJSON = """
                     "type": "hstack",
                     "spacing": 16,
                     "children": [
-                      { "type": "label", "label": "🌯", "styleId": "emoji" },
+                      { "type": "label", "text": "🌯", "styleId": "emoji" },
                       {
                         "type": "vstack",
                         "alignment": "leading",
                         "spacing": 2,
                         "children": [
-                          { "type": "label", "label": "Burrito Grande", "styleId": "menuItemTitle" },
-                          { "type": "label", "label": "$9.50 each", "styleId": "menuItemPrice" }
+                          { "type": "label", "text": "Burrito Grande", "styleId": "menuItemTitle" },
+                          { "type": "label", "text": "$9.50 each", "styleId": "menuItemPrice" }
                         ]
                       },
                       { "type": "spacer" },
@@ -1125,7 +1926,7 @@ private let tacoTruckJSON = """
                         "children": [
                           {
                             "type": "button",
-                            "label": "−",
+                            "text": "−",
                             "styleId": "countButton",
                             "actions": { "onTap": "decrementBurrito" }
                           },
@@ -1136,7 +1937,7 @@ private let tacoTruckJSON = """
                           },
                           {
                             "type": "button",
-                            "label": "+",
+                            "text": "+",
                             "styleId": "countButton",
                             "actions": { "onTap": "incrementBurrito" }
                           }
@@ -1151,20 +1952,20 @@ private let tacoTruckJSON = """
                 "alignment": "leading",
                 "spacing": 12,
                 "children": [
-                  { "type": "label", "label": "Choose Your Protein", "styleId": "sectionTitle" },
+                  { "type": "label", "text": "Choose Your Protein", "styleId": "sectionTitle" },
                   {
                     "type": "hstack",
                     "spacing": 8,
                     "children": [
                       {
                         "type": "button",
-                        "label": "🐷 Carnitas",
+                        "text": "🐷 Carnitas",
                         "styleId": "proteinOption",
                         "actions": { "onTap": "selectCarnitas" }
                       },
                       {
                         "type": "button",
-                        "label": "🐔 Pollo",
+                        "text": "🐔 Pollo",
                         "styleId": "proteinOption",
                         "actions": { "onTap": "selectPollo" }
                       }
@@ -1176,13 +1977,13 @@ private let tacoTruckJSON = """
                     "children": [
                       {
                         "type": "button",
-                        "label": "🥩 Carne Asada",
+                        "text": "🥩 Carne Asada",
                         "styleId": "proteinOption",
                         "actions": { "onTap": "selectCarne" }
                       },
                       {
                         "type": "button",
-                        "label": "🥬 Veggie",
+                        "text": "🥬 Veggie",
                         "styleId": "proteinOption",
                         "actions": { "onTap": "selectVeggie" }
                       }
@@ -1195,7 +1996,7 @@ private let tacoTruckJSON = """
                 "alignment": "leading",
                 "spacing": 8,
                 "children": [
-                  { "type": "label", "label": "Special Instructions", "styleId": "sectionTitle" },
+                  { "type": "label", "text": "Special Instructions", "styleId": "sectionTitle" },
                   {
                     "type": "textfield",
                     "placeholder": "Extra salsa, no onions, etc...",
@@ -1215,14 +2016,14 @@ private let tacoTruckJSON = """
               {
                 "type": "hstack",
                 "children": [
-                  { "type": "label", "label": "Order Total", "styleId": "totalLabel" },
+                  { "type": "label", "text": "Order Total", "styleId": "totalLabel" },
                   { "type": "spacer" },
                   { "type": "label", "dataSourceId": "totalDisplay", "styleId": "totalAmount" }
                 ]
               },
               {
                 "type": "button",
-                "label": "Place Order 🎉",
+                "text": "Place Order 🎉",
                 "styleId": "orderButton",
                 "fillWidth": true,
                 "actions": { "onTap": "placeOrder" }
@@ -1394,7 +2195,7 @@ private let movieNightJSON = """
         "type": "binding",
         "template": "Starting ${selectedGenre} movie night with ${attendees} people. Enjoy!"
       },
-      "buttons": [{ "label": "Let's Go!", "style": "default" }]
+      "buttons": [{ "text": "Let's Go!", "style": "default" }]
     }
   },
 
@@ -1444,7 +2245,7 @@ private let movieNightJSON = """
       "fontWeight": "bold",
       "textColor": "#FFFFFF"
     },
-    "label": {
+    "text": {
       "fontSize": 16,
       "fontWeight": "medium",
       "textColor": "#FFFFFF"
@@ -1492,7 +2293,7 @@ private let movieNightJSON = """
               { "type": "spacer" },
               {
                 "type": "button",
-                "label": "Close",
+                "text": "Close",
                 "styleId": "closeButton",
                 "actions": { "onTap": "dismissView" }
               }
@@ -1507,14 +2308,14 @@ private let movieNightJSON = """
                 "type": "hstack",
                 "spacing": 16,
                 "children": [
-                  { "type": "label", "label": "🎬", "styleId": "emoji" },
+                  { "type": "label", "text": "🎬", "styleId": "emoji" },
                   {
                     "type": "vstack",
                     "alignment": "leading",
                     "spacing": 4,
                     "children": [
-                      { "type": "label", "label": "Movie Night", "styleId": "screenTitle" },
-                      { "type": "label", "label": "Pick your perfect movie experience", "styleId": "subtitle" }
+                      { "type": "label", "text": "Movie Night", "styleId": "screenTitle" },
+                      { "type": "label", "text": "Pick your perfect movie experience", "styleId": "subtitle" }
                     ]
                   },
                   { "type": "spacer" }
@@ -1525,20 +2326,20 @@ private let movieNightJSON = """
                 "alignment": "leading",
                 "spacing": 12,
                 "children": [
-                  { "type": "label", "label": "Choose Genre", "styleId": "sectionTitle" },
+                  { "type": "label", "text": "Choose Genre", "styleId": "sectionTitle" },
                   {
                     "type": "hstack",
                     "spacing": 8,
                     "children": [
                       {
                         "type": "button",
-                        "label": "Action",
+                        "text": "Action",
                         "styleId": "genreButton",
                         "actions": { "onTap": "selectAction" }
                       },
                       {
                         "type": "button",
-                        "label": "Comedy",
+                        "text": "Comedy",
                         "styleId": "genreButton",
                         "actions": { "onTap": "selectComedy" }
                       }
@@ -1550,13 +2351,13 @@ private let movieNightJSON = """
                     "children": [
                       {
                         "type": "button",
-                        "label": "Horror",
+                        "text": "Horror",
                         "styleId": "genreButton",
                         "actions": { "onTap": "selectHorror" }
                       },
                       {
                         "type": "button",
-                        "label": "Sci-Fi",
+                        "text": "Sci-Fi",
                         "styleId": "genreButton",
                         "actions": { "onTap": "selectSciFi" }
                       }
@@ -1569,7 +2370,7 @@ private let movieNightJSON = """
                 "alignment": "leading",
                 "spacing": 8,
                 "children": [
-                  { "type": "label", "label": "Movie Title (optional)", "styleId": "sectionTitle" },
+                  { "type": "label", "text": "Movie Title (optional)", "styleId": "sectionTitle" },
                   {
                     "type": "textfield",
                     "placeholder": "Enter a movie name...",
@@ -1587,14 +2388,14 @@ private let movieNightJSON = """
                     "alignment": "leading",
                     "spacing": 8,
                     "children": [
-                      { "type": "label", "label": "Attendees", "styleId": "sectionTitle" },
+                      { "type": "label", "text": "Attendees", "styleId": "sectionTitle" },
                       {
                         "type": "hstack",
                         "spacing": 16,
                         "children": [
                           {
                             "type": "button",
-                            "label": "−",
+                            "text": "−",
                             "styleId": "countButton",
                             "actions": { "onTap": "decrementAttendees" }
                           },
@@ -1605,7 +2406,7 @@ private let movieNightJSON = """
                           },
                           {
                             "type": "button",
-                            "label": "+",
+                            "text": "+",
                             "styleId": "countButton",
                             "actions": { "onTap": "incrementAttendees" }
                           }
@@ -1618,14 +2419,14 @@ private let movieNightJSON = """
                     "alignment": "leading",
                     "spacing": 8,
                     "children": [
-                      { "type": "label", "label": "Min Rating", "styleId": "sectionTitle" },
+                      { "type": "label", "text": "Min Rating", "styleId": "sectionTitle" },
                       {
                         "type": "hstack",
                         "spacing": 16,
                         "children": [
                           {
                             "type": "button",
-                            "label": "−",
+                            "text": "−",
                             "styleId": "countButton",
                             "actions": { "onTap": "decrementRating" }
                           },
@@ -1636,7 +2437,7 @@ private let movieNightJSON = """
                           },
                           {
                             "type": "button",
-                            "label": "+",
+                            "text": "+",
                             "styleId": "countButton",
                             "actions": { "onTap": "incrementRating" }
                           }
@@ -1655,7 +2456,7 @@ private let movieNightJSON = """
             "children": [
               {
                 "type": "button",
-                "label": "Start Movie Night",
+                "text": "Start Movie Night",
                 "styleId": "startButton",
                 "fillWidth": true,
                 "actions": { "onTap": "startMovie" }
@@ -1671,6 +2472,10 @@ private let movieNightJSON = """
 
 #Preview {
     ContentView()
+}
+
+#Preview("Dad Jokes") {
+    DadJokesExampleView()
 }
 
 #Preview("Taco Truck") {

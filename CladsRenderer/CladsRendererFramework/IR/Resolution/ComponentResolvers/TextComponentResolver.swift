@@ -36,7 +36,7 @@ public struct TextComponentResolver: ComponentResolving {
         }
 
         // Resolve content (may record dependencies)
-        let content = ContentResolver.resolve(component, context: context, viewNode: viewNode)
+        let contentResult = ContentResolver.resolve(component, context: context, viewNode: viewNode)
 
         if context.isTracking {
             context.tracker?.endTracking()
@@ -49,8 +49,11 @@ public struct TextComponentResolver: ComponentResolving {
 
         let renderNode = RenderNode.text(TextNode(
             id: component.id,
-            content: content,
-            style: style
+            content: contentResult.content,
+            style: style,
+            padding: PaddingConverter.convert(component.padding),
+            bindingPath: contentResult.bindingPath,
+            bindingTemplate: contentResult.bindingTemplate
         ))
 
         return ComponentResolutionResult(renderNode: renderNode, viewNode: viewNode)

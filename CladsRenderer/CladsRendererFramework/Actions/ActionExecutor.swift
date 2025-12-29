@@ -15,6 +15,12 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
     private let actionDefinitions: [String: Document.Action]
     private let registry: ActionRegistry
 
+    /// Custom action closures injected at view creation time
+    private let customActions: [String: ActionClosure]
+
+    /// Delegate for handling custom actions
+    public weak var actionDelegate: CladsActionDelegate?
+
     /// Callback to dismiss the current view
     public var dismissHandler: (() -> Void)?
 
@@ -27,17 +33,43 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
     public init(
         stateStore: StateStore,
         actionDefinitions: [String: Document.Action],
-        registry: ActionRegistry = .shared
+        registry: ActionRegistry = .shared,
+        customActions: [String: ActionClosure] = [:],
+        actionDelegate: CladsActionDelegate? = nil
     ) {
         self.stateStore = stateStore
         self.actionDefinitions = actionDefinitions
         self.registry = registry
+        self.customActions = customActions
+        self.actionDelegate = actionDelegate
     }
 
     // MARK: - ActionExecutionContext
 
-    /// Execute an action by its ID (looks up in document's action definitions)
+    /// Execute an action by its ID.
+    ///
+    /// Resolution order:
+    /// 1. Custom action closures (injected at view creation)
+    /// 2. Action delegate
+    /// 3. Document action definitions
     public func executeAction(id actionId: String) async {
+        // 1. Check custom action closures first
+        if let closure = customActions[actionId] {
+            await closure(ActionParameters(raw: [:]), self)
+            return
+        }
+
+        // 2. Check delegate
+        if let delegate = actionDelegate {
+            let handled = await delegate.cladsRenderer(
+                handleAction: actionId,
+                parameters: ActionParameters(raw: [:]),
+                context: self
+            )
+            if handled { return }
+        }
+
+        // 3. Fall back to document action definitions
         guard let action = actionDefinitions[actionId] else {
             print("ActionContext: Unknown action '\(actionId)'")
             return
@@ -54,6 +86,9 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
 
         case .setState(let setStateAction):
             executeSetState(setStateAction)
+
+        case .toggleState(let toggleStateAction):
+            executeToggleState(toggleStateAction)
 
         case .showAlert(let showAlertAction):
             executeShowAlert(showAlertAction)
@@ -73,8 +108,30 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
         }
     }
 
-    /// Execute an action directly by type and parameters (for custom actions and legacy support)
+    /// Execute an action directly by type and parameters.
+    ///
+    /// Resolution order:
+    /// 1. Custom action closures (injected at view creation)
+    /// 2. Action delegate
+    /// 3. Action registry (global handlers)
     public func executeAction(type actionType: String, parameters: ActionParameters) async {
+        // 1. Check custom action closures first
+        if let closure = customActions[actionType] {
+            await closure(parameters, self)
+            return
+        }
+
+        // 2. Check delegate
+        if let delegate = actionDelegate {
+            let handled = await delegate.cladsRenderer(
+                handleAction: actionType,
+                parameters: parameters,
+                context: self
+            )
+            if handled { return }
+        }
+
+        // 3. Fall back to registry
         guard let handler = registry.handler(for: actionType) else {
             print("ActionContext: No handler registered for action type '\(actionType)'")
             return
@@ -91,10 +148,14 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
         case .literal(let stateValue):
             value = stateValueToAny(stateValue)
         case .expression(let expr):
-            // For now, just store the expression string - expression evaluation is separate
-            value = expr
+            value = stateStore.evaluate(expression: expr)
         }
         stateStore.set(action.path, value: value)
+    }
+
+    private func executeToggleState(_ action: Document.ToggleStateAction) {
+        let currentValue = stateStore.get(action.path) as? Bool ?? false
+        stateStore.set(action.path, value: !currentValue)
     }
 
     private func executeShowAlert(_ action: Document.ShowAlertAction) {
@@ -104,8 +165,7 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
             case .static(let str):
                 message = str
             case .template(let template):
-                // Template interpolation would happen here
-                message = template
+                message = stateStore.interpolate(template)
             }
         } else {
             message = nil

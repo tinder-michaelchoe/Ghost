@@ -16,7 +16,32 @@ public struct CladsRendererView: View {
 
     @Environment(\.dismiss) private var dismiss
 
-    public init(document: Document.Definition, registry: ActionRegistry = .shared) {
+    /// Initialize with a document and optional custom action handlers.
+    ///
+    /// - Parameters:
+    ///   - document: The document definition to render
+    ///   - registry: The global action registry (default: `.shared`)
+    ///   - customActions: View-specific action closures, keyed by action ID
+    ///   - actionDelegate: Delegate for handling custom actions
+    ///
+    /// Example:
+    /// ```swift
+    /// CladsRendererView(
+    ///     document: document,
+    ///     customActions: [
+    ///         "submitOrder": { params, context in
+    ///             let orderId = context.stateStore.get("order.id") as? String
+    ///             await OrderService.submit(orderId)
+    ///         }
+    ///     ]
+    /// )
+    /// ```
+    public init(
+        document: Document.Definition,
+        registry: ActionRegistry = .shared,
+        customActions: [String: ActionClosure] = [:],
+        actionDelegate: CladsActionDelegate? = nil
+    ) {
         // Resolve Document (AST) into RenderTree (IR)
         let resolver = Resolver(document: document)
         let tree: RenderTree
@@ -31,11 +56,13 @@ public struct CladsRendererView: View {
         }
         self.renderTree = tree
 
-        // Create ActionContext with the resolved state store
+        // Create ActionContext with the resolved state store and custom actions
         let ctx = ActionContext(
             stateStore: tree.stateStore,
             actionDefinitions: document.actions ?? [:],
-            registry: registry
+            registry: registry,
+            customActions: customActions,
+            actionDelegate: actionDelegate
         )
         _actionContext = StateObject(wrappedValue: ctx)
     }
@@ -67,16 +94,36 @@ extension CladsRendererView {
     /// - Parameters:
     ///   - jsonString: The JSON string to parse
     ///   - registry: The action registry to use
+    ///   - customActions: View-specific action closures
+    ///   - actionDelegate: Delegate for handling custom actions
     ///   - debugMode: Whether to print debug output when parsing
-    public init?(jsonString: String, registry: ActionRegistry = .shared, debugMode: Bool = false) {
+    public init?(
+        jsonString: String,
+        registry: ActionRegistry = .shared,
+        customActions: [String: ActionClosure] = [:],
+        actionDelegate: CladsActionDelegate? = nil,
+        debugMode: Bool = false
+    ) {
         guard let document = try? Document.Definition(jsonString: jsonString) else {
             return nil
         }
-        self.init(document: document, registry: registry, debugMode: debugMode)
+        self.init(
+            document: document,
+            registry: registry,
+            customActions: customActions,
+            actionDelegate: actionDelegate,
+            debugMode: debugMode
+        )
     }
 
     /// Initialize from a Document with optional debug output
-    public init(document: Document.Definition, registry: ActionRegistry = .shared, debugMode: Bool) {
+    public init(
+        document: Document.Definition,
+        registry: ActionRegistry = .shared,
+        customActions: [String: ActionClosure] = [:],
+        actionDelegate: CladsActionDelegate? = nil,
+        debugMode: Bool
+    ) {
         // Resolve Document (AST) into RenderTree (IR)
         let resolver = Resolver(document: document)
         let tree: RenderTree
@@ -98,11 +145,13 @@ extension CladsRendererView {
             print(debugRenderer.render(tree))
         }
 
-        // Create ActionContext with the resolved state store
+        // Create ActionContext with the resolved state store and custom actions
         let ctx = ActionContext(
             stateStore: tree.stateStore,
             actionDefinitions: document.actions ?? [:],
-            registry: registry
+            registry: registry,
+            customActions: customActions,
+            actionDelegate: actionDelegate
         )
         _actionContext = StateObject(wrappedValue: ctx)
     }
@@ -124,6 +173,12 @@ public struct CladsRendererConfiguration<State: Codable> {
     /// Custom action registry
     public var actionRegistry: ActionRegistry
 
+    /// View-specific action closures
+    public var customActions: [String: ActionClosure]
+
+    /// Delegate for handling custom actions
+    public weak var actionDelegate: CladsActionDelegate?
+
     /// Enable debug mode
     public var debugMode: Bool
 
@@ -132,12 +187,16 @@ public struct CladsRendererConfiguration<State: Codable> {
         onStateChange: ((_ path: String, _ oldValue: Any?, _ newValue: Any?) -> Void)? = nil,
         onAction: ((_ actionId: String, _ parameters: [String: Any]) -> Void)? = nil,
         actionRegistry: ActionRegistry = .shared,
+        customActions: [String: ActionClosure] = [:],
+        actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
     ) {
         self.initialState = initialState
         self.onStateChange = onStateChange
         self.onAction = onAction
         self.actionRegistry = actionRegistry
+        self.customActions = customActions
+        self.actionDelegate = actionDelegate
         self.debugMode = debugMode
     }
 }
@@ -232,11 +291,13 @@ class BindingRenderContext<State: Codable>: ObservableObject {
         self.renderTree = tree
         self.stateStore = tree.stateStore
 
-        // Create action context
+        // Create action context with custom actions
         self._actionContext = ActionContext(
             stateStore: tree.stateStore,
             actionDefinitions: document.actions ?? [:],
-            registry: configuration.actionRegistry
+            registry: configuration.actionRegistry,
+            customActions: configuration.customActions,
+            actionDelegate: configuration.actionDelegate
         )
 
         // Set up state change callback
@@ -308,29 +369,3 @@ extension CladsRendererView {
     }
 }
 
-// MARK: - Edge Insets Modifier
-
-struct EdgeInsetsModifier: ViewModifier {
-    let insets: Document.EdgeInsets?
-
-    func body(content: Content) -> some View {
-        content
-            .safeAreaPadding(.top, insets?.top?.padding ?? 0)
-            .safeAreaPadding(.bottom, insets?.bottom?.padding ?? 0)
-            .safeAreaPadding(.leading, insets?.leading?.padding ?? 0)
-            .safeAreaPadding(.trailing, insets?.trailing?.padding ?? 0)
-            .ignoresSafeArea(edges: absoluteEdges())
-    }
-
-    /// Determine which edges should ignore safe area (absolute mode)
-    private func absoluteEdges() -> Edge.Set {
-        guard let insets = insets else { return [] }
-
-        var edges: Edge.Set = []
-        if insets.top?.isAbsolute == true { edges.insert(.top) }
-        if insets.bottom?.isAbsolute == true { edges.insert(.bottom) }
-        if insets.leading?.isAbsolute == true { edges.insert(.leading) }
-        if insets.trailing?.isAbsolute == true { edges.insert(.trailing) }
-        return edges
-    }
-}

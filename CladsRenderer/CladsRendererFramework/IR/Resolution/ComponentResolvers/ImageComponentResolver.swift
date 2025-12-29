@@ -50,7 +50,17 @@ public struct ImageComponentResolver: ComponentResolving {
     // MARK: - Private Helpers
 
     private func resolveImageSource(_ component: Document.Component) -> ImageNode.Source {
-        // Check the data property for image source
+        // Check for image property (preferred)
+        if let image = component.image {
+            if let systemName = image.system {
+                return .system(name: systemName)
+            }
+            if let urlString = image.url, let url = URL(string: urlString) {
+                return .url(url)
+            }
+        }
+
+        // Fallback: Check the data property for image source (legacy support)
         if let data = component.data {
             switch data.type {
             case .static:

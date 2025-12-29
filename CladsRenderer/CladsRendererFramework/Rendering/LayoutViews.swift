@@ -152,7 +152,7 @@ struct ComponentView: View {
             return resolveDataSource(dataSource)
         }
 
-        return component.label ?? ""
+        return component.text ?? ""
     }
 
     private func resolveDataReference(_ ref: Document.DataReference) -> String {

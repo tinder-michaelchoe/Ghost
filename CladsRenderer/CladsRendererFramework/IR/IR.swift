@@ -43,6 +43,9 @@ extension IR {
         public var borderWidth: CGFloat?
         public var borderColor: Color?
 
+        // Image
+        public var tintColor: Color?
+
         // Sizing
         public var width: CGFloat?
         public var height: CGFloat?
@@ -69,6 +72,7 @@ extension IR {
             if let v = style.cornerRadius { cornerRadius = v }
             if let v = style.borderWidth { borderWidth = v }
             if let v = style.borderColor { borderColor = Color(hex: v) }
+            if let v = style.tintColor { tintColor = Color(hex: v) }
             if let v = style.width { width = v }
             if let v = style.height { height = v }
             if let v = style.minWidth { minWidth = v }
@@ -76,18 +80,21 @@ extension IR {
             if let v = style.maxWidth { maxWidth = v }
             if let v = style.maxHeight { maxHeight = v }
 
-            // Padding resolution: specific > general
-            if let v = style.paddingTop { paddingTop = v }
-            else if let v = style.paddingVertical { paddingTop = v }
-
-            if let v = style.paddingBottom { paddingBottom = v }
-            else if let v = style.paddingVertical { paddingBottom = v }
-
-            if let v = style.paddingLeading { paddingLeading = v }
-            else if let v = style.paddingHorizontal { paddingLeading = v }
-
-            if let v = style.paddingTrailing { paddingTrailing = v }
-            else if let v = style.paddingHorizontal { paddingTrailing = v }
+            // Padding resolution using Padding struct
+            if let padding = style.padding {
+                if padding.top != nil || padding.vertical != nil {
+                    paddingTop = padding.resolvedTop
+                }
+                if padding.bottom != nil || padding.vertical != nil {
+                    paddingBottom = padding.resolvedBottom
+                }
+                if padding.leading != nil || padding.horizontal != nil {
+                    paddingLeading = padding.resolvedLeading
+                }
+                if padding.trailing != nil || padding.horizontal != nil {
+                    paddingTrailing = padding.resolvedTrailing
+                }
+            }
         }
 
         /// Get the font with size and weight applied
@@ -162,6 +169,7 @@ extension IR {
 extension IR {
     /// Resolved configuration for a section
     public struct SectionConfig {
+        public let alignment: SwiftUI.HorizontalAlignment
         public let itemSpacing: CGFloat
         public let lineSpacing: CGFloat
         public let contentInsets: NSDirectionalEdgeInsets
@@ -174,6 +182,7 @@ extension IR {
         public let showsDividers: Bool
 
         public init(
+            alignment: SwiftUI.HorizontalAlignment = .leading,
             itemSpacing: CGFloat = 8,
             lineSpacing: CGFloat = 8,
             contentInsets: NSDirectionalEdgeInsets = .zero,
@@ -181,6 +190,7 @@ extension IR {
             isPagingEnabled: Bool = false,
             showsDividers: Bool = true
         ) {
+            self.alignment = alignment
             self.itemSpacing = itemSpacing
             self.lineSpacing = lineSpacing
             self.contentInsets = contentInsets
@@ -204,3 +214,55 @@ extension IR.Style {
         return UIFont.systemFont(ofSize: size)
     }
 }
+
+// MARK: - IR.Positioning
+
+extension IR {
+    /// Positioning reference for edge insets
+    public enum Positioning {
+        /// Position relative to safe area boundaries
+        case safeArea
+        /// Position relative to absolute screen edges (ignores safe area)
+        case absolute
+    }
+}
+
+// MARK: - IR.EdgeInset
+
+extension IR {
+    /// A resolved edge inset with positioning and value
+    public struct EdgeInset {
+        public let positioning: Positioning
+        public let value: CGFloat
+
+        public init(positioning: Positioning, value: CGFloat) {
+            self.positioning = positioning
+            self.value = value
+        }
+    }
+}
+
+// MARK: - IR.EdgeInsets
+
+extension IR {
+    /// Resolved edge insets for the root container
+    public struct EdgeInsets {
+        public let top: EdgeInset?
+        public let bottom: EdgeInset?
+        public let leading: EdgeInset?
+        public let trailing: EdgeInset?
+
+        public init(
+            top: EdgeInset? = nil,
+            bottom: EdgeInset? = nil,
+            leading: EdgeInset? = nil,
+            trailing: EdgeInset? = nil
+        ) {
+            self.top = top
+            self.bottom = bottom
+            self.leading = leading
+            self.trailing = trailing
+        }
+    }
+}
+

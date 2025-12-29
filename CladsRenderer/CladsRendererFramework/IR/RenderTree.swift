@@ -45,22 +45,25 @@ public enum RenderColorScheme {
 /// The resolved root container
 public struct RootNode {
     public let backgroundColor: Color?
-    public let edgeInsets: Document.EdgeInsets?
+    public let edgeInsets: IR.EdgeInsets?
     public let colorScheme: RenderColorScheme
     public let style: IR.Style
+    public let actions: RootActions
     public let children: [RenderNode]
 
     public init(
         backgroundColor: Color? = nil,
-        edgeInsets: Document.EdgeInsets? = nil,
+        edgeInsets: IR.EdgeInsets? = nil,
         colorScheme: RenderColorScheme = .system,
         style: IR.Style = IR.Style(),
+        actions: RootActions = RootActions(),
         children: [RenderNode] = []
     ) {
         self.backgroundColor = backgroundColor
         self.edgeInsets = edgeInsets
         self.colorScheme = colorScheme
         self.style = style
+        self.actions = actions
         self.children = children
     }
 }
@@ -178,34 +181,88 @@ public struct TextNode {
     public let id: String?
     public let content: String
     public let style: IR.Style
+    public let padding: NSDirectionalEdgeInsets
+    /// If set, the content should be read dynamically from StateStore at this path
+    public let bindingPath: String?
+    /// If set, this template should be interpolated with StateStore values (e.g., "Hello ${name}")
+    public let bindingTemplate: String?
 
-    public init(id: String? = nil, content: String, style: IR.Style = IR.Style()) {
+    /// Whether this text node has dynamic content that should be observed
+    public var isDynamic: Bool {
+        bindingPath != nil || bindingTemplate != nil
+    }
+
+    public init(
+        id: String? = nil,
+        content: String,
+        style: IR.Style = IR.Style(),
+        padding: NSDirectionalEdgeInsets = .zero,
+        bindingPath: String? = nil,
+        bindingTemplate: String? = nil
+    ) {
         self.id = id
         self.content = content
         self.style = style
+        self.padding = padding
+        self.bindingPath = bindingPath
+        self.bindingTemplate = bindingTemplate
     }
 }
 
 // MARK: - Button Node
 
+/// Resolved styles for different button states
+public struct ButtonStyles {
+    public let normal: IR.Style
+    public let selected: IR.Style?
+    public let disabled: IR.Style?
+
+    public init(
+        normal: IR.Style = IR.Style(),
+        selected: IR.Style? = nil,
+        disabled: IR.Style? = nil
+    ) {
+        self.normal = normal
+        self.selected = selected
+        self.disabled = disabled
+    }
+
+    /// Get the appropriate style for the current state
+    public func style(isSelected: Bool, isDisabled: Bool = false) -> IR.Style {
+        if isDisabled, let disabled = disabled {
+            return disabled
+        }
+        if isSelected, let selected = selected {
+            return selected
+        }
+        return normal
+    }
+}
+
 /// A button component
 public struct ButtonNode {
     public let id: String?
     public let label: String
-    public let style: IR.Style
+    public let styles: ButtonStyles
+    public let isSelectedBinding: String?
     public let fillWidth: Bool
     public let onTap: Document.Component.ActionBinding?
+
+    /// Convenience accessor for backward compatibility
+    public var style: IR.Style { styles.normal }
 
     public init(
         id: String? = nil,
         label: String,
-        style: IR.Style = IR.Style(),
+        styles: ButtonStyles = ButtonStyles(),
+        isSelectedBinding: String? = nil,
         fillWidth: Bool = false,
         onTap: Document.Component.ActionBinding? = nil
     ) {
         self.id = id
         self.label = label
-        self.style = style
+        self.styles = styles
+        self.isSelectedBinding = isSelectedBinding
         self.fillWidth = fillWidth
         self.onTap = onTap
     }
@@ -333,6 +390,7 @@ public enum GradientColor {
 public enum ActionDefinition: Codable {
     case dismiss
     case setState(path: String, value: StateSetValue)
+    case toggleState(path: String)
     case showAlert(config: AlertActionConfig)
     case sequence(steps: [ActionDefinition])
     case navigate(destination: String, presentation: Document.NavigationPresentation)
@@ -345,7 +403,7 @@ public enum ActionDefinition: Codable {
     }
 
     private enum ActionType: String, Codable {
-        case dismiss, setState, showAlert, sequence, navigate, custom
+        case dismiss, setState, toggleState, showAlert, sequence, navigate, custom
     }
 
     public init(from decoder: Decoder) throws {
@@ -359,6 +417,9 @@ public enum ActionDefinition: Codable {
             let path = try container.decode(String.self, forKey: .path)
             let value = try container.decode(StateSetValue.self, forKey: .value)
             self = .setState(path: path, value: value)
+        case .toggleState:
+            let path = try container.decode(String.self, forKey: .path)
+            self = .toggleState(path: path)
         case .showAlert:
             let config = try container.decode(AlertActionConfig.self, forKey: .config)
             self = .showAlert(config: config)
@@ -386,6 +447,9 @@ public enum ActionDefinition: Codable {
             try container.encode(ActionType.setState, forKey: .type)
             try container.encode(path, forKey: .path)
             try container.encode(value, forKey: .value)
+        case .toggleState(let path):
+            try container.encode(ActionType.toggleState, forKey: .type)
+            try container.encode(path, forKey: .path)
         case .showAlert(let config):
             try container.encode(ActionType.showAlert, forKey: .type)
             try container.encode(config, forKey: .config)
