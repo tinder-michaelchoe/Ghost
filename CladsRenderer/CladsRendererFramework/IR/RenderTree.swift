@@ -77,6 +77,8 @@ public enum RenderNode {
     case text(TextNode)
     case button(ButtonNode)
     case textField(TextFieldNode)
+    case toggle(ToggleNode)
+    case slider(SliderNode)
     case image(ImageNode)
     case gradient(GradientNode)
     case spacer
@@ -88,6 +90,8 @@ public enum RenderNode {
         case text
         case button
         case textField
+        case toggle
+        case slider
         case image
         case gradient
         case spacer
@@ -101,6 +105,8 @@ public enum RenderNode {
         case .text: return .text
         case .button: return .button
         case .textField: return .textField
+        case .toggle: return .toggle
+        case .slider: return .slider
         case .image: return .image
         case .gradient: return .gradient
         case .spacer: return .spacer
@@ -287,6 +293,50 @@ public struct TextFieldNode {
         self.placeholder = placeholder
         self.style = style
         self.bindingPath = bindingPath
+    }
+}
+
+// MARK: - Toggle Node
+
+/// A toggle/switch component
+public struct ToggleNode {
+    public let id: String?
+    public let bindingPath: String?  // State path to bind to
+    public let style: IR.Style
+
+    public init(
+        id: String? = nil,
+        bindingPath: String? = nil,
+        style: IR.Style = IR.Style()
+    ) {
+        self.id = id
+        self.bindingPath = bindingPath
+        self.style = style
+    }
+}
+
+// MARK: - Slider Node
+
+/// A slider component
+public struct SliderNode {
+    public let id: String?
+    public let bindingPath: String?  // State path to bind to (Double value 0.0-1.0)
+    public let minValue: Double
+    public let maxValue: Double
+    public let style: IR.Style
+
+    public init(
+        id: String? = nil,
+        bindingPath: String? = nil,
+        minValue: Double = 0.0,
+        maxValue: Double = 1.0,
+        style: IR.Style = IR.Style()
+    ) {
+        self.id = id
+        self.bindingPath = bindingPath
+        self.minValue = minValue
+        self.maxValue = maxValue
+        self.style = style
     }
 }
 

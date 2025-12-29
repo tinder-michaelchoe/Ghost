@@ -129,6 +129,12 @@ struct RenderNodeView: View {
         case .textField(let textField):
             TextFieldNodeView(node: textField)
 
+        case .toggle(let toggle):
+            ToggleNodeView(node: toggle)
+
+        case .slider(let slider):
+            SliderNodeView(node: slider)
+
         case .image(let image):
             ImageNodeView(node: image)
 
@@ -286,6 +292,53 @@ struct TextFieldNodeView: View {
                 }
             }
             .onChange(of: text) { _, newValue in
+                if let path = node.bindingPath {
+                    stateStore.set(path, value: newValue)
+                }
+            }
+    }
+}
+
+// MARK: - Toggle Node View
+
+struct ToggleNodeView: View {
+    let node: ToggleNode
+    @EnvironmentObject var stateStore: StateStore
+    @State private var isOn: Bool = false
+
+    var body: some View {
+        Toggle("", isOn: $isOn)
+            .labelsHidden()
+            .tint(node.style.tintColor)
+            .onAppear {
+                if let path = node.bindingPath {
+                    isOn = stateStore.get(path) as? Bool ?? false
+                }
+            }
+            .onChange(of: isOn) { _, newValue in
+                if let path = node.bindingPath {
+                    stateStore.set(path, value: newValue)
+                }
+            }
+    }
+}
+
+// MARK: - Slider Node View
+
+struct SliderNodeView: View {
+    let node: SliderNode
+    @EnvironmentObject var stateStore: StateStore
+    @State private var value: Double = 0.0
+
+    var body: some View {
+        Slider(value: $value, in: node.minValue...node.maxValue)
+            .tint(node.style.tintColor)
+            .onAppear {
+                if let path = node.bindingPath {
+                    value = stateStore.get(path) as? Double ?? node.minValue
+                }
+            }
+            .onChange(of: value) { _, newValue in
                 if let path = node.bindingPath {
                     stateStore.set(path, value: newValue)
                 }

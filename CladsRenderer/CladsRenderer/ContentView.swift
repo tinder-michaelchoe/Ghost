@@ -296,7 +296,13 @@ private let componentShowcaseJSON = """
   "state": {
     "textFieldValue": "",
     "buttonTapCount": 0,
-    "isToggled": false
+    "isToggled": false,
+    "toggle1": false,
+    "toggle2": true,
+    "toggle3": false,
+    "slider1": 0.5,
+    "slider2": 0.75,
+    "slider3": 25
   },
 
   "styles": {
@@ -387,6 +393,18 @@ private let componentShowcaseJSON = """
     },
     "urlImageStyle": {
       "cornerRadius": 12
+    },
+    "greenToggleStyle": {
+      "tintColor": "#34C759"
+    },
+    "purpleToggleStyle": {
+      "tintColor": "#AF52DE"
+    },
+    "orangeSliderStyle": {
+      "tintColor": "#FF9500"
+    },
+    "redSliderStyle": {
+      "tintColor": "#FF3B30"
     },
     "cardStyle": {
       "backgroundColor": "#F2F2F7",
@@ -524,6 +542,71 @@ private let componentShowcaseJSON = """
                 "children": [
                   { "type": "label", "text": "You typed:", "styleId": "captionText" },
                   { "type": "label", "dataSourceId": "textFieldDisplay", "styleId": "captionText" }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "toggles",
+            "layout": { "type": "list", "showsDividers": false, "itemSpacing": 16, "contentInsets": { "horizontal": 20 } },
+            "header": { "type": "label", "text": "Toggles", "styleId": "sectionTitle", "padding": { "bottom": 12 } },
+            "children": [
+              {
+                "type": "hstack",
+                "spacing": 12,
+                "children": [
+                  { "type": "label", "text": "Default toggle:", "styleId": "bodyText" },
+                  { "type": "toggle", "bind": "toggle1" }
+                ]
+              },
+              {
+                "type": "hstack",
+                "spacing": 12,
+                "children": [
+                  { "type": "label", "text": "Green toggle:", "styleId": "bodyText" },
+                  { "type": "toggle", "bind": "toggle2", "styleId": "greenToggleStyle" }
+                ]
+              },
+              {
+                "type": "hstack",
+                "spacing": 12,
+                "children": [
+                  { "type": "label", "text": "Purple toggle:", "styleId": "bodyText" },
+                  { "type": "toggle", "bind": "toggle3", "styleId": "purpleToggleStyle" }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "sliders",
+            "layout": { "type": "list", "showsDividers": false, "itemSpacing": 16, "contentInsets": { "horizontal": 20 } },
+            "header": { "type": "label", "text": "Sliders", "styleId": "sectionTitle", "padding": { "bottom": 12 } },
+            "children": [
+              {
+                "type": "vstack",
+                "spacing": 8,
+                "alignment": "leading",
+                "children": [
+                  { "type": "label", "text": "Default slider (0-1):", "styleId": "bodyText" },
+                  { "type": "slider", "bind": "slider1" }
+                ]
+              },
+              {
+                "type": "vstack",
+                "spacing": 8,
+                "alignment": "leading",
+                "children": [
+                  { "type": "label", "text": "Orange slider (0-1):", "styleId": "bodyText" },
+                  { "type": "slider", "bind": "slider2", "styleId": "orangeSliderStyle" }
+                ]
+              },
+              {
+                "type": "vstack",
+                "spacing": 8,
+                "alignment": "leading",
+                "children": [
+                  { "type": "label", "text": "Red slider (0-100):", "styleId": "bodyText" },
+                  { "type": "slider", "bind": "slider3", "minValue": 0, "maxValue": 100, "styleId": "redSliderStyle" }
                 ]
               }
             ]

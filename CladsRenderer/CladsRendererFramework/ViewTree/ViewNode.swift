@@ -113,6 +113,8 @@ public enum ViewNodeType {
     case text(TextNodeData)
     case button(ButtonNodeData)
     case textField(TextFieldNodeData)
+    case toggle(ToggleNodeData)
+    case slider(SliderNodeData)
     case image(ImageNodeData)
     case gradient(GradientNodeData)
     case spacer
@@ -220,6 +222,38 @@ public struct TextFieldNodeData {
         self.placeholder = placeholder
         self.style = style
         self.bindingPath = bindingPath
+    }
+}
+
+public struct ToggleNodeData {
+    public var bindingPath: String?
+    public var style: IR.Style
+
+    public init(
+        bindingPath: String? = nil,
+        style: IR.Style = IR.Style()
+    ) {
+        self.bindingPath = bindingPath
+        self.style = style
+    }
+}
+
+public struct SliderNodeData {
+    public var bindingPath: String?
+    public var minValue: Double
+    public var maxValue: Double
+    public var style: IR.Style
+
+    public init(
+        bindingPath: String? = nil,
+        minValue: Double = 0.0,
+        maxValue: Double = 1.0,
+        style: IR.Style = IR.Style()
+    ) {
+        self.bindingPath = bindingPath
+        self.minValue = minValue
+        self.maxValue = maxValue
+        self.style = style
     }
 }
 

@@ -31,6 +31,8 @@ extension Document {
             case textfield
             case image
             case gradient
+            case toggle
+            case slider
         }
 
         /// An action binding - either an inline action or a reference to a document-level action.
@@ -130,6 +132,10 @@ extension Document {
         /// Local state declaration for this component
         public let state: LocalStateDeclaration?
 
+        // Slider-specific properties
+        public let minValue: Double?
+        public let maxValue: Double?
+
         // Image-specific properties
         public let image: ImageSource?
 
@@ -154,6 +160,8 @@ extension Document {
             actions: Actions? = nil,
             data: DataReference? = nil,
             state: LocalStateDeclaration? = nil,
+            minValue: Double? = nil,
+            maxValue: Double? = nil,
             image: ImageSource? = nil,
             gradientColors: [GradientColorConfig]? = nil,
             gradientStart: String? = nil,
@@ -174,6 +182,8 @@ extension Document {
             self.actions = actions
             self.data = data
             self.state = state
+            self.minValue = minValue
+            self.maxValue = maxValue
             self.image = image
             self.gradientColors = gradientColors
             self.gradientStart = gradientStart

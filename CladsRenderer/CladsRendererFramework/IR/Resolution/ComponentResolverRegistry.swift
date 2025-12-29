@@ -26,6 +26,8 @@ public final class ComponentResolverRegistry {
         registry.register(TextComponentResolver())
         registry.register(ButtonComponentResolver())
         registry.register(TextFieldComponentResolver())
+        registry.register(ToggleComponentResolver())
+        registry.register(SliderComponentResolver())
         registry.register(ImageComponentResolver())
         registry.register(GradientComponentResolver())
         return registry

@@ -373,6 +373,10 @@ public final class CladsUIKitView: UIView {
             view = renderButton(button)
         case .textField(let textField):
             view = renderTextField(textField)
+        case .toggle(let toggle):
+            view = renderToggle(toggle)
+        case .slider(let slider):
+            view = renderSlider(slider)
         case .image(let image):
             view = renderImage(image)
         case .gradient(let gradient):
@@ -498,6 +502,32 @@ public final class CladsUIKitView: UIView {
         field.borderStyle = .roundedRect
         field.applyStyle(textField.style)
         return field
+    }
+
+    private func renderToggle(_ toggle: ToggleNode) -> UIView {
+        let uiSwitch = BoundSwitch(
+            bindingPath: toggle.bindingPath,
+            stateStore: stateStore
+        )
+        uiSwitch.translatesAutoresizingMaskIntoConstraints = false
+        if let tintColor = toggle.style.tintColor {
+            uiSwitch.onTintColor = UIColor(tintColor)
+        }
+        return uiSwitch
+    }
+
+    private func renderSlider(_ slider: SliderNode) -> UIView {
+        let uiSlider = BoundSlider(
+            bindingPath: slider.bindingPath,
+            minValue: slider.minValue,
+            maxValue: slider.maxValue,
+            stateStore: stateStore
+        )
+        uiSlider.translatesAutoresizingMaskIntoConstraints = false
+        if let tintColor = slider.style.tintColor {
+            uiSlider.minimumTrackTintColor = UIColor(tintColor)
+        }
+        return uiSlider
     }
 
     private func renderImage(_ image: ImageNode) -> UIView {

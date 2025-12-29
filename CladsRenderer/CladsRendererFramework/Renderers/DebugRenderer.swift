@@ -108,6 +108,21 @@ public struct DebugRenderer: Renderer {
             let propsStr = props.joined(separator: ", ")
             return "\(prefix)image (\(propsStr))"
 
+        case .toggle(let toggle):
+            var props: [String] = []
+            if let id = toggle.id { props.append("id: \(id)") }
+            if let path = toggle.bindingPath { props.append("binding: \(path)") }
+            let propsStr = props.isEmpty ? "" : " (\(props.joined(separator: ", ")))"
+            return "\(prefix)toggle\(propsStr)"
+
+        case .slider(let slider):
+            var props: [String] = []
+            if let id = slider.id { props.append("id: \(id)") }
+            if let path = slider.bindingPath { props.append("binding: \(path)") }
+            props.append("range: \(slider.minValue)...\(slider.maxValue)")
+            let propsStr = props.joined(separator: ", ")
+            return "\(prefix)slider (\(propsStr))"
+
         case .gradient(let gradient):
             var props: [String] = []
             if let id = gradient.id { props.append("id: \(id)") }

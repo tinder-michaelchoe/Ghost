@@ -138,6 +138,14 @@ struct ComponentView: View {
         case .gradient:
             // Gradient is handled by the new pipeline (SwiftUIRenderer)
             EmptyView()
+
+        case .toggle:
+            // Toggle is handled by the new pipeline (SwiftUIRenderer)
+            EmptyView()
+
+        case .slider:
+            // Slider is handled by the new pipeline (SwiftUIRenderer)
+            EmptyView()
         }
     }
 
