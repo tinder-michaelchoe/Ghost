@@ -7,7 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		806240132F03383C0055EA41 /* CLADS in Frameworks */ = {isa = PBXBuildFile; productRef = 806240122F03383C0055EA41 /* CLADS */; };
+		8062450F2F048FE60055EA41 /* CladsExamples.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806245042F048FE60055EA41 /* CladsExamples.framework */; };
+		806245372F0490560055EA41 /* CLADS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8062452C2F0490550055EA41 /* CLADS.framework */; };
+		806245412F0490560055EA41 /* CLADS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8062452C2F0490550055EA41 /* CLADS.framework */; };
+		806245422F0490560055EA41 /* CLADS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8062452C2F0490550055EA41 /* CLADS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		80624A142F0493E70055EA41 /* CLADS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8062452C2F0490550055EA41 /* CLADS.framework */; };
+		80624A152F0493E70055EA41 /* CLADS.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8062452C2F0490550055EA41 /* CLADS.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		80624A1A2F0493EB0055EA41 /* CoreContracts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80624A192F0493EB0055EA41 /* CoreContracts.framework */; };
+		80624A1B2F0493EB0055EA41 /* CoreContracts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 80624A192F0493EB0055EA41 /* CoreContracts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -18,6 +25,48 @@
 			remoteGlobalIDString = 800AE78C2EFE26C900F18C75;
 			remoteInfo = CladsRenderer;
 		};
+		806245102F048FE60055EA41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 806245032F048FE60055EA41;
+			remoteInfo = CladsExamples;
+		};
+		806245122F048FE60055EA41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 800AE78C2EFE26C900F18C75;
+			remoteInfo = CladsRenderer;
+		};
+		806245382F0490560055EA41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8062452B2F0490550055EA41;
+			remoteInfo = CLADS;
+		};
+		8062453A2F0490560055EA41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 800AE78C2EFE26C900F18C75;
+			remoteInfo = CladsRenderer;
+		};
+		8062453F2F0490560055EA41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8062452B2F0490550055EA41;
+			remoteInfo = CLADS;
+		};
+		80624A162F0493E70055EA41 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8062452B2F0490550055EA41;
+			remoteInfo = CLADS;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -27,6 +76,19 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				806245422F0490560055EA41 /* CLADS.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		80624A182F0493E70055EA41 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				80624A152F0493E70055EA41 /* CLADS.framework in Embed Frameworks */,
+				80624A1B2F0493EB0055EA41 /* CoreContracts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -36,6 +98,11 @@
 /* Begin PBXFileReference section */
 		800AE78D2EFE26C900F18C75 /* CladsRenderer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CladsRenderer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		800AE79A2EFE26CB00F18C75 /* CladsRendererTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CladsRendererTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		806245042F048FE60055EA41 /* CladsExamples.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CladsExamples.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8062450E2F048FE60055EA41 /* CladsExamplesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CladsExamplesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8062452C2F0490550055EA41 /* CLADS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = CLADS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806245362F0490550055EA41 /* CLADSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CLADSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		80624A192F0493EB0055EA41 /* CoreContracts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreContracts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -49,6 +116,26 @@
 			path = CladsRendererTests;
 			sourceTree = "<group>";
 		};
+		806245052F048FE60055EA41 /* CladsExamples */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CladsExamples;
+			sourceTree = "<group>";
+		};
+		806245142F048FE60055EA41 /* CladsExamplesTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CladsExamplesTests;
+			sourceTree = "<group>";
+		};
+		8062452D2F0490550055EA41 /* CLADS */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CLADS;
+			sourceTree = "<group>";
+		};
+		8062453C2F0490560055EA41 /* CLADSTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = CLADSTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,7 +143,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				806240132F03383C0055EA41 /* CLADS in Frameworks */,
+				806245412F0490560055EA41 /* CLADS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -64,6 +151,38 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		806245012F048FE60055EA41 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				80624A142F0493E70055EA41 /* CLADS.framework in Frameworks */,
+				80624A1A2F0493EB0055EA41 /* CoreContracts.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8062450B2F048FE60055EA41 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8062450F2F048FE60055EA41 /* CladsExamples.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		806245292F0490550055EA41 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		806245332F0490550055EA41 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				806245372F0490560055EA41 /* CLADS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,6 +194,11 @@
 			children = (
 				800AE78F2EFE26C900F18C75 /* CladsRenderer */,
 				800AE79D2EFE26CB00F18C75 /* CladsRendererTests */,
+				806245052F048FE60055EA41 /* CladsExamples */,
+				806245142F048FE60055EA41 /* CladsExamplesTests */,
+				8062452D2F0490550055EA41 /* CLADS */,
+				8062453C2F0490560055EA41 /* CLADSTests */,
+				80624A132F0493E70055EA41 /* Frameworks */,
 				800AE78E2EFE26C900F18C75 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -84,11 +208,40 @@
 			children = (
 				800AE78D2EFE26C900F18C75 /* CladsRenderer.app */,
 				800AE79A2EFE26CB00F18C75 /* CladsRendererTests.xctest */,
+				806245042F048FE60055EA41 /* CladsExamples.framework */,
+				8062450E2F048FE60055EA41 /* CladsExamplesTests.xctest */,
+				8062452C2F0490550055EA41 /* CLADS.framework */,
+				806245362F0490550055EA41 /* CLADSTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
+		80624A132F0493E70055EA41 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				80624A192F0493EB0055EA41 /* CoreContracts.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		806244FF2F048FE60055EA41 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		806245272F0490550055EA41 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
 		800AE78C2EFE26C900F18C75 /* CladsRenderer */ = {
@@ -103,13 +256,13 @@
 			buildRules = (
 			);
 			dependencies = (
+				806245402F0490560055EA41 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				800AE78F2EFE26C900F18C75 /* CladsRenderer */,
 			);
 			name = CladsRenderer;
 			packageProductDependencies = (
-				806240122F03383C0055EA41 /* CLADS */,
 			);
 			productName = CladsRenderer;
 			productReference = 800AE78D2EFE26C900F18C75 /* CladsRenderer.app */;
@@ -138,6 +291,102 @@
 			productReference = 800AE79A2EFE26CB00F18C75 /* CladsRendererTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		806245032F048FE60055EA41 /* CladsExamples */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8062451F2F048FE60055EA41 /* Build configuration list for PBXNativeTarget "CladsExamples" */;
+			buildPhases = (
+				806244FF2F048FE60055EA41 /* Headers */,
+				806245002F048FE60055EA41 /* Sources */,
+				806245012F048FE60055EA41 /* Frameworks */,
+				806245022F048FE60055EA41 /* Resources */,
+				80624A182F0493E70055EA41 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				80624A172F0493E70055EA41 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				806245052F048FE60055EA41 /* CladsExamples */,
+			);
+			name = CladsExamples;
+			packageProductDependencies = (
+			);
+			productName = CladsExamples;
+			productReference = 806245042F048FE60055EA41 /* CladsExamples.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		8062450D2F048FE60055EA41 /* CladsExamplesTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 806245202F048FE60055EA41 /* Build configuration list for PBXNativeTarget "CladsExamplesTests" */;
+			buildPhases = (
+				8062450A2F048FE60055EA41 /* Sources */,
+				8062450B2F048FE60055EA41 /* Frameworks */,
+				8062450C2F048FE60055EA41 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				806245112F048FE60055EA41 /* PBXTargetDependency */,
+				806245132F048FE60055EA41 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				806245142F048FE60055EA41 /* CladsExamplesTests */,
+			);
+			name = CladsExamplesTests;
+			packageProductDependencies = (
+			);
+			productName = CladsExamplesTests;
+			productReference = 8062450E2F048FE60055EA41 /* CladsExamplesTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		8062452B2F0490550055EA41 /* CLADS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 806245432F0490560055EA41 /* Build configuration list for PBXNativeTarget "CLADS" */;
+			buildPhases = (
+				806245272F0490550055EA41 /* Headers */,
+				806245282F0490550055EA41 /* Sources */,
+				806245292F0490550055EA41 /* Frameworks */,
+				8062452A2F0490550055EA41 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				8062452D2F0490550055EA41 /* CLADS */,
+			);
+			name = CLADS;
+			packageProductDependencies = (
+			);
+			productName = CLADS;
+			productReference = 8062452C2F0490550055EA41 /* CLADS.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		806245352F0490550055EA41 /* CLADSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 806245462F0490560055EA41 /* Build configuration list for PBXNativeTarget "CLADSTests" */;
+			buildPhases = (
+				806245322F0490550055EA41 /* Sources */,
+				806245332F0490550055EA41 /* Frameworks */,
+				806245342F0490550055EA41 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				806245392F0490560055EA41 /* PBXTargetDependency */,
+				8062453B2F0490560055EA41 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8062453C2F0490560055EA41 /* CLADSTests */,
+			);
+			name = CLADSTests;
+			packageProductDependencies = (
+			);
+			productName = CLADSTests;
+			productReference = 806245362F0490550055EA41 /* CLADSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -155,6 +404,20 @@
 						CreatedOnToolsVersion = 26.2;
 						TestTargetID = 800AE78C2EFE26C900F18C75;
 					};
+					806245032F048FE60055EA41 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					8062450D2F048FE60055EA41 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 800AE78C2EFE26C900F18C75;
+					};
+					8062452B2F0490550055EA41 = {
+						CreatedOnToolsVersion = 26.2;
+					};
+					806245352F0490550055EA41 = {
+						CreatedOnToolsVersion = 26.2;
+						TestTargetID = 800AE78C2EFE26C900F18C75;
+					};
 				};
 			};
 			buildConfigurationList = 800AE7882EFE26C900F18C75 /* Build configuration list for PBXProject "CladsRenderer" */;
@@ -167,7 +430,6 @@
 			mainGroup = 800AE7842EFE26C900F18C75;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				806240112F03383C0055EA41 /* XCLocalSwiftPackageReference "../CLADS" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 800AE78E2EFE26C900F18C75 /* Products */;
@@ -176,6 +438,10 @@
 			targets = (
 				800AE78C2EFE26C900F18C75 /* CladsRenderer */,
 				800AE7992EFE26CB00F18C75 /* CladsRendererTests */,
+				806245032F048FE60055EA41 /* CladsExamples */,
+				8062450D2F048FE60055EA41 /* CladsExamplesTests */,
+				8062452B2F0490550055EA41 /* CLADS */,
+				806245352F0490550055EA41 /* CLADSTests */,
 			);
 		};
 /* End PBXProject section */
@@ -189,6 +455,34 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		800AE7982EFE26CB00F18C75 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		806245022F048FE60055EA41 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8062450C2F048FE60055EA41 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8062452A2F0490550055EA41 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		806245342F0490550055EA41 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -212,6 +506,34 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		806245002F048FE60055EA41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8062450A2F048FE60055EA41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		806245282F0490550055EA41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		806245322F0490550055EA41 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -219,6 +541,36 @@
 			isa = PBXTargetDependency;
 			target = 800AE78C2EFE26C900F18C75 /* CladsRenderer */;
 			targetProxy = 800AE79B2EFE26CB00F18C75 /* PBXContainerItemProxy */;
+		};
+		806245112F048FE60055EA41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 806245032F048FE60055EA41 /* CladsExamples */;
+			targetProxy = 806245102F048FE60055EA41 /* PBXContainerItemProxy */;
+		};
+		806245132F048FE60055EA41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 800AE78C2EFE26C900F18C75 /* CladsRenderer */;
+			targetProxy = 806245122F048FE60055EA41 /* PBXContainerItemProxy */;
+		};
+		806245392F0490560055EA41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8062452B2F0490550055EA41 /* CLADS */;
+			targetProxy = 806245382F0490560055EA41 /* PBXContainerItemProxy */;
+		};
+		8062453B2F0490560055EA41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 800AE78C2EFE26C900F18C75 /* CladsRenderer */;
+			targetProxy = 8062453A2F0490560055EA41 /* PBXContainerItemProxy */;
+		};
+		806245402F0490560055EA41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8062452B2F0490550055EA41 /* CLADS */;
+			targetProxy = 8062453F2F0490560055EA41 /* PBXContainerItemProxy */;
+		};
+		80624A172F0493E70055EA41 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8062452B2F0490550055EA41 /* CLADS */;
+			targetProxy = 80624A162F0493E70055EA41 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -454,6 +806,238 @@
 			};
 			name = Release;
 		};
+		8062451B2F048FE60055EA41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DL9J8BRCF3;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsExamples;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		8062451C2F048FE60055EA41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DL9J8BRCF3;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsExamples;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		8062451D2F048FE60055EA41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsExamplesTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CladsRenderer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CladsRenderer";
+			};
+			name = Debug;
+		};
+		8062451E2F048FE60055EA41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CladsExamplesTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CladsRenderer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CladsRenderer";
+			};
+			name = Release;
+		};
+		806245442F0490560055EA41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DL9J8BRCF3;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CLADS;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		806245452F0490560055EA41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = DL9J8BRCF3;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CLADS;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_MODULE = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		806245472F0490560055EA41 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CLADSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CladsRenderer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CladsRenderer";
+			};
+			name = Debug;
+		};
+		806245482F0490560055EA41 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L2JNG48FS5;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.CLADSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CladsRenderer.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CladsRenderer";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -484,21 +1068,43 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		8062451F2F048FE60055EA41 /* Build configuration list for PBXNativeTarget "CladsExamples" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8062451B2F048FE60055EA41 /* Debug */,
+				8062451C2F048FE60055EA41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		806245202F048FE60055EA41 /* Build configuration list for PBXNativeTarget "CladsExamplesTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8062451D2F048FE60055EA41 /* Debug */,
+				8062451E2F048FE60055EA41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		806245432F0490560055EA41 /* Build configuration list for PBXNativeTarget "CLADS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				806245442F0490560055EA41 /* Debug */,
+				806245452F0490560055EA41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		806245462F0490560055EA41 /* Build configuration list for PBXNativeTarget "CLADSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				806245472F0490560055EA41 /* Debug */,
+				806245482F0490560055EA41 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		806240112F03383C0055EA41 /* XCLocalSwiftPackageReference "../CLADS" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../CLADS;
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		806240122F03383C0055EA41 /* CLADS */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CLADS;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 800AE7852EFE26C900F18C75 /* Project object */;
 }

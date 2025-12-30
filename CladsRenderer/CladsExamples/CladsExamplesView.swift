@@ -1,13 +1,14 @@
 //
 //  ContentView.swift
-//  CladsRenderer
+//  StaticExamples
+//
+//  Created by mexicanpizza on 12/23/25.
 //
 
 import CLADS
-import CladsExamples
 import SwiftUI
 
-struct ContentView: View {
+struct CladsExamplesView: View {
     @State private var selectedExample: Example?
     @State private var fullScreenExample: Example?
 
@@ -228,11 +229,11 @@ enum Example: String, CaseIterable, Identifiable {
 
 // MARK: - Example Sheet View
 
-public struct ExampleSheetView: View {
+struct ExampleSheetView: View {
     let example: Example
     @Environment(\.dismiss) private var dismiss
 
-    public var body: some View {
+    var body: some View {
         Group {
             if let json = example.json,
                let view = CladsRendererView(jsonString: json, debugMode: true) {
@@ -288,8 +289,4 @@ struct PresentationStyleModifier: ViewModifier {
             content
         }
     }
-}
-
-#Preview {
-    ContentView()
 }

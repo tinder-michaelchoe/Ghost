@@ -7,20 +7,40 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		80623E7A2F03322A0055EA41 /* TabBar in Frameworks */ = {isa = PBXBuildFile; productRef = 80623E792F03322A0055EA41 /* TabBar */; };
-		80623F292F0333E00055EA41 /* AppFeatureFlags in Frameworks */ = {isa = PBXBuildFile; productRef = 80623F282F0333E00055EA41 /* AppFeatureFlags */; };
-		80623F2C2F03340B0055EA41 /* AppFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 80623F2B2F03340B0055EA41 /* AppFoundation */; };
-		80623F2F2F0334480055EA41 /* Builder in Frameworks */ = {isa = PBXBuildFile; productRef = 80623F2E2F0334480055EA41 /* Builder */; };
-		80623F352F0334BD0055EA41 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = 80623F342F0334BD0055EA41 /* Settings */; };
-		8062400D2F03375A0055EA41 /* CladsExamples in Frameworks */ = {isa = PBXBuildFile; productRef = 8062400C2F03375A0055EA41 /* CladsExamples */; };
-		806240102F0337D40055EA41 /* CLADS in Frameworks */ = {isa = PBXBuildFile; productRef = 8062400F2F0337D40055EA41 /* CLADS */; };
-		806240162F038DBA0055EA41 /* Dashboard in Frameworks */ = {isa = PBXBuildFile; productRef = 806240152F038DBA0055EA41 /* Dashboard */; };
-		806240192F03963C0055EA41 /* NetworkClient in Frameworks */ = {isa = PBXBuildFile; productRef = 806240182F03963C0055EA41 /* NetworkClient */; };
 		806241D52F0486000055EA41 /* Secrets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806241D42F0486000055EA41 /* Secrets.framework */; };
 		806241D62F0486000055EA41 /* Secrets.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806241D42F0486000055EA41 /* Secrets.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		806241D92F0486060055EA41 /* Weather.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806241D82F0486060055EA41 /* Weather.framework */; };
 		806241DA2F0486060055EA41 /* Weather.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806241D82F0486060055EA41 /* Weather.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		806612832F032E8C00B32793 /* CoreContracts in Frameworks */ = {isa = PBXBuildFile; productRef = 806612822F032E8C00B32793 /* CoreContracts */; };
+		806244292F048CAD0055EA41 /* AppFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244202F048CAD0055EA41 /* AppFoundation.framework */; };
+		8062442A2F048CAD0055EA41 /* AppFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244202F048CAD0055EA41 /* AppFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8062442B2F048CAD0055EA41 /* NetworkClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244212F048CAD0055EA41 /* NetworkClient.framework */; };
+		8062442C2F048CAD0055EA41 /* NetworkClient.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244212F048CAD0055EA41 /* NetworkClient.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8062442D2F048CAD0055EA41 /* Persistence.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244222F048CAD0055EA41 /* Persistence.framework */; };
+		8062442E2F048CAD0055EA41 /* Persistence.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244222F048CAD0055EA41 /* Persistence.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8062442F2F048CAD0055EA41 /* Photos.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244232F048CAD0055EA41 /* Photos.framework */; };
+		806244302F048CAD0055EA41 /* Photos.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244232F048CAD0055EA41 /* Photos.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806244312F048CAD0055EA41 /* PhotosService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244242F048CAD0055EA41 /* PhotosService.framework */; };
+		806244322F048CAD0055EA41 /* PhotosService.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244242F048CAD0055EA41 /* PhotosService.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806244332F048CAD0055EA41 /* Secrets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244252F048CAD0055EA41 /* Secrets.framework */; };
+		806244342F048CAD0055EA41 /* Secrets.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244252F048CAD0055EA41 /* Secrets.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806244352F048CAD0055EA41 /* Settings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244262F048CAD0055EA41 /* Settings.framework */; };
+		806244362F048CAD0055EA41 /* Settings.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244262F048CAD0055EA41 /* Settings.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806244372F048CAD0055EA41 /* TabBar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244272F048CAD0055EA41 /* TabBar.framework */; };
+		806244382F048CAD0055EA41 /* TabBar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244272F048CAD0055EA41 /* TabBar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806244392F048CAD0055EA41 /* Weather.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244282F048CAD0055EA41 /* Weather.framework */; };
+		8062443A2F048CAD0055EA41 /* Weather.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244282F048CAD0055EA41 /* Weather.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806245DB2F0490B90055EA41 /* CladsExamples.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806245DA2F0490B90055EA41 /* CladsExamples.framework */; };
+		806245DC2F0490B90055EA41 /* CladsExamples.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806245DA2F0490B90055EA41 /* CladsExamples.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806247E02F0492900055EA41 /* AppFeatureFlags.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DB2F0492900055EA41 /* AppFeatureFlags.framework */; };
+		806247E12F0492900055EA41 /* AppFeatureFlags.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DB2F0492900055EA41 /* AppFeatureFlags.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806247E22F0492900055EA41 /* Builder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DC2F0492900055EA41 /* Builder.framework */; };
+		806247E32F0492900055EA41 /* Builder.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DC2F0492900055EA41 /* Builder.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806247E42F0492900055EA41 /* CladsExamples.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DD2F0492900055EA41 /* CladsExamples.framework */; };
+		806247E52F0492900055EA41 /* CladsExamples.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DD2F0492900055EA41 /* CladsExamples.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806247E62F0492900055EA41 /* CoreContracts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DE2F0492900055EA41 /* CoreContracts.framework */; };
+		806247E72F0492900055EA41 /* CoreContracts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DE2F0492900055EA41 /* CoreContracts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806247E82F0492900055EA41 /* Dashboard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DF2F0492900055EA41 /* Dashboard.framework */; };
+		806247E92F0492900055EA41 /* Dashboard.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DF2F0492900055EA41 /* Dashboard.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,8 +67,23 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				806247E32F0492900055EA41 /* Builder.framework in Embed Frameworks */,
+				8062442C2F048CAD0055EA41 /* NetworkClient.framework in Embed Frameworks */,
+				806247E12F0492900055EA41 /* AppFeatureFlags.framework in Embed Frameworks */,
+				806245DC2F0490B90055EA41 /* CladsExamples.framework in Embed Frameworks */,
+				8062442E2F048CAD0055EA41 /* Persistence.framework in Embed Frameworks */,
 				806241D62F0486000055EA41 /* Secrets.framework in Embed Frameworks */,
+				806247E92F0492900055EA41 /* Dashboard.framework in Embed Frameworks */,
 				806241DA2F0486060055EA41 /* Weather.framework in Embed Frameworks */,
+				8062443A2F048CAD0055EA41 /* Weather.framework in Embed Frameworks */,
+				8062442A2F048CAD0055EA41 /* AppFoundation.framework in Embed Frameworks */,
+				806244322F048CAD0055EA41 /* PhotosService.framework in Embed Frameworks */,
+				806247E52F0492900055EA41 /* CladsExamples.framework in Embed Frameworks */,
+				806244342F048CAD0055EA41 /* Secrets.framework in Embed Frameworks */,
+				806244302F048CAD0055EA41 /* Photos.framework in Embed Frameworks */,
+				806247E72F0492900055EA41 /* CoreContracts.framework in Embed Frameworks */,
+				806244382F048CAD0055EA41 /* TabBar.framework in Embed Frameworks */,
+				806244362F048CAD0055EA41 /* Settings.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -71,6 +106,21 @@
 		806240072F03368E0055EA41 /* CladsRendererFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CladsRendererFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		806241D42F0486000055EA41 /* Secrets.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Secrets.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		806241D82F0486060055EA41 /* Weather.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Weather.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806244202F048CAD0055EA41 /* AppFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AppFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806244212F048CAD0055EA41 /* NetworkClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = NetworkClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806244222F048CAD0055EA41 /* Persistence.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Persistence.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806244232F048CAD0055EA41 /* Photos.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Photos.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806244242F048CAD0055EA41 /* PhotosService.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PhotosService.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806244252F048CAD0055EA41 /* Secrets.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Secrets.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806244262F048CAD0055EA41 /* Settings.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Settings.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806244272F048CAD0055EA41 /* TabBar.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = TabBar.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806244282F048CAD0055EA41 /* Weather.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Weather.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806245DA2F0490B90055EA41 /* CladsExamples.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CladsExamples.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806247DB2F0492900055EA41 /* AppFeatureFlags.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AppFeatureFlags.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806247DC2F0492900055EA41 /* Builder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Builder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806247DD2F0492900055EA41 /* CladsExamples.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CladsExamples.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806247DE2F0492900055EA41 /* CoreContracts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreContracts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806247DF2F0492900055EA41 /* Dashboard.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dashboard.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -109,18 +159,23 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80623F352F0334BD0055EA41 /* Settings in Frameworks */,
-				80623F2C2F03340B0055EA41 /* AppFoundation in Frameworks */,
-				80623F2F2F0334480055EA41 /* Builder in Frameworks */,
-				8062400D2F03375A0055EA41 /* CladsExamples in Frameworks */,
-				806240102F0337D40055EA41 /* CLADS in Frameworks */,
+				806247E22F0492900055EA41 /* Builder.framework in Frameworks */,
+				806244392F048CAD0055EA41 /* Weather.framework in Frameworks */,
+				806247E02F0492900055EA41 /* AppFeatureFlags.framework in Frameworks */,
+				806244312F048CAD0055EA41 /* PhotosService.framework in Frameworks */,
+				8062442D2F048CAD0055EA41 /* Persistence.framework in Frameworks */,
+				806244372F048CAD0055EA41 /* TabBar.framework in Frameworks */,
+				806247E82F0492900055EA41 /* Dashboard.framework in Frameworks */,
+				806244332F048CAD0055EA41 /* Secrets.framework in Frameworks */,
+				806244292F048CAD0055EA41 /* AppFoundation.framework in Frameworks */,
 				806241D92F0486060055EA41 /* Weather.framework in Frameworks */,
-				806240162F038DBA0055EA41 /* Dashboard in Frameworks */,
-				80623F292F0333E00055EA41 /* AppFeatureFlags in Frameworks */,
-				80623E7A2F03322A0055EA41 /* TabBar in Frameworks */,
-				806240192F03963C0055EA41 /* NetworkClient in Frameworks */,
+				806244352F048CAD0055EA41 /* Settings.framework in Frameworks */,
+				806247E42F0492900055EA41 /* CladsExamples.framework in Frameworks */,
+				806245DB2F0490B90055EA41 /* CladsExamples.framework in Frameworks */,
+				8062442B2F048CAD0055EA41 /* NetworkClient.framework in Frameworks */,
+				806247E62F0492900055EA41 /* CoreContracts.framework in Frameworks */,
+				8062442F2F048CAD0055EA41 /* Photos.framework in Frameworks */,
 				806241D52F0486000055EA41 /* Secrets.framework in Frameworks */,
-				806612832F032E8C00B32793 /* CoreContracts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,6 +220,21 @@
 		800AE2652EFCB33200F18C75 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				806247DB2F0492900055EA41 /* AppFeatureFlags.framework */,
+				806247DC2F0492900055EA41 /* Builder.framework */,
+				806247DD2F0492900055EA41 /* CladsExamples.framework */,
+				806247DE2F0492900055EA41 /* CoreContracts.framework */,
+				806247DF2F0492900055EA41 /* Dashboard.framework */,
+				806245DA2F0490B90055EA41 /* CladsExamples.framework */,
+				806244202F048CAD0055EA41 /* AppFoundation.framework */,
+				806244212F048CAD0055EA41 /* NetworkClient.framework */,
+				806244222F048CAD0055EA41 /* Persistence.framework */,
+				806244232F048CAD0055EA41 /* Photos.framework */,
+				806244242F048CAD0055EA41 /* PhotosService.framework */,
+				806244252F048CAD0055EA41 /* Secrets.framework */,
+				806244262F048CAD0055EA41 /* Settings.framework */,
+				806244272F048CAD0055EA41 /* TabBar.framework */,
+				806244282F048CAD0055EA41 /* Weather.framework */,
 				806241D82F0486060055EA41 /* Weather.framework */,
 				806241D42F0486000055EA41 /* Secrets.framework */,
 				806240072F03368E0055EA41 /* CladsRendererFramework.framework */,
@@ -202,16 +272,6 @@
 			);
 			name = Ghost;
 			packageProductDependencies = (
-				806612822F032E8C00B32793 /* CoreContracts */,
-				80623E792F03322A0055EA41 /* TabBar */,
-				80623F282F0333E00055EA41 /* AppFeatureFlags */,
-				80623F2B2F03340B0055EA41 /* AppFoundation */,
-				80623F2E2F0334480055EA41 /* Builder */,
-				80623F342F0334BD0055EA41 /* Settings */,
-				8062400C2F03375A0055EA41 /* CladsExamples */,
-				8062400F2F0337D40055EA41 /* CLADS */,
-				806240152F038DBA0055EA41 /* Dashboard */,
-				806240182F03963C0055EA41 /* NetworkClient */,
 			);
 			productName = Ghost;
 			productReference = 800AE0BD2EFC7EDA00F18C75 /* Ghost.app */;
@@ -296,16 +356,6 @@
 			mainGroup = 800AE0B42EFC7EDA00F18C75;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				806612812F032E8C00B32793 /* XCLocalSwiftPackageReference "../CoreContracts" */,
-				80623E782F03322A0055EA41 /* XCLocalSwiftPackageReference "../TabBar" */,
-				80623F272F0333C30055EA41 /* XCLocalSwiftPackageReference "../AppFeatureFlags" */,
-				80623F2A2F03340B0055EA41 /* XCLocalSwiftPackageReference "../AppFoundation" */,
-				80623F2D2F0334480055EA41 /* XCLocalSwiftPackageReference "../Builder" */,
-				80623F332F0334BD0055EA41 /* XCLocalSwiftPackageReference "../Settings" */,
-				8062400B2F03375A0055EA41 /* XCLocalSwiftPackageReference "../CladsExamples" */,
-				8062400E2F0337D40055EA41 /* XCLocalSwiftPackageReference "../CLADS" */,
-				806240142F038DAE0055EA41 /* XCLocalSwiftPackageReference "../Dashboard" */,
-				806240172F03963C0055EA41 /* XCLocalSwiftPackageReference "../NetworkClient" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 800AE0BE2EFC7EDA00F18C75 /* Products */;
@@ -690,94 +740,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		80623E782F03322A0055EA41 /* XCLocalSwiftPackageReference "../TabBar" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../TabBar;
-		};
-		80623F272F0333C30055EA41 /* XCLocalSwiftPackageReference "../AppFeatureFlags" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../AppFeatureFlags;
-		};
-		80623F2A2F03340B0055EA41 /* XCLocalSwiftPackageReference "../AppFoundation" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../AppFoundation;
-		};
-		80623F2D2F0334480055EA41 /* XCLocalSwiftPackageReference "../Builder" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../Builder;
-		};
-		80623F332F0334BD0055EA41 /* XCLocalSwiftPackageReference "../Settings" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../Settings;
-		};
-		8062400B2F03375A0055EA41 /* XCLocalSwiftPackageReference "../CladsExamples" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../CladsExamples;
-		};
-		8062400E2F0337D40055EA41 /* XCLocalSwiftPackageReference "../CLADS" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../CLADS;
-		};
-		806240142F038DAE0055EA41 /* XCLocalSwiftPackageReference "../Dashboard" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../Dashboard;
-		};
-		806240172F03963C0055EA41 /* XCLocalSwiftPackageReference "../NetworkClient" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../NetworkClient;
-		};
-		806612812F032E8C00B32793 /* XCLocalSwiftPackageReference "../CoreContracts" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../CoreContracts;
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		80623E792F03322A0055EA41 /* TabBar */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = TabBar;
-		};
-		80623F282F0333E00055EA41 /* AppFeatureFlags */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 80623F272F0333C30055EA41 /* XCLocalSwiftPackageReference "../AppFeatureFlags" */;
-			productName = AppFeatureFlags;
-		};
-		80623F2B2F03340B0055EA41 /* AppFoundation */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = AppFoundation;
-		};
-		80623F2E2F0334480055EA41 /* Builder */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Builder;
-		};
-		80623F342F0334BD0055EA41 /* Settings */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Settings;
-		};
-		8062400C2F03375A0055EA41 /* CladsExamples */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CladsExamples;
-		};
-		8062400F2F0337D40055EA41 /* CLADS */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CLADS;
-		};
-		806240152F038DBA0055EA41 /* Dashboard */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 806240142F038DAE0055EA41 /* XCLocalSwiftPackageReference "../Dashboard" */;
-			productName = Dashboard;
-		};
-		806240182F03963C0055EA41 /* NetworkClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = NetworkClient;
-		};
-		806612822F032E8C00B32793 /* CoreContracts */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CoreContracts;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 800AE0B52EFC7EDA00F18C75 /* Project object */;
 }

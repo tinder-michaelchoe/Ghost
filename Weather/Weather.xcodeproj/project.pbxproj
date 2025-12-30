@@ -8,9 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		806240302F03A5550055EA41 /* Weather.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806240242F03A5550055EA41 /* Weather.framework */; };
-		8062407B2F03A58C0055EA41 /* CoreContracts in Frameworks */ = {isa = PBXBuildFile; productRef = 8062407A2F03A58C0055EA41 /* CoreContracts */; };
 		806241C42F046D750055EA41 /* Weather.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806240242F03A5550055EA41 /* Weather.framework */; };
 		806241C52F046D750055EA41 /* Weather.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806240242F03A5550055EA41 /* Weather.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806247D22F0492530055EA41 /* CoreContracts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247D12F0492530055EA41 /* CoreContracts.framework */; };
+		806247D32F0492530055EA41 /* CoreContracts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247D12F0492530055EA41 /* CoreContracts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,17 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		806247D42F0492530055EA41 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				806247D32F0492530055EA41 /* CoreContracts.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -64,6 +76,7 @@
 		806241922F046D6A0055EA41 /* WeatherApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WeatherApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		806241A72F046D6B0055EA41 /* WeatherAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		806241B12F046D6B0055EA41 /* WeatherAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		806247D12F0492530055EA41 /* CoreContracts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreContracts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -112,7 +125,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8062407B2F03A58C0055EA41 /* CoreContracts in Frameworks */,
+				806247D22F0492530055EA41 /* CoreContracts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -177,6 +190,7 @@
 		806241C32F046D750055EA41 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				806247D12F0492530055EA41 /* CoreContracts.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -202,6 +216,7 @@
 				806240202F03A5550055EA41 /* Sources */,
 				806240212F03A5550055EA41 /* Frameworks */,
 				806240222F03A5550055EA41 /* Resources */,
+				806247D42F0492530055EA41 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -212,7 +227,6 @@
 			);
 			name = Weather;
 			packageProductDependencies = (
-				8062407A2F03A58C0055EA41 /* CoreContracts */,
 			);
 			productName = Weather;
 			productReference = 806240242F03A5550055EA41 /* Weather.framework */;
@@ -350,7 +364,6 @@
 			mainGroup = 8062401A2F03A5550055EA41;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				806240792F03A58C0055EA41 /* XCLocalSwiftPackageReference "../CoreContracts" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 806240252F03A5550055EA41 /* Products */;
@@ -909,20 +922,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCLocalSwiftPackageReference section */
-		806240792F03A58C0055EA41 /* XCLocalSwiftPackageReference "../CoreContracts" */ = {
-			isa = XCLocalSwiftPackageReference;
-			relativePath = ../CoreContracts;
-		};
-/* End XCLocalSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		8062407A2F03A58C0055EA41 /* CoreContracts */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = CoreContracts;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 8062401B2F03A5550055EA41 /* Project object */;
 }

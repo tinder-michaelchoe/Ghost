@@ -5,12 +5,45 @@
       location = "container:Ghost/Ghost.xcodeproj">
    </FileRef>
    <FileRef
+      location = "container:CoreContracts/CoreContracts.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:AppFeatureFlags/AppFeatureFlags.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:AppFoundation/AppFoundation.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:Builder/Builder.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:CladsRenderer/CladsRenderer.xcodeproj">
    </FileRef>
    <FileRef
-      location = "container:Weather/Weather.xcodeproj">
+      location = "container:Dashboard/Dashboard.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:NetworkClient/NetworkClient.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:Persistence/Persistence.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:Photos/Photos.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:PhotosService/PhotosService.xcodeproj">
    </FileRef>
    <FileRef
       location = "container:Secrets/Secrets.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:Settings/Settings.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:TabBar/TabBar.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:Weather/Weather.xcodeproj">
    </FileRef>
 </Workspace>
