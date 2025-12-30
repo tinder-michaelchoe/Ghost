@@ -7,4 +7,10 @@
    <FileRef
       location = "group:CladsRenderer/CladsRenderer.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "container:Weather/Weather.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:Secrets/Secrets.xcodeproj">
+   </FileRef>
 </Workspace>

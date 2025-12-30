@@ -10,4 +10,5 @@ public enum TabBarUISurface: UISurface {
     case settings
     case home
     case builder
+    case dashboard
 }

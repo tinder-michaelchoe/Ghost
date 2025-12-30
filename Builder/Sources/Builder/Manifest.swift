@@ -9,8 +9,6 @@ import CoreContracts
 
 public enum BuilderManifest: Manifest {
     public static var uiProviders: [UIProvider.Type] {
-        [
-            BuilderUIProvider.self
-        ]
+        [BuilderUIProvider.self]
     }
 }

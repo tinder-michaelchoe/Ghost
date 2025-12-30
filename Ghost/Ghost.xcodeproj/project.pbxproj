@@ -14,6 +14,8 @@
 		80623F352F0334BD0055EA41 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = 80623F342F0334BD0055EA41 /* Settings */; };
 		8062400D2F03375A0055EA41 /* CladsExamples in Frameworks */ = {isa = PBXBuildFile; productRef = 8062400C2F03375A0055EA41 /* CladsExamples */; };
 		806240102F0337D40055EA41 /* CLADS in Frameworks */ = {isa = PBXBuildFile; productRef = 8062400F2F0337D40055EA41 /* CLADS */; };
+		806240162F038DBA0055EA41 /* Dashboard in Frameworks */ = {isa = PBXBuildFile; productRef = 806240152F038DBA0055EA41 /* Dashboard */; };
+		806240192F03963C0055EA41 /* NetworkClient in Frameworks */ = {isa = PBXBuildFile; productRef = 806240182F03963C0055EA41 /* NetworkClient */; };
 		806612832F032E8C00B32793 /* CoreContracts in Frameworks */ = {isa = PBXBuildFile; productRef = 806612822F032E8C00B32793 /* CoreContracts */; };
 /* End PBXBuildFile section */
 
@@ -91,8 +93,10 @@
 				80623F2F2F0334480055EA41 /* Builder in Frameworks */,
 				8062400D2F03375A0055EA41 /* CladsExamples in Frameworks */,
 				806240102F0337D40055EA41 /* CLADS in Frameworks */,
+				806240162F038DBA0055EA41 /* Dashboard in Frameworks */,
 				80623F292F0333E00055EA41 /* AppFeatureFlags in Frameworks */,
 				80623E7A2F03322A0055EA41 /* TabBar in Frameworks */,
+				806240192F03963C0055EA41 /* NetworkClient in Frameworks */,
 				806612832F032E8C00B32793 /* CoreContracts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -180,6 +184,8 @@
 				80623F342F0334BD0055EA41 /* Settings */,
 				8062400C2F03375A0055EA41 /* CladsExamples */,
 				8062400F2F0337D40055EA41 /* CLADS */,
+				806240152F038DBA0055EA41 /* Dashboard */,
+				806240182F03963C0055EA41 /* NetworkClient */,
 			);
 			productName = Ghost;
 			productReference = 800AE0BD2EFC7EDA00F18C75 /* Ghost.app */;
@@ -272,6 +278,8 @@
 				80623F332F0334BD0055EA41 /* XCLocalSwiftPackageReference "../Settings" */,
 				8062400B2F03375A0055EA41 /* XCLocalSwiftPackageReference "../CladsExamples" */,
 				8062400E2F0337D40055EA41 /* XCLocalSwiftPackageReference "../CLADS" */,
+				806240142F038DAE0055EA41 /* XCLocalSwiftPackageReference "../Dashboard" */,
+				806240172F03963C0055EA41 /* XCLocalSwiftPackageReference "../NetworkClient" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 800AE0BE2EFC7EDA00F18C75 /* Products */;
@@ -686,6 +694,14 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../CLADS;
 		};
+		806240142F038DAE0055EA41 /* XCLocalSwiftPackageReference "../Dashboard" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Dashboard;
+		};
+		806240172F03963C0055EA41 /* XCLocalSwiftPackageReference "../NetworkClient" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../NetworkClient;
+		};
 		806612812F032E8C00B32793 /* XCLocalSwiftPackageReference "../CoreContracts" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../CoreContracts;
@@ -721,6 +737,15 @@
 		8062400F2F0337D40055EA41 /* CLADS */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = CLADS;
+		};
+		806240152F038DBA0055EA41 /* Dashboard */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 806240142F038DAE0055EA41 /* XCLocalSwiftPackageReference "../Dashboard" */;
+			productName = Dashboard;
+		};
+		806240182F03963C0055EA41 /* NetworkClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = NetworkClient;
 		};
 		806612822F032E8C00B32793 /* CoreContracts */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -36,57 +36,48 @@ final class TabBarController: UITabBarController {
     private func buildTabs() async {
         // Get tab bar contributions for each tab surface
         // For now, we'll query each TabBarUISurface case individually
-        let tabSurfaces: [TabBarUISurface] = [.home, .builder, .settings]
-        var allContributions: [any ViewContribution] = []
+        let tabSurfaces: [TabBarUISurface] = [.home, .builder, .dashboard, .settings]
         
+        var allContributions: [any ViewContribution] = []
         for surface in tabSurfaces {
             let contributions = uiRegistry.contributions(for: surface)
-            allContributions.append(contentsOf: contributions)
+            allContributions += contributions
         }
         
-        var viewControllers: [UIViewController] = []
-        
-        for contribution in allContributions {
-            let viewController: UIViewController
-            
-            // Handle UIKit contributions
-            if let uiKitContrib = contribution as? UIKitViewContribution {
-                let anyVC = uiKitContrib.makeViewController(context: context)
-                viewController = anyVC.build() as! UIViewController
-            }
-            // Handle SwiftUI contributions
-            else if let swiftUIContrib = contribution as? SwiftUIViewContribution {
-                let swiftUIView = swiftUIContrib.makeSwiftUIView(context: context)
-                viewController = UIHostingController(rootView: swiftUIView)
-            } else {
-                print("⚠️ No view builder for contribution \(contribution.id.rawValue)")
-                continue
-            }
-            
-            // Configure tab bar item if contribution provides metadata
-            if let tabBarItem = contribution as? TabBarItemProviding {
-                if let title = tabBarItem.tabBarTitle {
-                    viewController.title = title
+        let viewControllers: [UIViewController] = allContributions
+            .compactMap { contribution in
+                let viewController: UIViewController
+                // Handle UIKit contributions
+                if let uiKitContrib = contribution as? UIKitViewContribution {
+                    let anyVC = uiKitContrib.makeViewController(context: context)
+                    viewController = anyVC.build() as! UIViewController
+                }
+                // Handle SwiftUI contributions
+                else if let swiftUIContrib = contribution as? SwiftUIViewContribution {
+                    let swiftUIView = swiftUIContrib.makeSwiftUIView(context: context)
+                    viewController = UIHostingController(rootView: swiftUIView)
+                } else {
+                    print("⚠️ No view builder for contribution \(contribution.id.rawValue)")
+                    return nil
                 }
                 
-                if let iconName = tabBarItem.tabBarIconSystemName {
-                    viewController.tabBarItem = UITabBarItem(
-                        title: tabBarItem.tabBarTitle,
-                        image: UIImage(systemName: iconName),
-                        selectedImage: UIImage(systemName: iconName)
-                    )
+                // Configure tab bar item if contribution provides metadata
+                if let tabBarItem = contribution as? TabBarItemProviding {
+                    if let title = tabBarItem.tabBarTitle {
+                        viewController.title = title
+                    }
+                    
+                    if let iconName = tabBarItem.tabBarIconSystemName {
+                        viewController.tabBarItem = UITabBarItem(
+                            title: tabBarItem.tabBarTitle,
+                            image: UIImage(systemName: iconName),
+                            selectedImage: UIImage(systemName: iconName)
+                        )
+                    }
                 }
+                return viewController
             }
-            
-            viewControllers.append(viewController)
-        }
-        let testViewController = UIViewController(nibName: nil, bundle: nil)
-        testViewController.view.backgroundColor = .systemBlue
         
-        let testViewController2 = UIViewController(nibName: nil, bundle: nil)
-        testViewController2.view.backgroundColor = .systemPink
-        
-        //setViewControllers([testViewController, testViewController2], animated: false)
         setViewControllers(viewControllers, animated: false)
     }
 }
