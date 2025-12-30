@@ -7,20 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		800AE2692EFCB33200F18C75 /* AppFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE2662EFCB33200F18C75 /* AppFoundation.framework */; };
-		800AE26A2EFCB33200F18C75 /* AppFoundation.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE2662EFCB33200F18C75 /* AppFoundation.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		800AE26B2EFCB33200F18C75 /* CoreContracts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE2672EFCB33200F18C75 /* CoreContracts.framework */; };
-		800AE26C2EFCB33200F18C75 /* CoreContracts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE2672EFCB33200F18C75 /* CoreContracts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		800AE26D2EFCB33200F18C75 /* TabBarFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE2682EFCB33200F18C75 /* TabBarFramework.framework */; };
-		800AE26E2EFCB33200F18C75 /* TabBarFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE2682EFCB33200F18C75 /* TabBarFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		800AE2C82EFCDB1300F18C75 /* StaticExamplesFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE2C72EFCDB1300F18C75 /* StaticExamplesFramework.framework */; };
-		800AE2C92EFCDB1300F18C75 /* StaticExamplesFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE2C72EFCDB1300F18C75 /* StaticExamplesFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		800AE3E32EFD129900F18C75 /* SettingsFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE3E22EFD129900F18C75 /* SettingsFramework.framework */; };
-		800AE3E42EFD129900F18C75 /* SettingsFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE3E22EFD129900F18C75 /* SettingsFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		800AE5072EFD18B900F18C75 /* BuilderFramework.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE5062EFD18B900F18C75 /* BuilderFramework.framework */; };
-		800AE5082EFD18B900F18C75 /* BuilderFramework.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AE5062EFD18B900F18C75 /* BuilderFramework.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		800AEC022EFE4FF200F18C75 /* AppFeatureFlags.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 800AEC012EFE4FF200F18C75 /* AppFeatureFlags.framework */; };
-		800AEC032EFE4FF200F18C75 /* AppFeatureFlags.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 800AEC012EFE4FF200F18C75 /* AppFeatureFlags.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		80623E7A2F03322A0055EA41 /* TabBar in Frameworks */ = {isa = PBXBuildFile; productRef = 80623E792F03322A0055EA41 /* TabBar */; };
+		80623F292F0333E00055EA41 /* AppFeatureFlags in Frameworks */ = {isa = PBXBuildFile; productRef = 80623F282F0333E00055EA41 /* AppFeatureFlags */; };
+		80623F2C2F03340B0055EA41 /* AppFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 80623F2B2F03340B0055EA41 /* AppFoundation */; };
+		80623F2F2F0334480055EA41 /* Builder in Frameworks */ = {isa = PBXBuildFile; productRef = 80623F2E2F0334480055EA41 /* Builder */; };
+		80623F352F0334BD0055EA41 /* Settings in Frameworks */ = {isa = PBXBuildFile; productRef = 80623F342F0334BD0055EA41 /* Settings */; };
+		8062400D2F03375A0055EA41 /* CladsExamples in Frameworks */ = {isa = PBXBuildFile; productRef = 8062400C2F03375A0055EA41 /* CladsExamples */; };
+		806240102F0337D40055EA41 /* CLADS in Frameworks */ = {isa = PBXBuildFile; productRef = 8062400F2F0337D40055EA41 /* CLADS */; };
+		806612832F032E8C00B32793 /* CoreContracts in Frameworks */ = {isa = PBXBuildFile; productRef = 806612822F032E8C00B32793 /* CoreContracts */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,26 +34,6 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		800AE26F2EFCB33200F18C75 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				800AE26A2EFCB33200F18C75 /* AppFoundation.framework in Embed Frameworks */,
-				800AE5082EFD18B900F18C75 /* BuilderFramework.framework in Embed Frameworks */,
-				800AE3E42EFD129900F18C75 /* SettingsFramework.framework in Embed Frameworks */,
-				800AE26C2EFCB33200F18C75 /* CoreContracts.framework in Embed Frameworks */,
-				800AE2C92EFCDB1300F18C75 /* StaticExamplesFramework.framework in Embed Frameworks */,
-				800AE26E2EFCB33200F18C75 /* TabBarFramework.framework in Embed Frameworks */,
-				800AEC032EFE4FF200F18C75 /* AppFeatureFlags.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		800AE0BD2EFC7EDA00F18C75 /* Ghost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ghost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		800AE0D32EFC7EDB00F18C75 /* GhostTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GhostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -73,6 +47,7 @@
 		800AE6622EFDF37100F18C75 /* Bootstrap.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Bootstrap.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		800AE7812EFE02B800F18C75 /* FeatureFlags.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = FeatureFlags.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		800AEC012EFE4FF200F18C75 /* AppFeatureFlags.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AppFeatureFlags.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806240072F03368E0055EA41 /* CladsRendererFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CladsRendererFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -111,13 +86,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				800AE2692EFCB33200F18C75 /* AppFoundation.framework in Frameworks */,
-				800AE5072EFD18B900F18C75 /* BuilderFramework.framework in Frameworks */,
-				800AE3E32EFD129900F18C75 /* SettingsFramework.framework in Frameworks */,
-				800AE26B2EFCB33200F18C75 /* CoreContracts.framework in Frameworks */,
-				800AE2C82EFCDB1300F18C75 /* StaticExamplesFramework.framework in Frameworks */,
-				800AE26D2EFCB33200F18C75 /* TabBarFramework.framework in Frameworks */,
-				800AEC022EFE4FF200F18C75 /* AppFeatureFlags.framework in Frameworks */,
+				80623F352F0334BD0055EA41 /* Settings in Frameworks */,
+				80623F2C2F03340B0055EA41 /* AppFoundation in Frameworks */,
+				80623F2F2F0334480055EA41 /* Builder in Frameworks */,
+				8062400D2F03375A0055EA41 /* CladsExamples in Frameworks */,
+				806240102F0337D40055EA41 /* CLADS in Frameworks */,
+				80623F292F0333E00055EA41 /* AppFeatureFlags in Frameworks */,
+				80623E7A2F03322A0055EA41 /* TabBar in Frameworks */,
+				806612832F032E8C00B32793 /* CoreContracts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -162,6 +138,7 @@
 		800AE2652EFCB33200F18C75 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				806240072F03368E0055EA41 /* CladsRendererFramework.framework */,
 				800AEC012EFE4FF200F18C75 /* AppFeatureFlags.framework */,
 				800AE7812EFE02B800F18C75 /* FeatureFlags.framework */,
 				800AE6622EFDF37100F18C75 /* Bootstrap.framework */,
@@ -185,7 +162,6 @@
 				800AE0B92EFC7EDA00F18C75 /* Sources */,
 				800AE0BA2EFC7EDA00F18C75 /* Frameworks */,
 				800AE0BB2EFC7EDA00F18C75 /* Resources */,
-				800AE26F2EFCB33200F18C75 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -196,6 +172,14 @@
 			);
 			name = Ghost;
 			packageProductDependencies = (
+				806612822F032E8C00B32793 /* CoreContracts */,
+				80623E792F03322A0055EA41 /* TabBar */,
+				80623F282F0333E00055EA41 /* AppFeatureFlags */,
+				80623F2B2F03340B0055EA41 /* AppFoundation */,
+				80623F2E2F0334480055EA41 /* Builder */,
+				80623F342F0334BD0055EA41 /* Settings */,
+				8062400C2F03375A0055EA41 /* CladsExamples */,
+				8062400F2F0337D40055EA41 /* CLADS */,
 			);
 			productName = Ghost;
 			productReference = 800AE0BD2EFC7EDA00F18C75 /* Ghost.app */;
@@ -279,6 +263,16 @@
 			);
 			mainGroup = 800AE0B42EFC7EDA00F18C75;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				806612812F032E8C00B32793 /* XCLocalSwiftPackageReference "../CoreContracts" */,
+				80623E782F03322A0055EA41 /* XCLocalSwiftPackageReference "../TabBar" */,
+				80623F272F0333C30055EA41 /* XCLocalSwiftPackageReference "../AppFeatureFlags" */,
+				80623F2A2F03340B0055EA41 /* XCLocalSwiftPackageReference "../AppFoundation" */,
+				80623F2D2F0334480055EA41 /* XCLocalSwiftPackageReference "../Builder" */,
+				80623F332F0334BD0055EA41 /* XCLocalSwiftPackageReference "../Settings" */,
+				8062400B2F03375A0055EA41 /* XCLocalSwiftPackageReference "../CladsExamples" */,
+				8062400E2F0337D40055EA41 /* XCLocalSwiftPackageReference "../CLADS" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 800AE0BE2EFC7EDA00F18C75 /* Products */;
 			projectDirPath = "";
@@ -662,6 +656,77 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		80623E782F03322A0055EA41 /* XCLocalSwiftPackageReference "../TabBar" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../TabBar;
+		};
+		80623F272F0333C30055EA41 /* XCLocalSwiftPackageReference "../AppFeatureFlags" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../AppFeatureFlags;
+		};
+		80623F2A2F03340B0055EA41 /* XCLocalSwiftPackageReference "../AppFoundation" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../AppFoundation;
+		};
+		80623F2D2F0334480055EA41 /* XCLocalSwiftPackageReference "../Builder" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Builder;
+		};
+		80623F332F0334BD0055EA41 /* XCLocalSwiftPackageReference "../Settings" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../Settings;
+		};
+		8062400B2F03375A0055EA41 /* XCLocalSwiftPackageReference "../CladsExamples" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../CladsExamples;
+		};
+		8062400E2F0337D40055EA41 /* XCLocalSwiftPackageReference "../CLADS" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../CLADS;
+		};
+		806612812F032E8C00B32793 /* XCLocalSwiftPackageReference "../CoreContracts" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../CoreContracts;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		80623E792F03322A0055EA41 /* TabBar */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = TabBar;
+		};
+		80623F282F0333E00055EA41 /* AppFeatureFlags */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 80623F272F0333C30055EA41 /* XCLocalSwiftPackageReference "../AppFeatureFlags" */;
+			productName = AppFeatureFlags;
+		};
+		80623F2B2F03340B0055EA41 /* AppFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = AppFoundation;
+		};
+		80623F2E2F0334480055EA41 /* Builder */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Builder;
+		};
+		80623F342F0334BD0055EA41 /* Settings */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Settings;
+		};
+		8062400C2F03375A0055EA41 /* CladsExamples */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CladsExamples;
+		};
+		8062400F2F0337D40055EA41 /* CLADS */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CLADS;
+		};
+		806612822F032E8C00B32793 /* CoreContracts */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = CoreContracts;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 800AE0B52EFC7EDA00F18C75 /* Project object */;
 }

@@ -10,7 +10,7 @@ import CoreContracts
 
 /// Thread-safe storage for UI contributions.
 /// Uses a serial DispatchQueue for thread safety, providing synchronous interface.
-final class UIRegistry: UIRegistryContributing, UIRegistryContributions {
+final class UIRegistry: UIRegistryContributing {
     private let queue = DispatchQueue(label: "com.ghost.uiregistry")
     private var contributions: [AnyHashable: [any ViewContribution]] = [:]
     

@@ -103,8 +103,10 @@ extension SceneDelegate {
             await coordinator.runPhase(.sceneConnect)
             
             // Get main view contribution (direct access to UI manager)
+            print("🔍 Looking up contributions for AppUISurface.mainView")
             let mainViewContributions = coordinator.uiManager.contributions(for: AppUISurface.mainView)
-            
+            print("🔍 Found \(mainViewContributions.count) contribution(s)")
+
             guard let mainViewContribution = mainViewContributions.first else {
                 print("⚠️ No main view contribution found")
                 return

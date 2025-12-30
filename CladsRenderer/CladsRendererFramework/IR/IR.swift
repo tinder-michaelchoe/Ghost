@@ -174,9 +174,13 @@ extension IR {
         public let lineSpacing: CGFloat
         public let contentInsets: NSDirectionalEdgeInsets
 
+        // Item dimensions (for horizontal/grid sections)
+        public let itemDimensions: ItemDimensions?
+
         // Horizontal section
         public let showsIndicators: Bool
         public let isPagingEnabled: Bool
+        public let snapBehavior: SnapBehavior
 
         // List section
         public let showsDividers: Bool
@@ -186,18 +190,74 @@ extension IR {
             itemSpacing: CGFloat = 8,
             lineSpacing: CGFloat = 8,
             contentInsets: NSDirectionalEdgeInsets = .zero,
+            itemDimensions: ItemDimensions? = nil,
             showsIndicators: Bool = false,
             isPagingEnabled: Bool = false,
+            snapBehavior: SnapBehavior = .none,
             showsDividers: Bool = true
         ) {
             self.alignment = alignment
             self.itemSpacing = itemSpacing
             self.lineSpacing = lineSpacing
             self.contentInsets = contentInsets
+            self.itemDimensions = itemDimensions
             self.showsIndicators = showsIndicators
             self.isPagingEnabled = isPagingEnabled
+            self.snapBehavior = snapBehavior
             self.showsDividers = showsDividers
         }
+    }
+}
+
+// MARK: - IR.ItemDimensions
+
+extension IR {
+    /// Resolved item dimensions for section items
+    public struct ItemDimensions {
+        public let width: DimensionValue?
+        public let height: DimensionValue?
+        public let aspectRatio: CGFloat?
+
+        public init(
+            width: DimensionValue? = nil,
+            height: DimensionValue? = nil,
+            aspectRatio: CGFloat? = nil
+        ) {
+            self.width = width
+            self.height = height
+            self.aspectRatio = aspectRatio
+        }
+    }
+}
+
+// MARK: - IR.DimensionValue
+
+extension IR {
+    /// Resolved dimension value - absolute or fractional
+    public enum DimensionValue: Equatable {
+        case absolute(CGFloat)
+        case fractional(CGFloat)
+
+        /// Resolve to an absolute value given a container size
+        public func resolve(in containerSize: CGFloat) -> CGFloat {
+            switch self {
+            case .absolute(let value):
+                return value
+            case .fractional(let fraction):
+                return containerSize * fraction
+            }
+        }
+    }
+}
+
+// MARK: - IR.SnapBehavior
+
+extension IR {
+    /// Resolved snap behavior for horizontal sections
+    public enum SnapBehavior {
+        case none
+        case viewAligned
+        case paging
     }
 }
 

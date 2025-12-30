@@ -21,10 +21,16 @@ final class UIManager {
     /// Register UI providers.
     /// - Parameter providers: Array of UIProvider types to register
     func register(providers: [UIProvider.Type]) async throws {
+        print("📋 UIManager: Registering \(providers.count) UI providers")
         for providerType in providers {
+            print("  → Registering \(providerType)")
             let instance = providerType.init()
             self.providers.append(instance)
             await instance.registerUI(registry)
+        }
+        print("📋 UIManager: All contributions after registration:")
+        for (surface, contribs) in registry.allContributions() {
+            print("  → \(surface): \(contribs.count) contribution(s)")
         }
     }
     

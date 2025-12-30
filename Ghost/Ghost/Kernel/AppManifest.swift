@@ -6,22 +6,21 @@
 //
 
 import AppFoundation
-import BuilderFramework
+import Builder
+import CladsExamples
 import CoreContracts
 import Foundation
-import SettingsFramework
-import StaticExamplesFramework
-import TabBarFramework
+import TabBar
 
 /// Central manifest of all modules in the app.
 /// This aggregates modules from AppFoundation and app-specific modules.
 enum AppManifest: Manifest {
     
     private static let allManifests: [Manifest.Type] = [
+        
         AppFoundationModules.self,
         BuilderManifest.self,
-        StaticExamplesManifest.self,
-        SettingsManifest.self,
+        CladsExamplesManifest.self,
         TabBarManifest.self,
     ]
     
