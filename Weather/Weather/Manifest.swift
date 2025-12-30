@@ -11,4 +11,8 @@ public enum WeatherManifest: Manifest {
     public static var serviceProviders: [ServiceProvider.Type] {
         [WeatherServiceProvider.self]
     }
+
+    public static var uiProviders: [UIProvider.Type] {
+        [WeatherUIProvider.self]
+    }
 }

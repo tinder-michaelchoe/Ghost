@@ -14,7 +14,7 @@ struct HomeTabContribution: UIKitViewContribution, TabBarItemProviding {
     let id: ViewContributionID
     let tabBarTitle: String?
     let tabBarIconSystemName: String?
-    
+
     init(
         id: ViewContributionID = ViewContributionID(rawValue: "dashboard-tab-item"),
         title: String? = "Dashboard",
@@ -24,10 +24,10 @@ struct HomeTabContribution: UIKitViewContribution, TabBarItemProviding {
         self.tabBarTitle = title
         self.tabBarIconSystemName = iconSystemName
     }
-    
+
     func makeViewController(context: AppContext) -> AnyViewController {
         return AnyViewController {
-            DashboardViewController(nibName: nil, bundle: nil)
+            DashboardViewController(context: context)
         }
     }
 }

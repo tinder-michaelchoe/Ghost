@@ -38,9 +38,12 @@ final class AppCoordinator {
         )
         
         // Step 3: Create AppContext with the service container as the resolver
+        // Note: uiRegistry is passed here but UI providers are registered later.
+        // The registry will be populated when UI providers register their contributions.
         context = AppContext(
             services: serviceManager.serviceContainer,
-            config: config
+            config: config,
+            uiRegistry: uiManager.uiRegistry
         )
         
         guard let context = context else {

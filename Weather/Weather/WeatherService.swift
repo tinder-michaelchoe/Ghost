@@ -88,6 +88,33 @@ public final class WeatherKitService: WeatherService, @unchecked Sendable {
         return mapHourlyForecast(hourly, hours: hours)
     }
 
+    public func dailyForecast(
+        for location: WeatherLocation,
+        days: Int = 7
+    ) async throws -> [DailyForecast] {
+        let token = try tokenGenerator.generateToken()
+
+        guard let url = buildURL(
+            for: location,
+            dataSets: ["forecastDaily"]
+        ) else {
+            throw WeatherError.networkError("Invalid URL")
+        }
+
+        let request = NetworkRequest.get(
+            url,
+            headers: ["Authorization": "Bearer \(token)"]
+        )
+
+        let response: WeatherKitResponse = try await networkClient.perform(request)
+
+        guard let daily = response.forecastDaily else {
+            throw WeatherError.invalidData
+        }
+
+        return mapDailyForecast(daily, days: days)
+    }
+
     // MARK: - Private Helpers
 
     private func buildURL(
@@ -137,6 +164,25 @@ public final class WeatherKitService: WeatherService, @unchecked Sendable {
             )
         }
     }
+
+    private func mapDailyForecast(
+        _ response: DailyForecastResponse,
+        days: Int
+    ) -> [DailyForecast] {
+        response.days.prefix(days).compactMap { day in
+            guard let forecastDate = day.forecastStart.toDate else {
+                return nil
+            }
+
+            return DailyForecast(
+                date: forecastDate,
+                highTemperature: Temperature(celsius: day.temperatureMax),
+                lowTemperature: Temperature(celsius: day.temperatureMin),
+                condition: day.conditionCode.toWeatherCondition,
+                precipitationChance: day.precipitationChance
+            )
+        }
+    }
 }
 
 // MARK: - Weather Service Provider
@@ -159,13 +205,15 @@ public final class WeatherServiceProvider: ServiceProvider {
     public func registerServices(_ registry: ServiceRegistry) {
         registry.register(WeatherService.self) { context in
             let networkClient = context.services.resolve(NetworkClient.self)!
-            let secrets = context.services.resolve(SecretsProvider.self)!
 
             // Check for configured service type, fallback to default
             let serviceType = context.services.resolve(WeatherServiceType.self) ?? Self.defaultServiceType
 
             switch serviceType {
             case .weatherKit:
+                guard let secrets = context.services.resolve(SecretsProvider.self) else {
+                    fatalError("WeatherKit requires SecretsProvider to be registered")
+                }
                 let configuration = try! WeatherKitConfiguration(
                     teamID: secrets.secret(for: .weatherKitTeamID),
                     serviceID: secrets.secret(for: .weatherKitServiceID),
@@ -175,7 +223,14 @@ public final class WeatherServiceProvider: ServiceProvider {
                 return WeatherKitService(networkClient: networkClient, configuration: configuration)
 
             case .nws:
-                let userAgent = try! secrets.secret(for: .nwsUserAgent)
+                // Use secrets if available, otherwise use a default user agent
+                let userAgent: String
+                if let secrets = context.services.resolve(SecretsProvider.self),
+                   let secret = try? secrets.secret(for: .nwsUserAgent) {
+                    userAgent = secret
+                } else {
+                    userAgent = "GhostApp/1.0 (ghost@example.com)"
+                }
                 return NWSWeatherService(networkClient: networkClient, userAgent: userAgent)
             }
         }

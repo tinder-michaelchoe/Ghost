@@ -69,6 +69,30 @@ struct NWSQuantitativeValue: Decodable, Sendable {
     let value: Double?
 }
 
+// MARK: - Daily Forecast Response
+
+/// Response from /gridpoints/{office}/{x},{y}/forecast endpoint
+/// The daily forecast returns periods where each day has two entries: day and night
+struct NWSDailyForecastResponse: Decodable, Sendable {
+    let properties: NWSForecastProperties
+}
+
+// MARK: - Date Parsing Helper
+
+extension String {
+    /// Parses ISO8601 date string to Date
+    var toDate: Date? {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = formatter.date(from: self) {
+            return date
+        }
+        // Try without fractional seconds
+        formatter.formatOptions = [.withInternetDateTime]
+        return formatter.date(from: self)
+    }
+}
+
 // MARK: - Condition Code Mapping
 
 extension String {

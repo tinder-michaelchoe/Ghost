@@ -96,6 +96,97 @@ public final class NWSWeatherService: WeatherService, @unchecked Sendable {
         }
     }
 
+    public func dailyForecast(for location: WeatherLocation, days: Int = 7) async throws -> [DailyForecast] {
+        let gridInfo = try await getGridInfo(for: location)
+
+        guard let forecastURL = URL(string: gridInfo.forecast) else {
+            throw WeatherError.networkError("Invalid forecast URL")
+        }
+
+        let request = NetworkRequest.get(
+            forecastURL,
+            headers: [
+                "User-Agent": userAgent,
+                "Accept": "application/geo+json"
+            ]
+        )
+
+        let response: NWSDailyForecastResponse = try await networkClient.perform(request)
+
+        // NWS returns periods where each day has two entries: day and night
+        // Group by date and extract high (daytime) and low (nighttime) temps
+        var dailyForecasts: [DailyForecast] = []
+        let calendar = Calendar.current
+        var processedDates: Set<DateComponents> = []
+
+        for period in response.properties.periods {
+            guard let date = period.startTime.toDate else { continue }
+
+            let dateComponents = calendar.dateComponents([.year, .month, .day], from: date)
+
+            // Skip if we've already processed this date
+            if processedDates.contains(dateComponents) { continue }
+
+            // Find the matching day/night pair
+            let dayPeriod = period.isDaytime ? period : nil
+            let nightPeriod = !period.isDaytime ? period : nil
+
+            // Look for the complementary period
+            let matchingPeriod = response.properties.periods.first { p in
+                guard let pDate = p.startTime.toDate else { return false }
+                let pComponents = calendar.dateComponents([.year, .month, .day], from: pDate)
+                return pComponents == dateComponents && p.isDaytime != period.isDaytime
+            }
+
+            let actualDayPeriod = dayPeriod ?? matchingPeriod
+            let actualNightPeriod = nightPeriod ?? matchingPeriod
+
+            let highTemp: Temperature
+            let lowTemp: Temperature
+            let condition: WeatherCondition
+
+            if let day = actualDayPeriod {
+                highTemp = day.temperatureUnit == "F"
+                    ? Temperature(fahrenheit: Double(day.temperature))
+                    : Temperature(celsius: Double(day.temperature))
+                condition = day.shortForecast.nwsToWeatherCondition
+            } else {
+                highTemp = period.temperatureUnit == "F"
+                    ? Temperature(fahrenheit: Double(period.temperature))
+                    : Temperature(celsius: Double(period.temperature))
+                condition = period.shortForecast.nwsToWeatherCondition
+            }
+
+            if let night = actualNightPeriod {
+                lowTemp = night.temperatureUnit == "F"
+                    ? Temperature(fahrenheit: Double(night.temperature))
+                    : Temperature(celsius: Double(night.temperature))
+            } else {
+                lowTemp = highTemp
+            }
+
+            let precipChance = max(
+                actualDayPeriod?.probabilityOfPrecipitation?.value ?? 0,
+                actualNightPeriod?.probabilityOfPrecipitation?.value ?? 0
+            ) / 100.0
+
+            let forecastDate = calendar.startOfDay(for: date)
+            dailyForecasts.append(DailyForecast(
+                date: forecastDate,
+                highTemperature: highTemp,
+                lowTemperature: lowTemp,
+                condition: condition,
+                precipitationChance: precipChance
+            ))
+
+            processedDates.insert(dateComponents)
+
+            if dailyForecasts.count >= days { break }
+        }
+
+        return dailyForecasts
+    }
+
     // MARK: - Private Helpers
 
     private func getGridInfo(for location: WeatherLocation) async throws -> NWSPointsProperties {

@@ -12,7 +12,9 @@ import CoreContracts
 import Dashboard
 import Foundation
 import NetworkClient
+import Secrets
 import TabBar
+import Weather
 
 /// Central manifest of all modules in the app.
 /// This aggregates modules from AppFoundation and app-specific modules.
@@ -92,6 +94,8 @@ extension AppManifest {
     static var dashboardFeature: [Manifest.Type] {
         [
             NetworkClientManifest.self,
+            SecretsManifest.self,
+            WeatherManifest.self,
             DashboardManifest.self,
         ]
     }

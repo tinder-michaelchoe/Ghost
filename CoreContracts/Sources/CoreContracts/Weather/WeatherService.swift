@@ -23,6 +23,13 @@ public protocol WeatherService: Sendable {
     ///   - hours: Number of hours to forecast (default 24)
     /// - Returns: Array of hourly forecasts
     func hourlyForecast(for location: WeatherLocation, hours: Int) async throws -> [HourlyForecast]
+
+    /// Fetches the daily forecast for a location
+    /// - Parameters:
+    ///   - location: The location to fetch forecast for
+    ///   - days: Number of days to forecast (default 7)
+    /// - Returns: Array of daily forecasts
+    func dailyForecast(for location: WeatherLocation, days: Int) async throws -> [DailyForecast]
 }
 
 // MARK: - Weather Location
@@ -87,6 +94,33 @@ public struct HourlyForecast: Sendable, Identifiable {
         self.id = hour
         self.hour = hour
         self.temperature = temperature
+        self.condition = condition
+        self.precipitationChance = precipitationChance
+    }
+}
+
+// MARK: - Daily Forecast
+
+/// Weather forecast for a specific day
+public struct DailyForecast: Sendable, Identifiable {
+    public let id: Date
+    public let date: Date
+    public let highTemperature: Temperature
+    public let lowTemperature: Temperature
+    public let condition: WeatherCondition
+    public let precipitationChance: Double
+
+    public init(
+        date: Date,
+        highTemperature: Temperature,
+        lowTemperature: Temperature,
+        condition: WeatherCondition,
+        precipitationChance: Double
+    ) {
+        self.id = date
+        self.date = date
+        self.highTemperature = highTemperature
+        self.lowTemperature = lowTemperature
         self.condition = condition
         self.precipitationChance = precipitationChance
     }

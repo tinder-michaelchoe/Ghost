@@ -30,9 +30,11 @@ public struct AppConfig {
 public struct AppContext {
     public let services: ServiceResolver
     public let config: AppConfig
+    public let uiRegistry: UIRegistryContributing
 
-    public init(services: ServiceResolver, config: AppConfig) {
+    public init(services: ServiceResolver, config: AppConfig, uiRegistry: UIRegistryContributing) {
         self.services = services
         self.config = config
+        self.uiRegistry = uiRegistry
     }
 }

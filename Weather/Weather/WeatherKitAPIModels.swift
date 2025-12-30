@@ -13,6 +13,7 @@ import Foundation
 struct WeatherKitResponse: Decodable, Sendable {
     let currentWeather: CurrentWeatherResponse?
     let forecastHourly: HourlyForecastResponse?
+    let forecastDaily: DailyForecastResponse?
 }
 
 // MARK: - Current Weather Response
@@ -68,6 +69,69 @@ struct HourlyWeatherResponse: Decodable, Sendable {
     let windSpeed: Double?
 }
 
+// MARK: - Daily Forecast Response
+
+struct DailyForecastResponse: Decodable, Sendable {
+    let metadata: WeatherMetadata
+    let days: [DailyWeatherResponse]
+}
+
+struct DailyWeatherResponse: Decodable, Sendable {
+    let forecastStart: String
+    let forecastEnd: String
+    let conditionCode: String
+    let maxUvIndex: Int?
+    let moonPhase: String?
+    let moonrise: String?
+    let moonset: String?
+    let precipitationAmount: Double?
+    let precipitationChance: Double
+    let precipitationType: String?
+    let snowfallAmount: Double?
+    let solarMidnight: String?
+    let solarNoon: String?
+    let sunrise: String?
+    let sunriseCivil: String?
+    let sunriseNautical: String?
+    let sunriseAstronomical: String?
+    let sunset: String?
+    let sunsetCivil: String?
+    let sunsetNautical: String?
+    let sunsetAstronomical: String?
+    let temperatureMax: Double
+    let temperatureMin: Double
+    let daytimeForecast: DaytimeForecast?
+    let overnightForecast: OvernightForecast?
+}
+
+struct DaytimeForecast: Decodable, Sendable {
+    let forecastStart: String
+    let forecastEnd: String
+    let cloudCover: Double?
+    let conditionCode: String
+    let humidity: Double?
+    let precipitationAmount: Double?
+    let precipitationChance: Double?
+    let precipitationType: String?
+    let snowfallAmount: Double?
+    let windDirection: Int?
+    let windSpeed: Double?
+}
+
+struct OvernightForecast: Decodable, Sendable {
+    let forecastStart: String
+    let forecastEnd: String
+    let cloudCover: Double?
+    let conditionCode: String
+    let humidity: Double?
+    let precipitationAmount: Double?
+    let precipitationChance: Double?
+    let precipitationType: String?
+    let snowfallAmount: Double?
+    let windDirection: Int?
+    let windSpeed: Double?
+}
+
 // MARK: - Metadata
 
 struct WeatherMetadata: Decodable, Sendable {
@@ -110,21 +174,6 @@ extension String {
         default:
             return .clear
         }
-    }
-}
-
-// MARK: - Date Parsing
-
-extension String {
-    var toDate: Date? {
-        let formatter = ISO8601DateFormatter()
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = formatter.date(from: self) {
-            return date
-        }
-        // Try without fractional seconds
-        formatter.formatOptions = [.withInternetDateTime]
-        return formatter.date(from: self)
     }
 }
 

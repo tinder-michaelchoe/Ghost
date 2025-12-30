@@ -14,16 +14,29 @@ final class DashboardViewController: UIViewController {
 
     // MARK: - Properties
 
+    private let context: AppContext
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, Widget>!
     private let layoutProvider = WidgetLayoutProvider()
 
     private var widgets: [Widget] = []
+    private var widgetContributions: [String: WidgetContribution] = [:]
 
     // MARK: - Section
 
     private enum Section: Hashable {
         case main
+    }
+
+    // MARK: - Init
+
+    init(context: AppContext) {
+        self.context = context
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     // MARK: - Lifecycle
@@ -35,7 +48,7 @@ final class DashboardViewController: UIViewController {
 
         setupCollectionView()
         setupDataSource()
-        loadSampleWidgets()
+        loadWidgets()
     }
 
     // MARK: - Setup
@@ -45,6 +58,9 @@ final class DashboardViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.backgroundColor = .systemBackground
         collectionView.delegate = self
+        collectionView.dragDelegate = self
+        collectionView.dropDelegate = self
+        collectionView.dragInteractionEnabled = true
 
         view.addSubview(collectionView)
 
@@ -64,8 +80,9 @@ final class DashboardViewController: UIViewController {
     }
 
     private func setupDataSource() {
-        let cellRegistration = UICollectionView.CellRegistration<WidgetCell, Widget> { cell, indexPath, widget in
-            cell.configure(with: widget)
+        let cellRegistration = UICollectionView.CellRegistration<WidgetCell, Widget> { [weak self] cell, indexPath, widget in
+            guard let self else { return }
+            self.configureCell(cell, with: widget)
         }
 
         dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { collectionView, indexPath, widget in
@@ -73,20 +90,44 @@ final class DashboardViewController: UIViewController {
         }
     }
 
+    private func configureCell(_ cell: WidgetCell, with widget: Widget) {
+        // Check if we have a contribution for this widget
+        if let contribution = widgetContributions[widget.id] {
+            let frontVC = contribution.makeFrontViewController(context: context)
+            let backVC = contribution.makeBackViewController(context: context)
+
+            cell.configureFrontView(with: frontVC)
+            if let backVC {
+                cell.configureBackView(with: backVC)
+            }
+
+            // Add child view controller management
+            addChild(frontVC)
+            frontVC.didMove(toParent: self)
+            if let backVC {
+                addChild(backVC)
+                backVC.didMove(toParent: self)
+            }
+        } else {
+            // Fallback to basic configuration for widgets without contributions
+            cell.configure(with: widget)
+        }
+    }
+
     // MARK: - Data
 
-    private func loadSampleWidgets() {
-        // Sample widgets to demonstrate different sizes and priorities
-        widgets = [
-            Widget(id: "weather", size: .medium, title: "Weather", priorityTier: .primary),
-            Widget(id: "calendar", size: .small, title: "Calendar", priorityTier: .primary),
-            Widget(id: "reminders", size: .tall, title: "Reminders", priorityTier: .secondary),
-            Widget(id: "music", size: .small, title: "Music", priorityTier: .tertiary),
-            Widget(id: "photos", size: .large, title: "Photos", priorityTier: .secondary),
-            Widget(id: "notes", size: .medium, title: "Notes", priorityTier: .secondary),
-            Widget(id: "fitness", size: .small, title: "Fitness", priorityTier: .tertiary),
-            Widget(id: "stocks", size: .small, title: "Stocks", priorityTier: .tertiary),
-        ].sortedForLayout()
+    private func loadWidgets() {
+        // Get widget contributions from the registry
+        let contributions = context.uiRegistry.contributions(for: DashboardUISurface.widgets)
+            .compactMap { $0 as? WidgetContribution }
+
+        // Store contributions by widget ID for cell configuration
+        for contribution in contributions {
+            widgetContributions[contribution.id.rawValue] = contribution
+        }
+
+        // Create widget models from contributions
+        widgets = contributions.map { $0.widget }.sortedForLayout()
 
         applySnapshot()
     }
@@ -112,6 +153,114 @@ extension DashboardViewController: UICollectionViewDelegate {
     }
 }
 
+// MARK: - UICollectionViewDragDelegate
+
+extension DashboardViewController: UICollectionViewDragDelegate {
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        itemsForBeginning session: UIDragSession,
+        at indexPath: IndexPath
+    ) -> [UIDragItem] {
+        guard let widget = dataSource.itemIdentifier(for: indexPath) else { return [] }
+
+        let itemProvider = NSItemProvider(object: widget.id as NSString)
+        let dragItem = UIDragItem(itemProvider: itemProvider)
+        dragItem.localObject = widget
+
+        return [dragItem]
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        dragPreviewParametersForItemAt indexPath: IndexPath
+    ) -> UIDragPreviewParameters? {
+        guard let cell = collectionView.cellForItem(at: indexPath) else { return nil }
+
+        let parameters = UIDragPreviewParameters()
+        parameters.visiblePath = UIBezierPath(
+            roundedRect: cell.contentView.bounds,
+            cornerRadius: 16
+        )
+        parameters.backgroundColor = .clear
+        return parameters
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        dragSessionWillBegin session: UIDragSession
+    ) {
+        // Add haptic feedback when drag begins
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        dragSessionDidEnd session: UIDragSession
+    ) {
+        // Invalidate layout to reflow widgets after drag ends
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
+}
+
+// MARK: - UICollectionViewDropDelegate
+
+extension DashboardViewController: UICollectionViewDropDelegate {
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        dropSessionDidUpdate session: UIDropSession,
+        withDestinationIndexPath destinationIndexPath: IndexPath?
+    ) -> UICollectionViewDropProposal {
+        guard collectionView.hasActiveDrag else {
+            return UICollectionViewDropProposal(operation: .forbidden)
+        }
+        return UICollectionViewDropProposal(operation: .move, intent: .insertAtDestinationIndexPath)
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        performDropWith coordinator: UICollectionViewDropCoordinator
+    ) {
+        guard let destinationIndexPath = coordinator.destinationIndexPath,
+              let item = coordinator.items.first,
+              let sourceIndexPath = item.sourceIndexPath,
+              let widget = item.dragItem.localObject as? Widget else {
+            return
+        }
+
+        // Perform the reorder
+        collectionView.performBatchUpdates {
+            widgets.remove(at: sourceIndexPath.item)
+            widgets.insert(widget, at: destinationIndexPath.item)
+
+            var snapshot = NSDiffableDataSourceSnapshot<Section, Widget>()
+            snapshot.appendSections([.main])
+            snapshot.appendItems(widgets)
+            dataSource.apply(snapshot, animatingDifferences: false)
+        } completion: { [weak self] _ in
+            // Invalidate layout to reflow widgets based on new positions
+            self?.collectionView.collectionViewLayout.invalidateLayout()
+        }
+
+        coordinator.drop(item.dragItem, toItemAt: destinationIndexPath)
+
+        // Haptic feedback on drop
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+    }
+
+    func collectionView(
+        _ collectionView: UICollectionView,
+        dropPreviewParametersForItemAt indexPath: IndexPath
+    ) -> UIDragPreviewParameters? {
+        let parameters = UIDragPreviewParameters()
+        parameters.backgroundColor = .clear
+        return parameters
+    }
+}
+
 // MARK: - Widget Cell
 
 final class WidgetCell: UICollectionViewCell {
@@ -120,6 +269,7 @@ final class WidgetCell: UICollectionViewCell {
 
     private var isFlipped = false
     private var hasBackView = false
+    private var frontViewController: UIViewController?
     private var backViewController: UIViewController?
 
     private let frontView: UIView = {
@@ -270,10 +420,20 @@ final class WidgetCell: UICollectionViewCell {
             backView.isHidden = true
             isFlipped = false
         }
+        // Clear front view content (except for the placeholder UI)
+        frontViewController?.willMove(toParent: nil)
+        frontViewController?.view.removeFromSuperview()
+        frontViewController?.removeFromParent()
+        frontViewController = nil
         // Clear back view content
+        backViewController?.willMove(toParent: nil)
         backViewController?.view.removeFromSuperview()
+        backViewController?.removeFromParent()
         backViewController = nil
         hasBackView = false
+        // Show placeholder UI
+        titleLabel.isHidden = false
+        iconView.isHidden = false
     }
 
     // MARK: - Configure
@@ -281,6 +441,8 @@ final class WidgetCell: UICollectionViewCell {
     func configure(with widget: Widget, hasBackView: Bool = false) {
         self.hasBackView = hasBackView
         titleLabel.text = widget.title
+        titleLabel.isHidden = false
+        iconView.isHidden = false
 
         // Set icon based on widget id
         let iconName: String
@@ -319,6 +481,28 @@ final class WidgetCell: UICollectionViewCell {
         iconView.image = UIImage(systemName: iconName)
         iconView.tintColor = iconColor
         frontView.backgroundColor = iconColor.withAlphaComponent(0.15)
+    }
+
+    /// Configure the front view with a view controller
+    func configureFrontView(with viewController: UIViewController) {
+        frontViewController = viewController
+        // Hide placeholder UI
+        titleLabel.isHidden = true
+        iconView.isHidden = true
+
+        let view = viewController.view!
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 16
+        view.layer.cornerCurve = .continuous
+        view.clipsToBounds = true
+        frontView.addSubview(view)
+
+        NSLayoutConstraint.activate([
+            view.topAnchor.constraint(equalTo: frontView.topAnchor),
+            view.leadingAnchor.constraint(equalTo: frontView.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: frontView.trailingAnchor),
+            view.bottomAnchor.constraint(equalTo: frontView.bottomAnchor)
+        ])
     }
 
     /// Configure the back view with a view controller
