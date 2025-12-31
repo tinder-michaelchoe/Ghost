@@ -12,6 +12,7 @@ import CoreContracts
 import Dashboard
 import Foundation
 import NetworkClient
+import Persistence
 import Secrets
 import TabBar
 import Weather
@@ -21,11 +22,9 @@ import Weather
 enum AppManifest: Manifest {
 
     private static let allManifests: [Manifest.Type] = [
-        AppFoundationModules.self,
-        BuilderManifest.self,
-        CladsExamplesManifest.self,
-        TabBarManifest.self,
-    ] + dashboardFeature
+        core,
+        dashboardFeature
+    ].flatMap({ $0 })
 
     /// Deduplicates manifests by type identity, preserving order.
     private static var uniqueManifests: [Manifest.Type] {
@@ -89,11 +88,21 @@ enum AppManifest: Manifest {
 // MARK: - Feature Aggregates
 
 extension AppManifest {
+    
+    static var core: [Manifest.Type] {
+        [
+            AppFoundationModules.self,
+            BuilderManifest.self,
+            CladsExamplesManifest.self,
+            TabBarManifest.self
+        ]
+    }
 
     /// Dashboard feature and all its dependencies.
     static var dashboardFeature: [Manifest.Type] {
         [
             NetworkClientManifest.self,
+            PersistenceManifest.self,
             SecretsManifest.self,
             WeatherManifest.self,
             DashboardManifest.self,

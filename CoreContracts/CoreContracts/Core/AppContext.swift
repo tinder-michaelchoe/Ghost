@@ -18,23 +18,10 @@ public struct BuildInfo {
     }
 }
 
-/// App configuration available to all plugins via context.
+/// App configuration available to all plugins.
 public struct AppConfig {
     public let buildInfo: BuildInfo
     public init(buildInfo: BuildInfo) {
         self.buildInfo = buildInfo
-    }
-}
-
-/// Shared context passed to plugins and builders.
-public struct AppContext {
-    public let services: ServiceResolver
-    public let config: AppConfig
-    public let uiRegistry: UIRegistryContributing
-
-    public init(services: ServiceResolver, config: AppConfig, uiRegistry: UIRegistryContributing) {
-        self.services = services
-        self.config = config
-        self.uiRegistry = uiRegistry
     }
 }

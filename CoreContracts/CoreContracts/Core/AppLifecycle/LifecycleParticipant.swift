@@ -9,12 +9,11 @@ import Foundation
 
 /// Protocol for modules that participate in app lifecycle phases.
 /// Conform to this if your module needs to perform work during specific lifecycle phases.
+/// Dependencies should be injected via init or stored during service registration.
 public protocol LifecycleParticipant {
     init()
     /// Called by the kernel for each lifecycle phase.
-    /// - Parameters:
-    ///   - phase: The current lifecycle phase
-    ///   - context: The app context providing access to services, etc.
-    func run(phase: LifecyclePhase, context: AppContext) async
+    /// - Parameter phase: The current lifecycle phase
+    func run(phase: LifecyclePhase) async
 }
 

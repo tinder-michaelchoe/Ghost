@@ -14,6 +14,9 @@
       location = "container:AppFoundation/AppFoundation.xcodeproj">
    </FileRef>
    <FileRef
+      location = "container:Art/Art.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "container:Builder/Builder.xcodeproj">
    </FileRef>
    <FileRef

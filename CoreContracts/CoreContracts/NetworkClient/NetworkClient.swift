@@ -7,10 +7,11 @@
 
 import Foundation
 
-// MARK: - Network Client Protocol
+// MARK: - Network Request Performing Protocol
 
-/// Protocol for making REST API requests
-public protocol NetworkClient: Sendable {
+/// Protocol for making REST API requests.
+/// Named to avoid collision with the NetworkClient module.
+public protocol NetworkRequestPerforming: Sendable {
 
     /// Performs a network request and decodes the response
     /// - Parameters:

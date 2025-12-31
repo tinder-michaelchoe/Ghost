@@ -8,15 +8,62 @@
 import CoreContracts
 import UIKit
 
-// MARK: - Weather Widget View Controller
+// MARK: - Weather Widget Container
 
-final class WeatherWidgetViewController: UIViewController {
+/// Container view controller for the weather widget.
+/// Provides both front (weather display) and back (city picker) views
+/// for the flippable dashboard widget.
+final class WeatherWidgetContainer: UIViewController, FlippableWidgetProviding {
 
     // MARK: - Properties
 
-    private let context: AppContext
-    private var weatherService: WeatherService?
-    private var currentLocation: WeatherLocation = WeatherLocationStore.shared.selectedLocation
+    private let weatherService: WeatherService
+    private let persistenceService: PersistenceService
+
+    private lazy var _frontViewController: UIViewController = {
+        WeatherWidgetFrontViewController(
+            weatherService: weatherService,
+            persistenceService: persistenceService
+        )
+    }()
+
+    private lazy var _backViewController: UIViewController = {
+        WeatherCityPickerViewController(persistenceService: persistenceService)
+    }()
+
+    // MARK: - FlippableWidgetProviding
+
+    var frontViewController: UIViewController { _frontViewController }
+    var backViewController: UIViewController? { _backViewController }
+
+    // MARK: - Init
+
+    init(weatherService: WeatherService, persistenceService: PersistenceService) {
+        self.weatherService = weatherService
+        self.persistenceService = persistenceService
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // The container just holds references; actual display is handled by Dashboard
+        view.backgroundColor = .clear
+    }
+}
+
+// MARK: - Weather Widget Front View Controller
+
+final class WeatherWidgetFrontViewController: UIViewController {
+
+    // MARK: - Properties
+
+    private let weatherService: WeatherService
+    private let persistenceService: PersistenceService
+    private var currentLocation: WeatherLocation?
 
     // MARK: - UI Components
 
@@ -77,8 +124,9 @@ final class WeatherWidgetViewController: UIViewController {
 
     // MARK: - Init
 
-    init(context: AppContext) {
-        self.context = context
+    init(weatherService: WeatherService, persistenceService: PersistenceService) {
+        self.weatherService = weatherService
+        self.persistenceService = persistenceService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -90,12 +138,17 @@ final class WeatherWidgetViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupLocation()
         setupUI()
         setupObservers()
         loadWeather()
     }
 
     // MARK: - Setup
+
+    private func setupLocation() {
+        currentLocation = WeatherLocations.selectedLocation(from: persistenceService)
+    }
 
     private func setupUI() {
         view.backgroundColor = .systemGray6
@@ -150,30 +203,27 @@ final class WeatherWidgetViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(locationDidChange),
-            name: WeatherLocationStore.locationDidChangeNotification,
+            name: WeatherLocations.didChangeNotification,
             object: nil
         )
     }
 
     @objc private func locationDidChange() {
-        currentLocation = WeatherLocationStore.shared.selectedLocation
+        currentLocation = WeatherLocations.selectedLocation(from: persistenceService)
         loadWeather()
     }
 
     // MARK: - Data Loading
 
     private func loadWeather() {
+        guard let location = currentLocation else { return }
+
         loadingIndicator.startAnimating()
 
         Task {
             do {
-                guard let service = context.services.resolve(WeatherService.self) else {
-                    throw WeatherError.serviceUnavailable
-                }
-                self.weatherService = service
-
-                async let currentWeather = service.currentWeather(for: currentLocation)
-                async let forecast = service.dailyForecast(for: currentLocation, days: 5)
+                async let currentWeather = weatherService.currentWeather(for: location)
+                async let forecast = weatherService.dailyForecast(for: location, days: 5)
 
                 let (weather, dailyForecast) = try await (currentWeather, forecast)
 

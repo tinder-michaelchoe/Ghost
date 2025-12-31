@@ -13,12 +13,8 @@ public protocol ServiceManagerProtocol: AnyObject {
     /// Register service providers.
     /// - Parameter providers: Array of ServiceProvider types to register
     func register(providers: [ServiceProvider.Type]) throws
-    
-    /// Set the context for service resolution.
-    /// Must be called after services are registered and context is created.
-    func setContext(_ context: AppContext)
-    
-    /// Get the service container (for use in AppContext).
+
+    /// Get the service container.
     var serviceContainer: ServiceContainerType { get }
 }
 

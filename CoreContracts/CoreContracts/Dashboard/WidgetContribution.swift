@@ -31,9 +31,10 @@ public enum WidgetPriorityTier: Int, Comparable, Sendable, CaseIterable {
 
 // MARK: - Widget Contribution
 
-/// Protocol for contributing widgets to the dashboard.
-/// Contributors must provide a front view and can optionally provide a back view.
-/// If no back view is provided, double-tapping the widget will show a wiggle animation.
+/// Protocol for widget metadata.
+/// Widgets are registered as regular contributions via `contribute`.
+/// The factory should return a UIViewController that conforms to FlippableWidgetProviding
+/// if the widget supports front/back views.
 public protocol WidgetContribution: ViewContribution {
     /// The size of the widget in the grid
     var size: WidgetSize { get }
@@ -43,16 +44,6 @@ public protocol WidgetContribution: ViewContribution {
 
     /// The priority tier for layout ordering
     var priorityTier: WidgetPriorityTier { get }
-
-    /// Creates the front view for the widget
-    /// - Parameter context: The app context for resolving dependencies
-    /// - Returns: The front view controller
-    @MainActor func makeFrontViewController(context: AppContext) -> UIViewController
-
-    /// Creates the optional back view for the widget
-    /// - Parameter context: The app context for resolving dependencies
-    /// - Returns: The back view controller, or nil if no back side
-    @MainActor func makeBackViewController(context: AppContext) -> UIViewController?
 }
 
 // MARK: - Default Implementation
@@ -60,11 +51,6 @@ public protocol WidgetContribution: ViewContribution {
 public extension WidgetContribution {
     /// Default priority tier is secondary
     var priorityTier: WidgetPriorityTier { .secondary }
-
-    /// Default implementation returns nil (no back view)
-    @MainActor func makeBackViewController(context: AppContext) -> UIViewController? {
-        nil
-    }
 }
 
 // MARK: - Widget Model from Contribution
@@ -74,4 +60,17 @@ public extension WidgetContribution {
     var widget: Widget {
         Widget(id: id.rawValue, size: size, title: title, priorityTier: priorityTier)
     }
+}
+
+// MARK: - Flippable Widget Providing
+
+/// Protocol for widget view controllers that support front/back views.
+/// The Dashboard module uses this to create card views with flip capability.
+@MainActor
+public protocol FlippableWidgetProviding {
+    /// The front view controller (main widget content)
+    var frontViewController: UIViewController { get }
+
+    /// The back view controller (settings/configuration), nil if not flippable
+    var backViewController: UIViewController? { get }
 }

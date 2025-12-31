@@ -12,7 +12,7 @@ import CoreContracts
 /// Handles LifecycleParticipant registration and orchestrates lifecycle phases.
 final class LifecycleManager {
     private var participants: [LifecycleParticipant] = []
-    
+
     /// Register lifecycle participants.
     /// - Parameter participants: Array of LifecycleParticipant types to register
     func register(participants: [LifecycleParticipant.Type]) {
@@ -21,14 +21,12 @@ final class LifecycleManager {
             self.participants.append(instance)
         }
     }
-    
+
     /// Run all registered participants through a lifecycle phase.
-    /// - Parameters:
-    ///   - phase: The lifecycle phase to execute
-    ///   - context: The app context to pass to participants
-    func runPhase(_ phase: LifecyclePhase, context: AppContext) async {
+    /// - Parameter phase: The lifecycle phase to execute
+    func runPhase(_ phase: LifecyclePhase) async {
         for participant in participants {
-            await participant.run(phase: phase, context: context)
+            await participant.run(phase: phase)
         }
     }
 }

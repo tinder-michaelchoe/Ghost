@@ -5,37 +5,26 @@
 //  Created by mexicanpizza on 12/24/25.
 //
 
-import Foundation
 import CoreContracts
 import SwiftUI
 
-/// Contribution for the home tab that provides a SwiftUI view with tab bar metadata.
-struct HomeTabContribution: SwiftUIViewContribution, TabBarItemProviding {
-    let id: ViewContributionID
-    let tabBarTitle: String?
-    let tabBarIconSystemName: String?
-    
-    init(
-        id: ViewContributionID = ViewContributionID(rawValue: "settings-tab-item"),
-        title: String? = "Settings",
-        iconSystemName: String? = "gear"
-    ) {
-        self.id = id
-        self.tabBarTitle = title
-        self.tabBarIconSystemName = iconSystemName
-    }
-    
-    func makeSwiftUIView(context: AppContext) -> AnyView {
-        AnyView(SettingsView())
-    }
+// MARK: - Settings Tab Contribution
+
+struct SettingsTabContribution: ViewContribution, TabBarItemProviding, Sendable {
+    let id = ViewContributionID(rawValue: "settings-tab-item")
+    let tabBarTitle: String? = "Settings"
+    let tabBarIconSystemName: String? = "gear"
 }
 
-/// UI provider that contributes a TabBarController to the mainView surface.
+// MARK: - Settings UI Provider
+
+/// UI provider that contributes the settings tab.
 public final class SettingsUIProvider: UIProvider {
     public init() {}
-    
-    public func registerUI(_ registry: UIRegistryContributing) async {
-        let contribution = HomeTabContribution()
-        registry.contribute(to: TabBarUISurface.settings, item: contribution)
+
+    public func registerUI(_ registry: UIRegistryContributing) {
+        registry.contribute(to: TabBarUISurface.settings, contribution: SettingsTabContribution()) {
+            SettingsView()
+        }
     }
 }

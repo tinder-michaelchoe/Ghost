@@ -13,11 +13,17 @@ import CoreContracts
 final class UIManager {
     private let registry: UIRegistry
     private var providers: [UIProvider] = []
-    
+
     init() {
         self.registry = UIRegistry()
     }
-    
+
+    /// Set the service resolver for dependency injection.
+    /// Must be called before registering UI providers.
+    func setServiceResolver(_ resolver: ServiceResolver) {
+        registry.setServiceResolver(resolver)
+    }
+
     /// Register UI providers.
     /// - Parameter providers: Array of UIProvider types to register
     func register(providers: [UIProvider.Type]) async throws {
@@ -26,24 +32,23 @@ final class UIManager {
             print("  → Registering \(providerType)")
             let instance = providerType.init()
             self.providers.append(instance)
-            await instance.registerUI(registry)
+            instance.registerUI(registry)
         }
         print("📋 UIManager: All contributions after registration:")
         for (surface, contribs) in registry.allContributions() {
             print("  → \(surface): \(contribs.count) contribution(s)")
         }
     }
-    
-    /// Get contributions for a UI surface.
+
+    /// Get resolved contributions for a UI surface.
     /// - Parameter surface: The UI surface to get contributions for
-    /// - Returns: Array of view contributions for the surface
-    func contributions<T: UISurface>(for surface: T) -> [any ViewContribution] {
+    /// - Returns: Array of resolved contributions for the surface
+    func contributions<T: UISurface>(for surface: T) -> [ResolvedContribution] {
         registry.contributions(for: surface)
     }
-    
+
     /// Get the UI registry implementation (for direct access if needed).
     var uiRegistry: UIRegistry {
         registry
     }
 }
-

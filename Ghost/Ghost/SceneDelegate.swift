@@ -100,21 +100,15 @@ extension SceneDelegate {
             let mainViewContributions = coordinator.uiManager.contributions(for: AppUISurface.mainView)
             print("🔍 Found \(mainViewContributions.count) contribution(s)")
 
-            guard let mainViewContribution = mainViewContributions.first else {
+            guard let resolved = mainViewContributions.first else {
                 print("⚠️ No main view contribution found")
                 return
             }
-            
-            var rootViewController: UIViewController?
-            // Build the main view controller from contribution
-            if let uiKitContrib = mainViewContribution as? UIKitViewContribution {
-                let anyVC = uiKitContrib.makeViewController(context: context)
-                rootViewController = anyVC.build() as? UIViewController
-            } else if let swiftUIContrib = mainViewContribution as? SwiftUIViewContribution {
-                let swiftUIView = swiftUIContrib.makeSwiftUIView(context: context)
-                rootViewController = UIHostingController(rootView: swiftUIView)
-            } else {
-                print("⚠️ No view builder for main view")
+
+            // Build the main view controller from resolved contribution
+            let anyVC = resolved.makeViewController()
+            guard let rootViewController = anyVC.build() as? UIViewController else {
+                print("⚠️ Failed to build main view controller")
                 return
             }
             

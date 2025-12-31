@@ -19,6 +19,6 @@ public enum LifecyclePhase: CaseIterable {
 
 /// Types that participate in lifecycle orchestration.
 public protocol LifecycleRunnable {
-    /// Called by the kernel for each lifecycle phase, after dependencies.
-    func run(phase: LifecyclePhase, context: AppContext) async
+    /// Called by the kernel for each lifecycle phase.
+    func run(phase: LifecyclePhase) async
 }

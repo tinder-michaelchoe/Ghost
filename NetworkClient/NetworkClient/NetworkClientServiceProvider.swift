@@ -8,12 +8,12 @@
 import CoreContracts
 import Foundation
 
-/// Service provider that registers the NetworkClient service.
+/// Service provider that registers the NetworkRequestPerforming service.
 public final class NetworkClientServiceProvider: ServiceProvider {
     public init() {}
 
     public func registerServices(_ registry: ServiceRegistry) {
-        registry.register(NetworkClient.self) { _ in
+        registry.register(NetworkRequestPerforming.self) {
             URLSessionNetworkClient.jsonAPI()
         }
     }

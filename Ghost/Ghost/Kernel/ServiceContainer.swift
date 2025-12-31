@@ -9,14 +9,13 @@ import AppFoundation
 import Foundation
 import CoreContracts
 
-/// Unified thread-safe service container that stores factories, instances, and AppContext.
+/// Unified thread-safe service container that stores factories and instances.
 /// Uses NSRecursiveLock for thread safety to allow nested resolution (e.g., service A depending on service B).
 /// Implements ServiceRegistry, ServiceResolver, and ServiceValidating protocols.
 public final class ServiceContainer: ServiceContainerType {
     private let lock = NSRecursiveLock()
-    private var factories: [String: (AppContext) -> Any] = [:]
+    private var factories: [String: () -> Any] = [:]
     private var instances: [String: Any] = [:]
-    private var appContext: AppContext?
 
     /// Dependency graph: service type -> [dependency types]
     private var dependencyGraph: DAG<String> = DAG()
@@ -32,40 +31,31 @@ public final class ServiceContainer: ServiceContainerType {
 
     public init() {}
 
-    /// Set the AppContext for service resolution.
-    /// Must be called after services are registered and context is created.
-    /// - Parameter context: The app context to use for service resolution
-    public func setContext(_ context: AppContext) {
-        lock.lock()
-        defer { lock.unlock() }
-        self.appContext = context
-    }
-
     // MARK: - ServiceRegistry
 
-    /// Register a service factory without explicit dependencies (legacy).
+    /// Register a service with no dependencies.
     /// - Parameters:
     ///   - type: The service type to register
     ///   - factory: The factory closure that creates the service instance
-    public func register<T>(_ type: T.Type, factory: @escaping (AppContext) -> T) {
+    public func register<T>(_ type: T.Type, factory: @escaping () -> T) {
         lock.lock()
         defer { lock.unlock() }
         let key = String(describing: type)
         registeredServices.insert(key)
         dependencyGraph.addNode(key)
-        factories[key] = { factory($0) }
+        factories[key] = { factory() }
     }
 
     /// Register a service with explicit dependencies using parameter packs.
-    /// Dependencies are resolved and passed to the factory along with ServiceContext.
+    /// Dependencies are resolved and passed to the factory.
     /// - Parameters:
     ///   - type: The service type to register
     ///   - dependencies: A tuple of dependency types that this service requires
-    ///   - factory: The factory closure that receives ServiceContext and resolved dependencies
+    ///   - factory: The factory closure that receives resolved dependencies
     public func register<T, each D>(
         _ type: T.Type,
         dependencies: (repeat (each D).Type),
-        factory: @escaping (ServiceContext, repeat each D) -> T
+        factory: @escaping (repeat each D) -> T
     ) {
         lock.lock()
         defer { lock.unlock() }
@@ -89,45 +79,33 @@ public final class ServiceContainer: ServiceContainerType {
         }
 
         // Store factory that resolves dependencies and calls the provided factory
-        factories[key] = { [weak self] context in
+        factories[key] = { [weak self] in
             guard let self = self else { fatalError("ServiceContainer deallocated") }
 
-            let serviceContext = ServiceContext(
-                config: context.config,
-                uiRegistry: context.uiRegistry
-            )
-
             // Resolve each dependency - force unwrap since validation should catch missing deps
-            let resolved: (repeat each D) = (repeat self.resolveUnlocked((each D).self, context: context)!)
+            let resolved: (repeat each D) = (repeat self.resolveUnlocked((each D).self)!)
 
-            return factory(serviceContext, repeat each resolved)
+            return factory(repeat each resolved)
         }
     }
 
     // MARK: - ServiceResolver
 
     /// Resolve a service by type (synchronous).
-    /// Uses the stored AppContext for service creation.
     /// - Parameter type: The service type to resolve
-    /// - Returns: The resolved service instance, or nil if not found or context not set
+    /// - Returns: The resolved service instance, or nil if not found
     public func resolve<T>(_ type: T.Type) -> T? {
         lock.lock()
         defer { lock.unlock() }
-
-        guard let context = appContext else {
-            return nil
-        }
-        return resolveUnlocked(type, context: context)
+        return resolveUnlocked(type)
     }
 
-    /// Resolve a service by type with explicit context (internal).
+    /// Resolve a service by type (internal).
     /// Assumes lock is already held.
     /// Pre-resolves all dependencies in topological order before creating the service.
-    /// - Parameters:
-    ///   - type: The service type to resolve
-    ///   - context: The app context to use for service creation
+    /// - Parameter type: The service type to resolve
     /// - Returns: The resolved service instance, or nil if not found
-    private func resolveUnlocked<T>(_ type: T.Type, context: AppContext) -> T? {
+    private func resolveUnlocked<T>(_ type: T.Type) -> T? {
         let key = String(describing: type)
 
         // Check for cached instance
@@ -143,7 +121,7 @@ public final class ServiceContainer: ServiceContainerType {
 
             // Resolve the dependency (this will cache it)
             if let factory = factories[depKey] {
-                instances[depKey] = factory(context)
+                instances[depKey] = factory()
             }
         }
 
@@ -152,7 +130,7 @@ public final class ServiceContainer: ServiceContainerType {
             return nil
         }
 
-        let instance = factory(context) as? T
+        let instance = factory() as? T
         if let instance = instance {
             instances[key] = instance
         }

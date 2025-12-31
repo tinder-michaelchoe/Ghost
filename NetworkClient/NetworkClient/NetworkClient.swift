@@ -10,8 +10,8 @@ import Foundation
 
 // MARK: - URL Session Network Client
 
-/// Default implementation of NetworkClient using URLSession
-public final class URLSessionNetworkClient: NetworkClient, @unchecked Sendable {
+/// Default implementation of NetworkRequestPerforming using URLSession
+public final class URLSessionNetworkClient: NetworkRequestPerforming, @unchecked Sendable {
 
     // MARK: - Properties
 

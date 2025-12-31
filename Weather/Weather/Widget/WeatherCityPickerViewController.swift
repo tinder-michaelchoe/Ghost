@@ -14,8 +14,8 @@ final class WeatherCityPickerViewController: UIViewController {
 
     // MARK: - Properties
 
-    private let context: AppContext
-    private let locations = WeatherLocationStore.availableLocations
+    private let persistenceService: PersistenceService
+    private let locations = WeatherLocations.available
 
     // MARK: - UI Components
 
@@ -38,8 +38,8 @@ final class WeatherCityPickerViewController: UIViewController {
 
     // MARK: - Init
 
-    init(context: AppContext) {
-        self.context = context
+    init(persistenceService: PersistenceService) {
+        self.persistenceService = persistenceService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -75,7 +75,7 @@ final class WeatherCityPickerViewController: UIViewController {
         ])
 
         // Create city buttons
-        let selectedIndex = WeatherLocationStore.shared.selectedIndex
+        let selectedIndex = WeatherLocations.selectedIndex(from: persistenceService)
 
         for (index, location) in locations.enumerated() {
             let button = createCityButton(
@@ -107,10 +107,10 @@ final class WeatherCityPickerViewController: UIViewController {
     // MARK: - Actions
 
     @objc private func cityTapped(_ sender: UIButton) {
-        let previousIndex = WeatherLocationStore.shared.selectedIndex
+        let previousIndex = WeatherLocations.selectedIndex(from: persistenceService)
 
         // Update selection
-        WeatherLocationStore.shared.selectedIndex = sender.tag
+        WeatherLocations.setSelectedIndex(sender.tag, using: persistenceService)
 
         // Update button appearances
         for case let button as UIButton in stackView.arrangedSubviews {

@@ -17,7 +17,7 @@ public final class NWSWeatherService: WeatherService, @unchecked Sendable {
 
     // MARK: - Properties
 
-    private let networkClient: NetworkClient
+    private let networkClient: NetworkRequestPerforming
     private let userAgent: String
 
     private static let baseURL = "https://api.weather.gov"
@@ -32,7 +32,7 @@ public final class NWSWeatherService: WeatherService, @unchecked Sendable {
     /// - Parameters:
     ///   - networkClient: The network client to use for requests
     ///   - userAgent: Required User-Agent header (e.g., "MyApp contact@example.com")
-    public init(networkClient: NetworkClient, userAgent: String) {
+    public init(networkClient: NetworkRequestPerforming, userAgent: String) {
         self.networkClient = networkClient
         self.userAgent = userAgent
     }

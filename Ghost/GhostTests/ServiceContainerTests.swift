@@ -66,20 +66,6 @@ final class MockServiceD: ServiceD {
     }
 }
 
-// MARK: - Mock UI Registry
-
-final class MockUIRegistry: UIRegistryContributing, @unchecked Sendable {
-    func contribute<T: UISurface>(to surface: T, item: some ViewContribution) {}
-    func contributions<T: UISurface>(for surface: T) -> [any ViewContribution] { [] }
-}
-
-// MARK: - Test Helpers
-
-func makeTestContext(services: ServiceResolver) -> AppContext {
-    let buildInfo = BuildInfo(appVersion: "1.0", buildNumber: "1")
-    let config = AppConfig(buildInfo: buildInfo)
-    return AppContext(services: services, config: config, uiRegistry: MockUIRegistry())
-}
 
 // MARK: - Basic Registration Tests
 
@@ -91,11 +77,9 @@ struct ServiceContainerBasicTests {
     func registerAndResolve() {
         let container = ServiceContainer()
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             MockServiceA(identifier: "TestA")
         }
-
-        container.setContext(makeTestContext(services: container))
 
         let resolved = container.resolve(ServiceA.self)
         #expect(resolved != nil)
@@ -105,21 +89,7 @@ struct ServiceContainerBasicTests {
     @Test("Resolve unregistered service returns nil")
     func resolveUnregisteredReturnsNil() {
         let container = ServiceContainer()
-        container.setContext(makeTestContext(services: container))
 
-        let resolved = container.resolve(ServiceA.self)
-        #expect(resolved == nil)
-    }
-
-    @Test("Resolve without context returns nil")
-    func resolveWithoutContextReturnsNil() {
-        let container = ServiceContainer()
-
-        container.register(ServiceA.self) { _ in
-            MockServiceA()
-        }
-
-        // Don't set context
         let resolved = container.resolve(ServiceA.self)
         #expect(resolved == nil)
     }
@@ -129,12 +99,10 @@ struct ServiceContainerBasicTests {
         let container = ServiceContainer()
         var callCount = 0
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             callCount += 1
             return MockServiceA(identifier: "Instance-\(callCount)")
         }
-
-        container.setContext(makeTestContext(services: container))
 
         let first = container.resolve(ServiceA.self)
         let second = container.resolve(ServiceA.self)
@@ -147,11 +115,9 @@ struct ServiceContainerBasicTests {
     func multipleServicesRegistered() {
         let container = ServiceContainer()
 
-        container.register(ServiceA.self) { _ in MockServiceA(identifier: "A") }
-        container.register(ServiceB.self) { _ in MockServiceB(identifier: "B") }
-        container.register(ServiceC.self) { _ in MockServiceC(identifier: "C") }
-
-        container.setContext(makeTestContext(services: container))
+        container.register(ServiceA.self) { MockServiceA(identifier: "A") }
+        container.register(ServiceB.self) { MockServiceB(identifier: "B") }
+        container.register(ServiceC.self) { MockServiceC(identifier: "C") }
 
         #expect(container.resolve(ServiceA.self)?.identifier == "A")
         #expect(container.resolve(ServiceB.self)?.identifier == "B")
@@ -162,10 +128,8 @@ struct ServiceContainerBasicTests {
     func overwritingRegistration() {
         let container = ServiceContainer()
 
-        container.register(ServiceA.self) { _ in MockServiceA(identifier: "First") }
-        container.register(ServiceA.self) { _ in MockServiceA(identifier: "Second") }
-
-        container.setContext(makeTestContext(services: container))
+        container.register(ServiceA.self) { MockServiceA(identifier: "First") }
+        container.register(ServiceA.self) { MockServiceA(identifier: "Second") }
 
         let resolved = container.resolve(ServiceA.self)
         #expect(resolved?.identifier == "Second")
@@ -182,15 +146,13 @@ struct ServiceContainerDependencyTests {
     func registerWithSingleDependency() {
         let container = ServiceContainer()
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             MockServiceA(identifier: "DependencyA")
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { context, serviceA in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { serviceA in
             MockServiceB(identifier: "ServiceB-with-\(serviceA.identifier)", serviceA: serviceA)
         }
-
-        container.setContext(makeTestContext(services: container))
 
         let resolved = container.resolve(ServiceB.self) as? MockServiceB
         #expect(resolved != nil)
@@ -202,14 +164,12 @@ struct ServiceContainerDependencyTests {
     func registerWithMultipleDependencies() {
         let container = ServiceContainer()
 
-        container.register(ServiceA.self) { _ in MockServiceA(identifier: "A") }
-        container.register(ServiceB.self) { _ in MockServiceB(identifier: "B") }
+        container.register(ServiceA.self) { MockServiceA(identifier: "A") }
+        container.register(ServiceB.self) { MockServiceB(identifier: "B") }
 
-        container.register(ServiceC.self, dependencies: (ServiceA.self, ServiceB.self)) { context, serviceA, serviceB in
+        container.register(ServiceC.self, dependencies: (ServiceA.self, ServiceB.self)) { serviceA, serviceB in
             MockServiceC(identifier: "C-\(serviceA.identifier)-\(serviceB.identifier)", serviceA: serviceA, serviceB: serviceB)
         }
-
-        container.setContext(makeTestContext(services: container))
 
         let resolved = container.resolve(ServiceC.self) as? MockServiceC
         #expect(resolved != nil)
@@ -223,41 +183,21 @@ struct ServiceContainerDependencyTests {
         let container = ServiceContainer()
 
         // A has no dependencies
-        container.register(ServiceA.self) { _ in MockServiceA(identifier: "BaseA") }
+        container.register(ServiceA.self) { MockServiceA(identifier: "BaseA") }
 
         // B depends on A
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { context, serviceA in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { serviceA in
             MockServiceB(identifier: "B-from-\(serviceA.identifier)", serviceA: serviceA)
         }
 
         // C depends on B (which depends on A)
-        container.register(ServiceC.self, dependencies: (ServiceB.self)) { context, serviceB in
+        container.register(ServiceC.self, dependencies: (ServiceB.self)) { serviceB in
             MockServiceC(identifier: "C-from-\(serviceB.identifier)", serviceB: serviceB)
         }
-
-        container.setContext(makeTestContext(services: container))
 
         let resolved = container.resolve(ServiceC.self) as? MockServiceC
         #expect(resolved != nil)
         #expect(resolved?.identifier == "C-from-B-from-BaseA")
-    }
-
-    @Test("ServiceContext has correct config")
-    func serviceContextHasConfig() {
-        let container = ServiceContainer()
-        var capturedContext: ServiceContext?
-
-        container.register(ServiceA.self, dependencies: ()) { context in
-            capturedContext = context
-            return MockServiceA()
-        }
-
-        container.setContext(makeTestContext(services: container))
-        _ = container.resolve(ServiceA.self)
-
-        #expect(capturedContext != nil)
-        #expect(capturedContext?.config.buildInfo.appVersion == "1.0")
-        #expect(capturedContext?.config.buildInfo.buildNumber == "1")
     }
 
     @Test("Dependencies are resolved only once (cached)")
@@ -265,20 +205,18 @@ struct ServiceContainerDependencyTests {
         let container = ServiceContainer()
         var serviceACallCount = 0
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             serviceACallCount += 1
             return MockServiceA(identifier: "A-\(serviceACallCount)")
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { context, serviceA in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { serviceA in
             MockServiceB(serviceA: serviceA)
         }
 
-        container.register(ServiceC.self, dependencies: (ServiceA.self)) { context, serviceA in
+        container.register(ServiceC.self, dependencies: (ServiceA.self)) { serviceA in
             MockServiceC(serviceA: serviceA)
         }
-
-        container.setContext(makeTestContext(services: container))
 
         _ = container.resolve(ServiceB.self)
         _ = container.resolve(ServiceC.self)
@@ -303,8 +241,8 @@ struct ServiceContainerValidationTests {
     func noDependenciesValidates() {
         let container = ServiceContainer()
 
-        container.register(ServiceA.self) { _ in MockServiceA() }
-        container.register(ServiceB.self) { _ in MockServiceB() }
+        container.register(ServiceA.self) { MockServiceA() }
+        container.register(ServiceB.self) { MockServiceB() }
 
         let errors = container.validate()
         #expect(errors.isEmpty)
@@ -314,8 +252,8 @@ struct ServiceContainerValidationTests {
     func satisfiedDependenciesValidate() {
         let container = ServiceContainer()
 
-        container.register(ServiceA.self) { _ in MockServiceA() }
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceA.self) { MockServiceA() }
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             MockServiceB(serviceA: a)
         }
 
@@ -328,7 +266,7 @@ struct ServiceContainerValidationTests {
         let container = ServiceContainer()
 
         // Register B with dependency on A, but don't register A
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             MockServiceB(serviceA: a)
         }
 
@@ -348,7 +286,7 @@ struct ServiceContainerValidationTests {
         let container = ServiceContainer()
 
         // Register C with dependencies on A and B, but don't register either
-        container.register(ServiceC.self, dependencies: (ServiceA.self, ServiceB.self)) { _, a, b in
+        container.register(ServiceC.self, dependencies: (ServiceA.self, ServiceB.self)) { a, b in
             MockServiceC(serviceA: a, serviceB: b)
         }
 
@@ -371,12 +309,12 @@ struct ServiceContainerValidationTests {
         let container = ServiceContainer()
 
         // A depends on B
-        container.register(ServiceA.self, dependencies: (ServiceB.self)) { _, b in
+        container.register(ServiceA.self, dependencies: (ServiceB.self)) { b in
             MockServiceA()
         }
 
         // B depends on A - creates cycle
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             MockServiceB()
         }
 
@@ -393,15 +331,15 @@ struct ServiceContainerValidationTests {
     func cyclicDependencyThreeServices() {
         let container = ServiceContainer()
 
-        container.register(ServiceA.self, dependencies: (ServiceC.self)) { _, c in
+        container.register(ServiceA.self, dependencies: (ServiceC.self)) { c in
             MockServiceA()
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             MockServiceB()
         }
 
-        container.register(ServiceC.self, dependencies: (ServiceB.self)) { _, b in
+        container.register(ServiceC.self, dependencies: (ServiceB.self)) { b in
             MockServiceC()
         }
 
@@ -453,57 +391,36 @@ struct ServiceContainerEdgeCaseTests {
         let container = ServiceContainer()
 
         // Register B first (depends on A)
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             MockServiceB(identifier: "B-\(a.identifier)", serviceA: a)
         }
 
         // Register A second
-        container.register(ServiceA.self) { _ in MockServiceA(identifier: "A") }
-
-        container.setContext(makeTestContext(services: container))
+        container.register(ServiceA.self) { MockServiceA(identifier: "A") }
 
         let resolved = container.resolve(ServiceB.self) as? MockServiceB
         #expect(resolved?.identifier == "B-A")
     }
 
-    @Test("Legacy and new registration can coexist")
-    func legacyAndNewCoexist() {
+    @Test("No-dependency and dependency registrations can coexist")
+    func noDependencyAndDependencyCoexist() {
         let container = ServiceContainer()
 
-        // Legacy registration
-        container.register(ServiceA.self) { context in
-            MockServiceA(identifier: "Legacy-A")
+        // No-dependency registration
+        container.register(ServiceA.self) {
+            MockServiceA(identifier: "Simple-A")
         }
 
-        // New registration with dependencies
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { context, a in
-            MockServiceB(identifier: "New-B-\(a.identifier)", serviceA: a)
+        // Registration with dependencies
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
+            MockServiceB(identifier: "B-\(a.identifier)", serviceA: a)
         }
-
-        container.setContext(makeTestContext(services: container))
 
         let resolvedA = container.resolve(ServiceA.self)
         let resolvedB = container.resolve(ServiceB.self) as? MockServiceB
 
-        #expect(resolvedA?.identifier == "Legacy-A")
-        #expect(resolvedB?.identifier == "New-B-Legacy-A")
-    }
-
-    @Test("Service with zero dependencies using new API")
-    func zeroDependenciesNewAPI() {
-        let container = ServiceContainer()
-
-        container.register(ServiceA.self, dependencies: ()) { context in
-            MockServiceA(identifier: "ZeroDeps")
-        }
-
-        container.setContext(makeTestContext(services: container))
-
-        let resolved = container.resolve(ServiceA.self)
-        #expect(resolved?.identifier == "ZeroDeps")
-
-        let errors = container.validate()
-        #expect(errors.isEmpty)
+        #expect(resolvedA?.identifier == "Simple-A")
+        #expect(resolvedB?.identifier == "B-Simple-A")
     }
 
     @Test("Diamond dependency pattern")
@@ -520,24 +437,22 @@ struct ServiceContainerEdgeCaseTests {
         let container = ServiceContainer()
         var aCreationCount = 0
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             aCreationCount += 1
             return MockServiceA(identifier: "A-\(aCreationCount)")
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             MockServiceB(identifier: "B-\(a.identifier)", serviceA: a)
         }
 
-        container.register(ServiceC.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceC.self, dependencies: (ServiceA.self)) { a in
             MockServiceC(identifier: "C-\(a.identifier)", serviceA: a)
         }
 
-        container.register(ServiceD.self, dependencies: (ServiceB.self, ServiceC.self)) { _, b, c in
+        container.register(ServiceD.self, dependencies: (ServiceB.self, ServiceC.self)) { b, c in
             MockServiceD(identifier: "D-\(b.identifier)-\(c.identifier)")
         }
-
-        container.setContext(makeTestContext(services: container))
 
         let errors = container.validate()
         #expect(errors.isEmpty, "Diamond dependency should be valid")
@@ -552,7 +467,7 @@ struct ServiceContainerEdgeCaseTests {
         let container = ServiceContainer()
 
         // A depends on itself
-        container.register(ServiceA.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceA.self, dependencies: (ServiceA.self)) { a in
             MockServiceA()
         }
 
@@ -573,22 +488,20 @@ struct ServiceContainerTopologicalOrderTests {
         let container = ServiceContainer()
         var resolutionOrder: [String] = []
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             resolutionOrder.append("A")
             return MockServiceA(identifier: "A")
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             resolutionOrder.append("B")
             return MockServiceB(identifier: "B", serviceA: a)
         }
 
-        container.register(ServiceC.self, dependencies: (ServiceB.self)) { _, b in
+        container.register(ServiceC.self, dependencies: (ServiceB.self)) { b in
             resolutionOrder.append("C")
             return MockServiceC(identifier: "C", serviceB: b)
         }
-
-        container.setContext(makeTestContext(services: container))
 
         // Resolve C - should resolve A, then B, then C
         _ = container.resolve(ServiceC.self)
@@ -608,27 +521,25 @@ struct ServiceContainerTopologicalOrderTests {
         let container = ServiceContainer()
         var resolutionOrder: [String] = []
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             resolutionOrder.append("A")
             return MockServiceA(identifier: "A")
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             resolutionOrder.append("B")
             return MockServiceB(identifier: "B", serviceA: a)
         }
 
-        container.register(ServiceC.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceC.self, dependencies: (ServiceA.self)) { a in
             resolutionOrder.append("C")
             return MockServiceC(identifier: "C", serviceA: a)
         }
 
-        container.register(ServiceD.self, dependencies: (ServiceB.self, ServiceC.self)) { _, b, c in
+        container.register(ServiceD.self, dependencies: (ServiceB.self, ServiceC.self)) { b, c in
             resolutionOrder.append("D")
             return MockServiceD(identifier: "D")
         }
-
-        container.setContext(makeTestContext(services: container))
 
         // Resolve D
         _ = container.resolve(ServiceD.self)
@@ -653,27 +564,25 @@ struct ServiceContainerTopologicalOrderTests {
         let container = ServiceContainer()
         var resolutionOrder: [String] = []
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             resolutionOrder.append("A")
             return MockServiceA(identifier: "A")
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             resolutionOrder.append("B")
             return MockServiceB(identifier: "B", serviceA: a)
         }
 
-        container.register(ServiceC.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceC.self, dependencies: (ServiceA.self)) { a in
             resolutionOrder.append("C")
             return MockServiceC(identifier: "C", serviceA: a)
         }
 
-        container.register(ServiceD.self, dependencies: (ServiceB.self, ServiceC.self)) { _, b, c in
+        container.register(ServiceD.self, dependencies: (ServiceB.self, ServiceC.self)) { b, c in
             resolutionOrder.append("D")
             return MockServiceD(identifier: "D")
         }
-
-        container.setContext(makeTestContext(services: container))
 
         _ = container.resolve(ServiceD.self)
 
@@ -691,22 +600,20 @@ struct ServiceContainerTopologicalOrderTests {
         let container = ServiceContainer()
         var resolutionOrder: [String] = []
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             resolutionOrder.append("A")
             return MockServiceA(identifier: "A")
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             resolutionOrder.append("B")
             return MockServiceB(identifier: "B", serviceA: a)
         }
 
-        container.register(ServiceC.self) { _ in
+        container.register(ServiceC.self) {
             resolutionOrder.append("C")
             return MockServiceC(identifier: "C")
         }
-
-        container.setContext(makeTestContext(services: container))
 
         // Resolve B - should only resolve A and B, not C
         _ = container.resolve(ServiceB.self)
@@ -721,27 +628,25 @@ struct ServiceContainerTopologicalOrderTests {
         let container = ServiceContainer()
         var resolutionOrder: [String] = []
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             resolutionOrder.append("A")
             return MockServiceA(identifier: "A")
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             resolutionOrder.append("B")
             return MockServiceB(identifier: "B", serviceA: a)
         }
 
-        container.register(ServiceC.self, dependencies: (ServiceB.self)) { _, b in
+        container.register(ServiceC.self, dependencies: (ServiceB.self)) { b in
             resolutionOrder.append("C")
             return MockServiceC(identifier: "C", serviceB: b)
         }
 
-        container.register(ServiceD.self, dependencies: (ServiceC.self)) { _, c in
+        container.register(ServiceD.self, dependencies: (ServiceC.self)) { c in
             resolutionOrder.append("D")
             return MockServiceD(identifier: "D")
         }
-
-        container.setContext(makeTestContext(services: container))
 
         _ = container.resolve(ServiceD.self)
 
@@ -755,27 +660,25 @@ struct ServiceContainerTopologicalOrderTests {
         let container = ServiceContainer()
         var resolutionOrder: [String] = []
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             resolutionOrder.append("A")
             return MockServiceA(identifier: "A")
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             resolutionOrder.append("B")
             return MockServiceB(identifier: "B", serviceA: a)
         }
 
-        container.register(ServiceC.self, dependencies: (ServiceB.self)) { _, b in
+        container.register(ServiceC.self, dependencies: (ServiceB.self)) { b in
             resolutionOrder.append("C")
             return MockServiceC(identifier: "C", serviceB: b)
         }
 
-        container.register(ServiceD.self, dependencies: (ServiceC.self)) { _, c in
+        container.register(ServiceD.self, dependencies: (ServiceC.self)) { c in
             resolutionOrder.append("D")
             return MockServiceD(identifier: "D")
         }
-
-        container.setContext(makeTestContext(services: container))
 
         // Resolve B only
         _ = container.resolve(ServiceB.self)
@@ -790,22 +693,20 @@ struct ServiceContainerTopologicalOrderTests {
         let container = ServiceContainer()
         var resolutionOrder: [String] = []
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             resolutionOrder.append("A")
             return MockServiceA(identifier: "A")
         }
 
-        container.register(ServiceB.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceB.self, dependencies: (ServiceA.self)) { a in
             resolutionOrder.append("B")
             return MockServiceB(identifier: "B", serviceA: a)
         }
 
-        container.register(ServiceC.self, dependencies: (ServiceA.self)) { _, a in
+        container.register(ServiceC.self, dependencies: (ServiceA.self)) { a in
             resolutionOrder.append("C")
             return MockServiceC(identifier: "C", serviceA: a)
         }
-
-        container.setContext(makeTestContext(services: container))
 
         // Resolve B first
         _ = container.resolve(ServiceB.self)
@@ -829,14 +730,12 @@ struct ServiceContainerThreadSafetyTests {
         var creationCount = 0
         let lock = NSLock()
 
-        container.register(ServiceA.self) { _ in
+        container.register(ServiceA.self) {
             lock.lock()
             creationCount += 1
             lock.unlock()
             return MockServiceA(identifier: "Concurrent")
         }
-
-        container.setContext(makeTestContext(services: container))
 
         // Resolve concurrently from multiple tasks
         await withTaskGroup(of: ServiceA?.self) { group in
@@ -862,13 +761,12 @@ struct ServiceContainerThreadSafetyTests {
     @Test("Concurrent registration and resolution")
     func concurrentRegistrationAndResolution() async {
         let container = ServiceContainer()
-        container.setContext(makeTestContext(services: container))
 
         await withTaskGroup(of: Void.self) { group in
             // Register services concurrently
             for i in 0..<10 {
                 group.addTask {
-                    await container.register(ServiceA.self) { _ in
+                    await container.register(ServiceA.self) {
                         MockServiceA(identifier: "A-\(i)")
                     }
                 }

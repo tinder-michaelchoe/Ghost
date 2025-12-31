@@ -6,38 +6,28 @@
 //
 
 import CoreContracts
-import Foundation
-import SwiftUI
+import UIKit
 
-/// Contribution for the home tab that provides a SwiftUI view with tab bar metadata.
-struct HomeTabContribution: UIKitViewContribution, TabBarItemProviding {
-    let id: ViewContributionID
-    let tabBarTitle: String?
-    let tabBarIconSystemName: String?
-    
-    init(
-        id: ViewContributionID = ViewContributionID(rawValue: "builder-tab-item"),
-        title: String? = "Builder",
-        iconSystemName: String? = "batteryblock"
-    ) {
-        self.id = id
-        self.tabBarTitle = title
-        self.tabBarIconSystemName = iconSystemName
-    }
-    
-    func makeViewController(context: AppContext) -> AnyViewController {
-        return AnyViewController {
-            BuilderViewController(nibName: nil, bundle: nil)
-        }
-    }
+// MARK: - Builder Tab Contribution
+
+struct BuilderTabContribution: ViewContribution, TabBarItemProviding, Sendable {
+    let id = ViewContributionID(rawValue: "builder-tab-item")
+    let tabBarTitle: String? = "Builder"
+    let tabBarIconSystemName: String? = "batteryblock"
 }
 
-/// UI provider that contributes a TabBarController to the mainView surface.
+// MARK: - Builder UI Provider
+
+/// UI provider that contributes the builder tab.
 public final class BuilderUIProvider: UIProvider {
     public init() {}
-    
-    public func registerUI(_ registry: UIRegistryContributing) async {
-        let contribution = HomeTabContribution()
-        registry.contribute(to: TabBarUISurface.builder, item: contribution)
+
+    public func registerUI(_ registry: UIRegistryContributing) {
+        registry.contribute(
+            to: TabBarUISurface.builder,
+            contribution: BuilderTabContribution()
+        ) {
+            BuilderViewController(nibName: nil, bundle: nil)
+        }
     }
 }

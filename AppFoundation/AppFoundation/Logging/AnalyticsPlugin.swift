@@ -10,27 +10,26 @@ import CoreContracts
 /// Analytics module that provides analytics service and starts in postUI phase.
 /// Conforms to ServiceProvider (registers services) and LifecycleParticipant (starts in postUI).
 public final class AnalyticsServiceProvider: ServiceProvider, LifecycleParticipant {
+    /// The analytics service instance created during registration
+    private var analytics: AnalyticsService?
+
     public init() {}
-    
+
     public func registerServices(_ registry: ServiceRegistry) {
-        registry.register(AnalyticsService.self) { _ in
-            // Get all registered logging services
-            // For now, create with default loggers
-            // In a more sophisticated system, you might query the service container
-            // for all LoggingService instances
-            AnalyticsServiceImpl(loggers: [
-                ConsoleLogger(),
-                FileLogger()
-            ])
+        let analytics = AnalyticsServiceImpl(loggers: [
+            ConsoleLogger(),
+            FileLogger()
+        ])
+        self.analytics = analytics
+        registry.register(AnalyticsService.self) {
+            analytics
         }
     }
-    
-    public func run(phase: LifecyclePhase, context: AppContext) async {
+
+    public func run(phase: LifecyclePhase) async {
         if phase == .postUI {
-            if let analytics = context.services.resolve(AnalyticsService.self) {
-                analytics.start()
-                analytics.track("app_launched", parameters: nil)
-            }
+            analytics?.start()
+            analytics?.track("app_launched", parameters: nil)
         }
     }
 }

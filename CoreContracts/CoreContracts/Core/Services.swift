@@ -10,28 +10,17 @@ import Foundation
 
 public typealias ServiceContainerType = ServiceRegistry & ServiceResolver & ServiceValidating
 
-/// Context passed to service factories (AppContext without services to prevent circular resolution).
-public struct ServiceContext {
-    public let config: AppConfig
-    public let uiRegistry: UIRegistryContributing
-
-    public init(config: AppConfig, uiRegistry: UIRegistryContributing) {
-        self.config = config
-        self.uiRegistry = uiRegistry
-    }
-}
-
-/// Registers services by protocol type with an associated capability.
+/// Registers services by protocol type with explicit dependencies.
 public protocol ServiceRegistry {
-    /// Register a service without explicit dependencies (legacy).
-    func register<T>(_ type: T.Type, factory: @escaping (AppContext) -> T)
+    /// Register a service with no dependencies.
+    func register<T>(_ type: T.Type, factory: @escaping () -> T)
 
     /// Register a service with explicit dependencies using parameter packs.
-    /// Dependencies are resolved and passed to the factory along with ServiceContext.
+    /// Dependencies are resolved and passed to the factory.
     func register<T, each D>(
         _ type: T.Type,
         dependencies: (repeat (each D).Type),
-        factory: @escaping (ServiceContext, repeat each D) -> T
+        factory: @escaping (repeat each D) -> T
     )
 }
 

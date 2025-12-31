@@ -10,7 +10,9 @@ import UIKit
 
 // MARK: - Weather Widget Contribution
 
-public struct WeatherWidgetContribution: WidgetContribution {
+/// Metadata for the weather widget contribution.
+/// The factory is registered separately in WeatherUIProvider.
+public struct WeatherWidgetContribution: WidgetContribution, Sendable {
 
     // MARK: - ViewContribution
 
@@ -25,16 +27,4 @@ public struct WeatherWidgetContribution: WidgetContribution {
     // MARK: - Init
 
     public init() {}
-
-    // MARK: - View Factory
-
-    @MainActor
-    public func makeFrontViewController(context: AppContext) -> UIViewController {
-        WeatherWidgetViewController(context: context)
-    }
-
-    @MainActor
-    public func makeBackViewController(context: AppContext) -> UIViewController? {
-        WeatherCityPickerViewController(context: context)
-    }
 }

@@ -11,8 +11,19 @@ import CoreContracts
 public final class WeatherUIProvider: UIProvider {
     public init() {}
 
-    public func registerUI(_ registry: UIRegistryContributing) async {
-        let contribution = WeatherWidgetContribution()
-        registry.contribute(to: DashboardUISurface.widgets, item: contribution)
+    public func registerUI(_ registry: UIRegistryContributing) {
+        // Register widget as a regular contribution
+        // The factory returns a FlippableWidgetProviding container
+        registry.contribute(
+            to: DashboardUISurface.widgets,
+            contribution: WeatherWidgetContribution(),
+            dependencies: (WeatherService.self, PersistenceService.self),
+            factory: { weatherService, persistenceService in
+                WeatherWidgetContainer(
+                    weatherService: weatherService,
+                    persistenceService: persistenceService
+                )
+            }
+        )
     }
 }

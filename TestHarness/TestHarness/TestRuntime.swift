@@ -13,7 +13,7 @@ import CoreContracts
 /// Usage:
 /// ```swift
 /// let runtime = TestRuntime()
-/// runtime.registerMock(NetworkClient.self) { MockNetworkClient() }
+/// runtime.registerMock(NetworkRequestPerforming.self) { MockNetworkClient() }
 /// runtime.registerMock(SecretsProvider.self) { MockSecretsProvider() }
 ///
 /// let weatherService = try runtime.resolve(WeatherService.self)
@@ -23,7 +23,6 @@ public final class TestRuntime {
     // MARK: - Properties
 
     private let container: TestContainer
-    private var contextCreated = false
 
     // MARK: - Init
 
@@ -38,7 +37,7 @@ public final class TestRuntime {
     ///   - type: The service protocol type to mock
     ///   - factory: A closure that creates the mock instance
     public func registerMock<T>(_ type: T.Type, factory: @escaping () -> T) {
-        container.register(type) { _ in factory() }
+        container.register(type) { factory() }
     }
 
     /// Register a mock instance directly for a service type.
@@ -46,7 +45,7 @@ public final class TestRuntime {
     ///   - type: The service protocol type to mock
     ///   - mock: The mock instance to return when resolved
     public func registerMock<T>(_ type: T.Type, mock: T) {
-        container.register(type) { _ in mock }
+        container.register(type) { mock }
     }
 
     // MARK: - Service Registration
@@ -65,8 +64,6 @@ public final class TestRuntime {
     /// - Returns: The resolved service instance
     /// - Throws: `TestRuntimeError` if dependencies are missing or there are cycles
     public func resolve<T>(_ type: T.Type) throws -> T {
-        ensureContext()
-
         let errors = container.validate()
         if !errors.isEmpty {
             throw TestRuntimeError.validationFailed(errors: errors)
@@ -83,7 +80,6 @@ public final class TestRuntime {
     /// - Parameter type: The service type to resolve
     /// - Returns: The resolved service instance, or nil if not found
     public func resolveUnchecked<T>(_ type: T.Type) -> T? {
-        ensureContext()
         return container.resolve(type)
     }
 
@@ -94,19 +90,6 @@ public final class TestRuntime {
     public func validate() -> [ServiceValidationError] {
         container.validate()
     }
-
-    // MARK: - Private
-
-    private func ensureContext() {
-        guard !contextCreated else { return }
-        contextCreated = true
-
-        let buildInfo = BuildInfo(appVersion: "1.0.0-test", buildNumber: "0")
-        let config = AppConfig(buildInfo: buildInfo)
-        let uiRegistry = TestUIRegistry()
-        let context = AppContext(services: container, config: config, uiRegistry: uiRegistry)
-        container.setContext(context)
-    }
 }
 
 // MARK: - Test Container
@@ -115,30 +98,25 @@ public final class TestRuntime {
 /// Implements the same protocols as the production ServiceContainer.
 private final class TestContainer: ServiceContainerType {
 
-    private var factories: [String: (AppContext) -> Any] = [:]
+    private var factories: [String: () -> Any] = [:]
     private var instances: [String: Any] = [:]
-    private var appContext: AppContext?
 
     /// Tracks registered services and their declared dependencies
     private var registeredServices: Set<String> = []
     private var declaredDependencies: [String: [String]] = [:]
 
-    func setContext(_ context: AppContext) {
-        self.appContext = context
-    }
-
     // MARK: - ServiceRegistry
 
-    func register<T>(_ type: T.Type, factory: @escaping (AppContext) -> T) {
+    func register<T>(_ type: T.Type, factory: @escaping () -> T) {
         let key = String(describing: type)
         registeredServices.insert(key)
-        factories[key] = { factory($0) }
+        factories[key] = { factory() }
     }
 
     func register<T, each D>(
         _ type: T.Type,
         dependencies: (repeat (each D).Type),
-        factory: @escaping (ServiceContext, repeat each D) -> T
+        factory: @escaping (repeat each D) -> T
     ) {
         let key = String(describing: type)
         registeredServices.insert(key)
@@ -149,16 +127,11 @@ private final class TestContainer: ServiceContainerType {
         declaredDependencies[key] = depKeys
 
         // Store factory that resolves dependencies
-        factories[key] = { [weak self] context in
+        factories[key] = { [weak self] in
             guard let self = self else { fatalError("TestContainer deallocated") }
 
-            let serviceContext = ServiceContext(
-                config: context.config,
-                uiRegistry: context.uiRegistry
-            )
-
             let resolved: (repeat each D) = (repeat self.resolve((each D).self)!)
-            return factory(serviceContext, repeat each resolved)
+            return factory(repeat each resolved)
         }
     }
 
@@ -171,11 +144,11 @@ private final class TestContainer: ServiceContainerType {
             return cached
         }
 
-        guard let context = appContext, let factory = factories[key] else {
+        guard let factory = factories[key] else {
             return nil
         }
 
-        let instance = factory(context) as? T
+        let instance = factory() as? T
         if let instance = instance {
             instances[key] = instance
         }
@@ -197,14 +170,6 @@ private final class TestContainer: ServiceContainerType {
 
         return errors
     }
-}
-
-// MARK: - Test UI Registry
-
-/// A no-op UI registry for testing.
-private final class TestUIRegistry: UIRegistryContributing, @unchecked Sendable {
-    func contribute<T: UISurface>(to surface: T, item: some ViewContribution) {}
-    func contributions<T: UISurface>(for surface: T) -> [any ViewContribution] { [] }
 }
 
 // MARK: - Test Runtime Error

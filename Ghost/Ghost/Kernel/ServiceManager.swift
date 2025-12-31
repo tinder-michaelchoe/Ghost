@@ -34,12 +34,6 @@ public final class ServiceManager: ServiceManagerProtocol {
         }
     }
     
-    /// Set the context for service resolution.
-    /// Must be called after services are registered and context is created.
-    public func setContext(_ context: AppContext) {
-        container.setContext(context)
-    }
-    
     /// Resolve a service by type.
     /// - Parameter type: The service type to resolve
     /// - Returns: The resolved service instance, or nil if not found

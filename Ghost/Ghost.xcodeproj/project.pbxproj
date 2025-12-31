@@ -21,15 +21,12 @@
 		806244302F048CAD0055EA41 /* Photos.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244232F048CAD0055EA41 /* Photos.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		806244312F048CAD0055EA41 /* PhotosService.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244242F048CAD0055EA41 /* PhotosService.framework */; };
 		806244322F048CAD0055EA41 /* PhotosService.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244242F048CAD0055EA41 /* PhotosService.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		806244332F048CAD0055EA41 /* Secrets.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244252F048CAD0055EA41 /* Secrets.framework */; };
 		806244342F048CAD0055EA41 /* Secrets.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244252F048CAD0055EA41 /* Secrets.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		806244352F048CAD0055EA41 /* Settings.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244262F048CAD0055EA41 /* Settings.framework */; };
 		806244362F048CAD0055EA41 /* Settings.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244262F048CAD0055EA41 /* Settings.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		806244372F048CAD0055EA41 /* TabBar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244272F048CAD0055EA41 /* TabBar.framework */; };
 		806244382F048CAD0055EA41 /* TabBar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244272F048CAD0055EA41 /* TabBar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		806244392F048CAD0055EA41 /* Weather.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806244282F048CAD0055EA41 /* Weather.framework */; };
 		8062443A2F048CAD0055EA41 /* Weather.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806244282F048CAD0055EA41 /* Weather.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		806245DB2F0490B90055EA41 /* CladsExamples.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806245DA2F0490B90055EA41 /* CladsExamples.framework */; };
 		806245DC2F0490B90055EA41 /* CladsExamples.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806245DA2F0490B90055EA41 /* CladsExamples.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		806247E02F0492900055EA41 /* AppFeatureFlags.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DB2F0492900055EA41 /* AppFeatureFlags.framework */; };
 		806247E12F0492900055EA41 /* AppFeatureFlags.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DB2F0492900055EA41 /* AppFeatureFlags.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -45,13 +42,6 @@
 
 /* Begin PBXContainerItemProxy section */
 		800AE0D42EFC7EDB00F18C75 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 800AE0B52EFC7EDA00F18C75 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 800AE0BC2EFC7EDA00F18C75;
-			remoteInfo = Ghost;
-		};
-		800AE0DE2EFC7EDB00F18C75 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 800AE0B52EFC7EDA00F18C75 /* Project object */;
 			proxyType = 1;
@@ -93,7 +83,6 @@
 /* Begin PBXFileReference section */
 		800AE0BD2EFC7EDA00F18C75 /* Ghost.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Ghost.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		800AE0D32EFC7EDB00F18C75 /* GhostTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GhostTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		800AE0DD2EFC7EDB00F18C75 /* GhostUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GhostUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		800AE2662EFCB33200F18C75 /* AppFoundation.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AppFoundation.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		800AE2672EFCB33200F18C75 /* CoreContracts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreContracts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		800AE2682EFCB33200F18C75 /* TabBarFramework.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = TabBarFramework.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -147,11 +136,6 @@
 			path = GhostTests;
 			sourceTree = "<group>";
 		};
-		800AE0E02EFC7EDB00F18C75 /* GhostUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GhostUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -160,18 +144,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				806247E22F0492900055EA41 /* Builder.framework in Frameworks */,
-				806244392F048CAD0055EA41 /* Weather.framework in Frameworks */,
 				806247E02F0492900055EA41 /* AppFeatureFlags.framework in Frameworks */,
 				806244312F048CAD0055EA41 /* PhotosService.framework in Frameworks */,
 				8062442D2F048CAD0055EA41 /* Persistence.framework in Frameworks */,
 				806244372F048CAD0055EA41 /* TabBar.framework in Frameworks */,
 				806247E82F0492900055EA41 /* Dashboard.framework in Frameworks */,
-				806244332F048CAD0055EA41 /* Secrets.framework in Frameworks */,
 				806244292F048CAD0055EA41 /* AppFoundation.framework in Frameworks */,
 				806241D92F0486060055EA41 /* Weather.framework in Frameworks */,
 				806244352F048CAD0055EA41 /* Settings.framework in Frameworks */,
 				806247E42F0492900055EA41 /* CladsExamples.framework in Frameworks */,
-				806245DB2F0490B90055EA41 /* CladsExamples.framework in Frameworks */,
 				8062442B2F048CAD0055EA41 /* NetworkClient.framework in Frameworks */,
 				806247E62F0492900055EA41 /* CoreContracts.framework in Frameworks */,
 				8062442F2F048CAD0055EA41 /* Photos.framework in Frameworks */,
@@ -186,13 +167,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		800AE0DA2EFC7EDB00F18C75 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -201,7 +175,6 @@
 			children = (
 				800AE0BF2EFC7EDA00F18C75 /* Ghost */,
 				800AE0D62EFC7EDB00F18C75 /* GhostTests */,
-				800AE0E02EFC7EDB00F18C75 /* GhostUITests */,
 				800AE2652EFCB33200F18C75 /* Frameworks */,
 				800AE0BE2EFC7EDA00F18C75 /* Products */,
 			);
@@ -212,7 +185,6 @@
 			children = (
 				800AE0BD2EFC7EDA00F18C75 /* Ghost.app */,
 				800AE0D32EFC7EDB00F18C75 /* GhostTests.xctest */,
-				800AE0DD2EFC7EDB00F18C75 /* GhostUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -300,29 +272,6 @@
 			productReference = 800AE0D32EFC7EDB00F18C75 /* GhostTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		800AE0DC2EFC7EDB00F18C75 /* GhostUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 800AE0EE2EFC7EDB00F18C75 /* Build configuration list for PBXNativeTarget "GhostUITests" */;
-			buildPhases = (
-				800AE0D92EFC7EDB00F18C75 /* Sources */,
-				800AE0DA2EFC7EDB00F18C75 /* Frameworks */,
-				800AE0DB2EFC7EDB00F18C75 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				800AE0DF2EFC7EDB00F18C75 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				800AE0E02EFC7EDB00F18C75 /* GhostUITests */,
-			);
-			name = GhostUITests;
-			packageProductDependencies = (
-			);
-			productName = GhostUITests;
-			productReference = 800AE0DD2EFC7EDB00F18C75 /* GhostUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -337,10 +286,6 @@
 						CreatedOnToolsVersion = 26.2;
 					};
 					800AE0D22EFC7EDB00F18C75 = {
-						CreatedOnToolsVersion = 26.2;
-						TestTargetID = 800AE0BC2EFC7EDA00F18C75;
-					};
-					800AE0DC2EFC7EDB00F18C75 = {
 						CreatedOnToolsVersion = 26.2;
 						TestTargetID = 800AE0BC2EFC7EDA00F18C75;
 					};
@@ -364,7 +309,6 @@
 			targets = (
 				800AE0BC2EFC7EDA00F18C75 /* Ghost */,
 				800AE0D22EFC7EDB00F18C75 /* GhostTests */,
-				800AE0DC2EFC7EDB00F18C75 /* GhostUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -378,13 +322,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		800AE0D12EFC7EDB00F18C75 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		800AE0DB2EFC7EDB00F18C75 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -408,13 +345,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		800AE0D92EFC7EDB00F18C75 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -422,11 +352,6 @@
 			isa = PBXTargetDependency;
 			target = 800AE0BC2EFC7EDA00F18C75 /* Ghost */;
 			targetProxy = 800AE0D42EFC7EDB00F18C75 /* PBXContainerItemProxy */;
-		};
-		800AE0DF2EFC7EDB00F18C75 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 800AE0BC2EFC7EDA00F18C75 /* Ghost */;
-			targetProxy = 800AE0DE2EFC7EDB00F18C75 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -660,46 +585,6 @@
 			};
 			name = Release;
 		};
-		800AE0EF2EFC7EDB00F18C75 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = L2JNG48FS5;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.GhostUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Ghost;
-			};
-			name = Debug;
-		};
-		800AE0F02EFC7EDB00F18C75 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = L2JNG48FS5;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.GhostUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Ghost;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -726,15 +611,6 @@
 			buildConfigurations = (
 				800AE0EC2EFC7EDB00F18C75 /* Debug */,
 				800AE0ED2EFC7EDB00F18C75 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		800AE0EE2EFC7EDB00F18C75 /* Build configuration list for PBXNativeTarget "GhostUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				800AE0EF2EFC7EDB00F18C75 /* Debug */,
-				800AE0F02EFC7EDB00F18C75 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

@@ -13,8 +13,8 @@ import TestHarness
 
 // MARK: - Mock Network Client
 
-/// A mock NetworkClient that returns predefined responses
-final class MockNetworkClient: NetworkClient, @unchecked Sendable {
+/// A mock NetworkRequestPerforming that returns predefined responses
+final class MockNetworkClient: NetworkRequestPerforming, @unchecked Sendable {
 
     var responses: [URL: Any] = [:]
     var rawResponses: [URL: (Data, URLResponse)] = [:]
@@ -97,7 +97,7 @@ struct WeatherServiceRuntimeTests {
         let runtime = TestRuntime()
 
         // Register mock dependencies
-        runtime.registerMock(NetworkClient.self, mock: MockNetworkClient())
+        runtime.registerMock(NetworkRequestPerforming.self, mock: MockNetworkClient())
         runtime.registerMock(SecretsProvider.self, mock: MockSecretsProvider.withNWSDefaults())
 
         // Register the service under test
@@ -108,11 +108,11 @@ struct WeatherServiceRuntimeTests {
         #expect(weatherService != nil)
     }
 
-    @Test("Fails with clear error when NetworkClient is missing")
+    @Test("Fails with clear error when NetworkRequestPerforming is missing")
     func failsWhenNetworkClientMissing() async throws {
         let runtime = TestRuntime()
 
-        // Only register SecretsProvider, forget NetworkClient
+        // Only register SecretsProvider, forget NetworkRequestPerforming
         runtime.registerMock(SecretsProvider.self, mock: MockSecretsProvider.withNWSDefaults())
 
         // Register the service under test
@@ -124,7 +124,7 @@ struct WeatherServiceRuntimeTests {
             Issue.record("Expected resolution to fail")
         } catch let error as TestRuntimeError {
             let description = error.description
-            #expect(description.contains("NetworkClient"))
+            #expect(description.contains("NetworkRequestPerforming"))
             #expect(description.contains("Did you forget to register a mock"))
         }
     }
@@ -133,8 +133,8 @@ struct WeatherServiceRuntimeTests {
     func failsWhenSecretsProviderMissing() async throws {
         let runtime = TestRuntime()
 
-        // Only register NetworkClient, forget SecretsProvider
-        runtime.registerMock(NetworkClient.self, mock: MockNetworkClient())
+        // Only register NetworkRequestPerforming, forget SecretsProvider
+        runtime.registerMock(NetworkRequestPerforming.self, mock: MockNetworkClient())
 
         // Register the service under test
         runtime.register(provider: WeatherServiceProvider())
@@ -157,7 +157,7 @@ struct WeatherServiceRuntimeTests {
         runtime.register(provider: WeatherServiceProvider())
 
         let errors = runtime.validate()
-        #expect(errors.count == 2) // Missing NetworkClient and SecretsProvider
+        #expect(errors.count == 2) // Missing NetworkRequestPerforming and SecretsProvider
 
         let missingTypes = errors.compactMap { error -> String? in
             if case .missingDependency(_, let missing) = error {
@@ -166,7 +166,7 @@ struct WeatherServiceRuntimeTests {
             return nil
         }
 
-        #expect(missingTypes.contains { $0.contains("NetworkClient") })
+        #expect(missingTypes.contains { $0.contains("NetworkRequestPerforming") })
         #expect(missingTypes.contains { $0.contains("SecretsProvider") })
     }
 }

@@ -15,7 +15,7 @@ public final class WeatherKitService: WeatherService, @unchecked Sendable {
 
     // MARK: - Properties
 
-    private let networkClient: NetworkClient
+    private let networkClient: NetworkRequestPerforming
     private let configuration: WeatherKitConfiguration
     private let tokenGenerator: WeatherKitTokenGenerator
     private let locale: String
@@ -25,7 +25,7 @@ public final class WeatherKitService: WeatherService, @unchecked Sendable {
     // MARK: - Init
 
     public init(
-        networkClient: NetworkClient,
+        networkClient: NetworkRequestPerforming,
         configuration: WeatherKitConfiguration,
         locale: String = "en_US"
     ) {
@@ -188,7 +188,9 @@ public final class WeatherKitService: WeatherService, @unchecked Sendable {
 // MARK: - Weather Service Provider
 
 /// Service provider that registers the WeatherService.
-/// Requires NetworkClient and SecretsProvider to be registered first.
+/// Requires NetworkRequestPerforming and SecretsProvider to be registered first.
+///
+/// Also configures WeatherLocationStore with PersistenceService during launch.
 ///
 /// To configure which service to use, register a `WeatherServiceType` before this provider runs:
 /// ```
@@ -206,10 +208,10 @@ public final class WeatherServiceProvider: ServiceProvider {
         registry.register(
             WeatherService.self,
             dependencies: (
-                NetworkClient.self,
+                NetworkRequestPerforming.self,
                 SecretsProvider.self
             ),
-            factory: { _, networkClient, secrets in
+            factory: { networkClient, secrets in
                 // Check for configured service type, fallback to default
                 let serviceType = Self.defaultServiceType
 

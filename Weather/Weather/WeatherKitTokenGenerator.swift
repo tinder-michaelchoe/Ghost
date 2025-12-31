@@ -63,7 +63,7 @@ struct WeatherKitTokenGenerator {
 
     private func loadPrivateKey() throws -> P256.Signing.PrivateKey {
         // Remove PEM headers/footers and whitespace if present
-        var keyString = configuration.privateKey
+        let keyString = configuration.privateKey
             .replacingOccurrences(of: "-----BEGIN PRIVATE KEY-----", with: "")
             .replacingOccurrences(of: "-----END PRIVATE KEY-----", with: "")
             .replacingOccurrences(of: "\n", with: "")

@@ -13,33 +13,10 @@ import UIKit
 public final class TabBarUIProvider: UIProvider {
     public init() {}
 
-    public func registerUI(_ registry: UIRegistryContributing) async {
-
-        struct MainViewContribution: UIKitViewContribution {
-
-            let id: ViewContributionID
-            let makeViewController: (@MainActor (AppContext) -> AnyViewController)
-
-            init(
-                id: ViewContributionID = ViewContributionID(rawValue: "tabbar-main-view"),
-                makeViewController: @escaping (@MainActor (AppContext) -> AnyViewController)
-            ) {
-                self.id = id
-                self.makeViewController = makeViewController
-            }
-            
-            func makeViewController(context: AppContext) -> AnyViewController {
-                return makeViewController(context)
-            }
+    public func registerUI(_ registry: UIRegistryContributing) {
+        // Capture the registry for tab building
+        registry.contribute(to: AppUISurface.mainView, id: "tabbar-main-view") { [registry] in
+            TabBarController(uiRegistry: registry)
         }
-        
-        let contribution = MainViewContribution { context in
-            return AnyViewController {
-                TabBarController(context: context, uiRegistry: registry)
-            }
-        }
-
-        // Register contribution synchronously
-        registry.contribute(to: AppUISurface.mainView, item: contribution)
     }
 }

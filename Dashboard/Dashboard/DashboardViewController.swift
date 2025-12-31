@@ -14,13 +14,13 @@ final class DashboardViewController: UIViewController {
 
     // MARK: - Properties
 
-    private let context: AppContext
+    private let uiRegistry: UIRegistryContributing
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, Widget>!
     private let layoutProvider = WidgetLayoutProvider()
 
     private var widgets: [Widget] = []
-    private var widgetContributions: [String: WidgetContribution] = [:]
+    private var widgetContributions: [String: ResolvedContribution] = [:]
 
     // MARK: - Section
 
@@ -30,8 +30,8 @@ final class DashboardViewController: UIViewController {
 
     // MARK: - Init
 
-    init(context: AppContext) {
-        self.context = context
+    init(uiRegistry: UIRegistryContributing) {
+        self.uiRegistry = uiRegistry
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -92,9 +92,23 @@ final class DashboardViewController: UIViewController {
 
     private func configureCell(_ cell: WidgetCell, with widget: Widget) {
         // Check if we have a contribution for this widget
-        if let contribution = widgetContributions[widget.id] {
-            let frontVC = contribution.makeFrontViewController(context: context)
-            let backVC = contribution.makeBackViewController(context: context)
+        guard let resolved = widgetContributions[widget.id] else {
+            // Fallback to basic configuration for widgets without contributions
+            cell.configure(with: widget)
+            return
+        }
+
+        // Get the view controller from the resolved contribution
+        let containerAnyVC = resolved.makeViewController()
+        guard let containerVC = containerAnyVC.build() as? UIViewController else {
+            cell.configure(with: widget)
+            return
+        }
+
+        // Check if the VC provides front/back views
+        if let flippable = containerVC as? FlippableWidgetProviding {
+            let frontVC = flippable.frontViewController
+            let backVC = flippable.backViewController
 
             cell.configureFrontView(with: frontVC)
             if let backVC {
@@ -109,25 +123,36 @@ final class DashboardViewController: UIViewController {
                 backVC.didMove(toParent: self)
             }
         } else {
-            // Fallback to basic configuration for widgets without contributions
-            cell.configure(with: widget)
+            // Non-flippable widget - use the VC directly as front
+            cell.configureFrontView(with: containerVC)
+            addChild(containerVC)
+            containerVC.didMove(toParent: self)
         }
     }
 
     // MARK: - Data
 
     private func loadWidgets() {
-        // Get widget contributions from the registry
-        let contributions = context.uiRegistry.contributions(for: DashboardUISurface.widgets)
-            .compactMap { $0 as? WidgetContribution }
+        // Get contributions for the widgets surface
+        let contributions = uiRegistry.contributions(for: DashboardUISurface.widgets)
 
-        // Store contributions by widget ID for cell configuration
-        for contribution in contributions {
-            widgetContributions[contribution.id.rawValue] = contribution
+        // Filter to only widget contributions and store for cell configuration
+        var widgetModels: [Widget] = []
+
+        for resolved in contributions {
+            guard let widgetContrib = resolved.contribution as? WidgetContribution else {
+                continue
+            }
+
+            // Store by widget ID for cell configuration
+            widgetContributions[widgetContrib.id.rawValue] = resolved
+
+            // Create widget model from contribution metadata
+            widgetModels.append(widgetContrib.widget)
         }
 
-        // Create widget models from contributions
-        widgets = contributions.map { $0.widget }.sortedForLayout()
+        // Sort widgets for optimal layout
+        widgets = widgetModels.sortedForLayout()
 
         applySnapshot()
     }

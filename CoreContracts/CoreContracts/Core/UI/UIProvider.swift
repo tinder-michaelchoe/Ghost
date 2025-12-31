@@ -12,5 +12,5 @@ import Foundation
 public protocol UIProvider {
     init()
     /// Register UI contributions provided by this module.
-    func registerUI(_ registry: UIRegistryContributing) async
+    func registerUI(_ registry: UIRegistryContributing)
 }

@@ -55,7 +55,7 @@ public final class SecretsServiceProvider: ServiceProvider {
     public init() {}
 
     public func registerServices(_ registry: ServiceRegistry) {
-        registry.register(SecretsProvider.self) { _ in
+        registry.register(SecretsProvider.self) {
             StaticSecretsProvider.testDefaults()
         }
     }
