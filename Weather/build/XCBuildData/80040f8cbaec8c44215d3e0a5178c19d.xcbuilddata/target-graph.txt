@@ -1,4 +1,0 @@
-Target dependency graph (2 targets)
-Target 'WeatherTests' in project 'Weather'
-➜ Explicit dependency on target 'Weather' in project 'Weather'
-Target 'Weather' in project 'Weather' (no dependencies)
