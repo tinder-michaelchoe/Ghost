@@ -18,15 +18,33 @@ public extension PersistenceKey where Value == Int {
     )
 }
 
+public extension PersistenceKey where Value == Double {
+    static let weatherCustomLatitude = PersistenceKey(
+        "weather.customLatitude",
+        default: 0.0
+    )
+    static let weatherCustomLongitude = PersistenceKey(
+        "weather.customLongitude",
+        default: 0.0
+    )
+}
+
+public extension PersistenceKey where Value == String {
+    static let weatherCustomLocationName = PersistenceKey(
+        "weather.customLocationName",
+        default: ""
+    )
+}
+
 // MARK: - Weather Locations
 
 /// Shared constants for weather location selection.
 enum WeatherLocations {
 
-    /// Notification posted when the selected location changes.
-    static let didChangeNotification = Notification.Name("WeatherLocationDidChange")
+    /// Index value indicating a custom location is selected.
+    static let customLocationIndex = -1
 
-    /// Available locations for weather display.
+    /// Available preset locations for weather display.
     static let available: [WeatherLocation] = [
         WeatherLocation(latitude: 40.7128, longitude: -74.0060, name: "New York"),
         WeatherLocation(latitude: 34.0522, longitude: -118.2437, name: "Los Angeles"),
@@ -34,8 +52,14 @@ enum WeatherLocations {
     ]
 
     /// Gets the currently selected location from persistence.
+    /// Returns either a preset location or a custom location.
     static func selectedLocation(from persistence: PersistenceService) -> WeatherLocation {
         let index = selectedIndex(from: persistence)
+
+        if index == customLocationIndex {
+            return customLocation(from: persistence) ?? available[0]
+        }
+
         guard index >= 0, index < available.count else {
             return available[0]
         }
@@ -43,18 +67,45 @@ enum WeatherLocations {
     }
 
     /// Gets the currently selected index from persistence.
+    /// Returns -1 for custom location, or 0+ for preset locations.
     static func selectedIndex(from persistence: PersistenceService) -> Int {
-        let index = persistence.get(.weatherSelectedLocationIndex)
-        guard index >= 0, index < available.count else {
-            return 0
-        }
-        return index
+        persistence.get(.weatherSelectedLocationIndex)
     }
 
-    /// Sets the selected location index and posts a notification.
+    /// Sets the selected location index.
+    /// Use -1 for custom location, or 0+ for preset locations.
     static func setSelectedIndex(_ index: Int, using persistence: PersistenceService) {
-        guard index >= 0, index < available.count else { return }
         persistence.set(.weatherSelectedLocationIndex, value: index)
-        NotificationCenter.default.post(name: didChangeNotification, object: nil)
+    }
+
+    /// Gets the custom location from persistence.
+    static func customLocation(from persistence: PersistenceService) -> WeatherLocation? {
+        let latitude = persistence.get(.weatherCustomLatitude)
+        let longitude = persistence.get(.weatherCustomLongitude)
+        let name = persistence.get(.weatherCustomLocationName)
+
+        // Check if we have valid coordinates
+        guard latitude != 0.0 || longitude != 0.0 else {
+            return nil
+        }
+
+        return WeatherLocation(
+            latitude: latitude,
+            longitude: longitude,
+            name: name.isEmpty ? nil : name
+        )
+    }
+
+    /// Sets a custom location and selects it.
+    static func setCustomLocation(
+        latitude: Double,
+        longitude: Double,
+        name: String?,
+        using persistence: PersistenceService
+    ) {
+        persistence.set(.weatherCustomLatitude, value: latitude)
+        persistence.set(.weatherCustomLongitude, value: longitude)
+        persistence.set(.weatherCustomLocationName, value: name ?? "")
+        persistence.set(.weatherSelectedLocationIndex, value: customLocationIndex)
     }
 }

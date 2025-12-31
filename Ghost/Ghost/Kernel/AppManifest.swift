@@ -6,11 +6,13 @@
 //
 
 import AppFoundation
+import Art
 import Builder
 import CladsExamples
 import CoreContracts
 import Dashboard
 import Foundation
+import Location
 import NetworkClient
 import Persistence
 import Secrets
@@ -104,7 +106,9 @@ extension AppManifest {
             NetworkClientManifest.self,
             PersistenceManifest.self,
             SecretsManifest.self,
+            LocationManifest.self,
             WeatherManifest.self,
+            ArtManifest.self,
             DashboardManifest.self,
         ]
     }

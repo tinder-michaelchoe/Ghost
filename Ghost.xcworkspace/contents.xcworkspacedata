@@ -26,6 +26,12 @@
       location = "container:Dashboard/Dashboard.xcodeproj">
    </FileRef>
    <FileRef
+      location = "container:Deeplinking/Deeplinking.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:Location/Location.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "container:NetworkClient/NetworkClient.xcodeproj">
    </FileRef>
    <FileRef
@@ -38,10 +44,16 @@
       location = "container:PhotosService/PhotosService.xcodeproj">
    </FileRef>
    <FileRef
+      location = "container:Revenue/Revenue.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "container:Secrets/Secrets.xcodeproj">
    </FileRef>
    <FileRef
       location = "container:Settings/Settings.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "container:Sports/Sports.xcodeproj">
    </FileRef>
    <FileRef
       location = "container:TabBar/TabBar.xcodeproj">

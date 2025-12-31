@@ -17,11 +17,12 @@ public final class WeatherUIProvider: UIProvider {
         registry.contribute(
             to: DashboardUISurface.widgets,
             contribution: WeatherWidgetContribution(),
-            dependencies: (WeatherService.self, PersistenceService.self),
-            factory: { weatherService, persistenceService in
+            dependencies: (WeatherService.self, PersistenceService.self, LocationService.self),
+            factory: { weatherService, persistenceService, locationService in
                 WeatherWidgetContainer(
                     weatherService: weatherService,
-                    persistenceService: persistenceService
+                    persistenceService: persistenceService,
+                    locationService: locationService
                 )
             }
         )

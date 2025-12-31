@@ -21,6 +21,8 @@ final class DashboardViewController: UIViewController {
 
     private var widgets: [Widget] = []
     private var widgetContributions: [String: ResolvedContribution] = [:]
+    private var widgetContainers: [String: UIViewController] = [:]
+    private var refreshableWidgets: [String: RefreshableWidget] = [:]
 
     // MARK: - Section
 
@@ -98,35 +100,63 @@ final class DashboardViewController: UIViewController {
             return
         }
 
-        // Get the view controller from the resolved contribution
-        let containerAnyVC = resolved.makeViewController()
-        guard let containerVC = containerAnyVC.build() as? UIViewController else {
-            cell.configure(with: widget)
-            return
+        // Get or create the container VC (cache to preserve delegate connections)
+        let containerVC: UIViewController
+        if let cached = widgetContainers[widget.id] {
+            containerVC = cached
+        } else {
+            let containerAnyVC = resolved.makeViewController()
+            guard let newContainer = containerAnyVC.build() as? UIViewController else {
+                cell.configure(with: widget)
+                return
+            }
+            containerVC = newContainer
+            widgetContainers[widget.id] = containerVC
+
+            // One-time setup for new containers
+            if let flippable = containerVC as? FlippableWidgetProviding {
+                let frontVC = flippable.frontViewController
+                let backVC = flippable.backViewController
+
+                // Add child view controller management
+                addChild(frontVC)
+                frontVC.didMove(toParent: self)
+                if let backVC {
+                    addChild(backVC)
+                    backVC.didMove(toParent: self)
+                }
+
+                // Wire up coordinator for cross-widget communication
+                if let coordinated = containerVC as? CoordinatedWidgetProviding {
+                    coordinated.coordinator = self
+                    print("[Dashboard] Set coordinator for widget: \(coordinated.widgetId)")
+                }
+
+                // Track refreshable widgets
+                if let refreshable = frontVC as? RefreshableWidget {
+                    refreshableWidgets[widget.id] = refreshable
+                    print("[Dashboard] Registered refreshable widget: \(widget.id)")
+                }
+            } else {
+                // Non-flippable widget
+                addChild(containerVC)
+                containerVC.didMove(toParent: self)
+
+                // Track if the container itself is refreshable
+                if let refreshable = containerVC as? RefreshableWidget {
+                    refreshableWidgets[widget.id] = refreshable
+                }
+            }
         }
 
-        // Check if the VC provides front/back views
+        // Configure cell with the (cached) container's views
         if let flippable = containerVC as? FlippableWidgetProviding {
-            let frontVC = flippable.frontViewController
-            let backVC = flippable.backViewController
-
-            cell.configureFrontView(with: frontVC)
-            if let backVC {
+            cell.configureFrontView(with: flippable.frontViewController)
+            if let backVC = flippable.backViewController {
                 cell.configureBackView(with: backVC)
             }
-
-            // Add child view controller management
-            addChild(frontVC)
-            frontVC.didMove(toParent: self)
-            if let backVC {
-                addChild(backVC)
-                backVC.didMove(toParent: self)
-            }
         } else {
-            // Non-flippable widget - use the VC directly as front
             cell.configureFrontView(with: containerVC)
-            addChild(containerVC)
-            containerVC.didMove(toParent: self)
         }
     }
 
@@ -435,6 +465,14 @@ final class WidgetCell: UICollectionViewCell {
         contentView.layer.add(animation, forKey: "wiggle")
     }
 
+    // MARK: - Layout
+
+    override func preferredLayoutAttributesFitting(_ layoutAttributes: UICollectionViewLayoutAttributes) -> UICollectionViewLayoutAttributes {
+        // Don't self-size - use the layout's fixed frame directly
+        // This prevents the recursive layout loop caused by content size mismatches
+        return layoutAttributes
+    }
+
     // MARK: - Reuse
 
     override func prepareForReuse() {
@@ -545,5 +583,21 @@ final class WidgetCell: UICollectionViewCell {
             view.trailingAnchor.constraint(equalTo: backView.trailingAnchor),
             view.bottomAnchor.constraint(equalTo: backView.bottomAnchor)
         ])
+    }
+}
+
+// MARK: - WidgetCoordinator
+
+extension DashboardViewController: WidgetCoordinator {
+
+    func widgetDidChangeSettings(widgetId: String) {
+        print("[Dashboard] widgetDidChangeSettings called from: \(widgetId)")
+        print("[Dashboard] Refreshable widgets: \(refreshableWidgets.keys)")
+        // When a widget's settings change, refresh all other refreshable widgets
+        // This handles cases like weather city change affecting the art widget
+        for (id, widget) in refreshableWidgets where id != widgetId {
+            print("[Dashboard] Refreshing widget: \(id)")
+            widget.refreshContent()
+        }
     }
 }

@@ -7,29 +7,29 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		80FEA73F2F059FBF00523496 /* Art.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEA7332F059FBF00523496 /* Art.framework */; };
-		80FEA9C82F05A9F000523496 /* CoreContracts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEA9C72F05A9F000523496 /* CoreContracts.framework */; };
-		80FEA9C92F05A9F000523496 /* CoreContracts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEA9C72F05A9F000523496 /* CoreContracts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		80FEA9E12F05B99D00523496 /* Location.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEA9D52F05B99C00523496 /* Location.framework */; };
+		80FEABDA2F05B9BF00523496 /* CoreContracts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEABD92F05B9BF00523496 /* CoreContracts.framework */; };
+		80FEABDB2F05B9BF00523496 /* CoreContracts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEABD92F05B9BF00523496 /* CoreContracts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		80FEA7402F059FBF00523496 /* PBXContainerItemProxy */ = {
+		80FEA9E22F05B99D00523496 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 80FEA72A2F059FBF00523496 /* Project object */;
+			containerPortal = 80FEA9CC2F05B99C00523496 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 80FEA7322F059FBF00523496;
-			remoteInfo = Art;
+			remoteGlobalIDString = 80FEA9D42F05B99C00523496;
+			remoteInfo = Location;
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		80FEA9CA2F05A9F000523496 /* Embed Frameworks */ = {
+		80FEABDC2F05B9BF00523496 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				80FEA9C92F05A9F000523496 /* CoreContracts.framework in Embed Frameworks */,
+				80FEABDB2F05B9BF00523496 /* CoreContracts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -37,67 +37,67 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		80FEA7332F059FBF00523496 /* Art.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Art.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		80FEA73E2F059FBF00523496 /* ArtTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ArtTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		80FEA9C72F05A9F000523496 /* CoreContracts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreContracts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80FEA9D52F05B99C00523496 /* Location.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Location.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80FEA9E02F05B99D00523496 /* LocationTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocationTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		80FEABD92F05B9BF00523496 /* CoreContracts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreContracts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		80FEA7352F059FBF00523496 /* Art */ = {
+		80FEA9D72F05B99C00523496 /* Location */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Art;
+			path = Location;
 			sourceTree = "<group>";
 		};
-		80FEA7422F059FBF00523496 /* ArtTests */ = {
+		80FEA9E42F05B99D00523496 /* LocationTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = ArtTests;
+			path = LocationTests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		80FEA7302F059FBF00523496 /* Frameworks */ = {
+		80FEA9D22F05B99C00523496 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80FEA9C82F05A9F000523496 /* CoreContracts.framework in Frameworks */,
+				80FEABDA2F05B9BF00523496 /* CoreContracts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		80FEA73B2F059FBF00523496 /* Frameworks */ = {
+		80FEA9DD2F05B99D00523496 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				80FEA73F2F059FBF00523496 /* Art.framework in Frameworks */,
+				80FEA9E12F05B99D00523496 /* Location.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		80FEA7292F059FBF00523496 = {
+		80FEA9CB2F05B99C00523496 = {
 			isa = PBXGroup;
 			children = (
-				80FEA7352F059FBF00523496 /* Art */,
-				80FEA7422F059FBF00523496 /* ArtTests */,
-				80FEA9C62F05A9F000523496 /* Frameworks */,
-				80FEA7342F059FBF00523496 /* Products */,
+				80FEA9D72F05B99C00523496 /* Location */,
+				80FEA9E42F05B99D00523496 /* LocationTests */,
+				80FEABD82F05B9BF00523496 /* Frameworks */,
+				80FEA9D62F05B99C00523496 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		80FEA7342F059FBF00523496 /* Products */ = {
+		80FEA9D62F05B99C00523496 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				80FEA7332F059FBF00523496 /* Art.framework */,
-				80FEA73E2F059FBF00523496 /* ArtTests.xctest */,
+				80FEA9D52F05B99C00523496 /* Location.framework */,
+				80FEA9E02F05B99D00523496 /* LocationTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		80FEA9C62F05A9F000523496 /* Frameworks */ = {
+		80FEABD82F05B9BF00523496 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				80FEA9C72F05A9F000523496 /* CoreContracts.framework */,
+				80FEABD92F05B9BF00523496 /* CoreContracts.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -105,7 +105,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		80FEA72E2F059FBF00523496 /* Headers */ = {
+		80FEA9D02F05B99C00523496 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -115,100 +115,100 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		80FEA7322F059FBF00523496 /* Art */ = {
+		80FEA9D42F05B99C00523496 /* Location */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 80FEA7472F059FBF00523496 /* Build configuration list for PBXNativeTarget "Art" */;
+			buildConfigurationList = 80FEA9E92F05B99D00523496 /* Build configuration list for PBXNativeTarget "Location" */;
 			buildPhases = (
-				80FEA72E2F059FBF00523496 /* Headers */,
-				80FEA72F2F059FBF00523496 /* Sources */,
-				80FEA7302F059FBF00523496 /* Frameworks */,
-				80FEA7312F059FBF00523496 /* Resources */,
-				80FEA9CA2F05A9F000523496 /* Embed Frameworks */,
+				80FEA9D02F05B99C00523496 /* Headers */,
+				80FEA9D12F05B99C00523496 /* Sources */,
+				80FEA9D22F05B99C00523496 /* Frameworks */,
+				80FEA9D32F05B99C00523496 /* Resources */,
+				80FEABDC2F05B9BF00523496 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				80FEA7352F059FBF00523496 /* Art */,
+				80FEA9D72F05B99C00523496 /* Location */,
 			);
-			name = Art;
+			name = Location;
 			packageProductDependencies = (
 			);
-			productName = Art;
-			productReference = 80FEA7332F059FBF00523496 /* Art.framework */;
+			productName = Location;
+			productReference = 80FEA9D52F05B99C00523496 /* Location.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		80FEA73D2F059FBF00523496 /* ArtTests */ = {
+		80FEA9DF2F05B99D00523496 /* LocationTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 80FEA74A2F059FBF00523496 /* Build configuration list for PBXNativeTarget "ArtTests" */;
+			buildConfigurationList = 80FEA9EC2F05B99D00523496 /* Build configuration list for PBXNativeTarget "LocationTests" */;
 			buildPhases = (
-				80FEA73A2F059FBF00523496 /* Sources */,
-				80FEA73B2F059FBF00523496 /* Frameworks */,
-				80FEA73C2F059FBF00523496 /* Resources */,
+				80FEA9DC2F05B99D00523496 /* Sources */,
+				80FEA9DD2F05B99D00523496 /* Frameworks */,
+				80FEA9DE2F05B99D00523496 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				80FEA7412F059FBF00523496 /* PBXTargetDependency */,
+				80FEA9E32F05B99D00523496 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				80FEA7422F059FBF00523496 /* ArtTests */,
+				80FEA9E42F05B99D00523496 /* LocationTests */,
 			);
-			name = ArtTests;
+			name = LocationTests;
 			packageProductDependencies = (
 			);
-			productName = ArtTests;
-			productReference = 80FEA73E2F059FBF00523496 /* ArtTests.xctest */;
+			productName = LocationTests;
+			productReference = 80FEA9E02F05B99D00523496 /* LocationTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		80FEA72A2F059FBF00523496 /* Project object */ = {
+		80FEA9CC2F05B99C00523496 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 2620;
 				TargetAttributes = {
-					80FEA7322F059FBF00523496 = {
+					80FEA9D42F05B99C00523496 = {
 						CreatedOnToolsVersion = 26.2;
 					};
-					80FEA73D2F059FBF00523496 = {
+					80FEA9DF2F05B99D00523496 = {
 						CreatedOnToolsVersion = 26.2;
 					};
 				};
 			};
-			buildConfigurationList = 80FEA72D2F059FBF00523496 /* Build configuration list for PBXProject "Art" */;
+			buildConfigurationList = 80FEA9CF2F05B99C00523496 /* Build configuration list for PBXProject "Location" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 				Base,
 			);
-			mainGroup = 80FEA7292F059FBF00523496;
+			mainGroup = 80FEA9CB2F05B99C00523496;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
-			productRefGroup = 80FEA7342F059FBF00523496 /* Products */;
+			productRefGroup = 80FEA9D62F05B99C00523496 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				80FEA7322F059FBF00523496 /* Art */,
-				80FEA73D2F059FBF00523496 /* ArtTests */,
+				80FEA9D42F05B99C00523496 /* Location */,
+				80FEA9DF2F05B99D00523496 /* LocationTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		80FEA7312F059FBF00523496 /* Resources */ = {
+		80FEA9D32F05B99C00523496 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		80FEA73C2F059FBF00523496 /* Resources */ = {
+		80FEA9DE2F05B99D00523496 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -218,14 +218,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		80FEA72F2F059FBF00523496 /* Sources */ = {
+		80FEA9D12F05B99C00523496 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		80FEA73A2F059FBF00523496 /* Sources */ = {
+		80FEA9DC2F05B99D00523496 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -235,15 +235,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		80FEA7412F059FBF00523496 /* PBXTargetDependency */ = {
+		80FEA9E32F05B99D00523496 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 80FEA7322F059FBF00523496 /* Art */;
-			targetProxy = 80FEA7402F059FBF00523496 /* PBXContainerItemProxy */;
+			target = 80FEA9D42F05B99C00523496 /* Location */;
+			targetProxy = 80FEA9E22F05B99D00523496 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
-		80FEA7452F059FBF00523496 /* Debug */ = {
+		80FEA9E72F05B99D00523496 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -310,7 +310,7 @@
 			};
 			name = Debug;
 		};
-		80FEA7462F059FBF00523496 /* Release */ = {
+		80FEA9E82F05B99D00523496 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -370,7 +370,7 @@
 			};
 			name = Release;
 		};
-		80FEA7482F059FBF00523496 /* Debug */ = {
+		80FEA9EA2F05B99D00523496 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
@@ -392,7 +392,7 @@
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.Art;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.Location;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -406,7 +406,7 @@
 			};
 			name = Debug;
 		};
-		80FEA7492F059FBF00523496 /* Release */ = {
+		80FEA9EB2F05B99D00523496 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
@@ -428,7 +428,7 @@
 				MARKETING_VERSION = 1.0;
 				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
 				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
-				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.Art;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.Location;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -442,7 +442,7 @@
 			};
 			name = Release;
 		};
-		80FEA74B2F059FBF00523496 /* Debug */ = {
+		80FEA9ED2F05B99D00523496 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -450,7 +450,7 @@
 				DEVELOPMENT_TEAM = L2JNG48FS5;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.ArtTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.LocationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -461,7 +461,7 @@
 			};
 			name = Debug;
 		};
-		80FEA74C2F059FBF00523496 /* Release */ = {
+		80FEA9EE2F05B99D00523496 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -469,7 +469,7 @@
 				DEVELOPMENT_TEAM = L2JNG48FS5;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.ArtTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.straussmade.LocationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				STRING_CATALOG_GENERATE_SYMBOLS = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
@@ -483,34 +483,34 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		80FEA72D2F059FBF00523496 /* Build configuration list for PBXProject "Art" */ = {
+		80FEA9CF2F05B99C00523496 /* Build configuration list for PBXProject "Location" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				80FEA7452F059FBF00523496 /* Debug */,
-				80FEA7462F059FBF00523496 /* Release */,
+				80FEA9E72F05B99D00523496 /* Debug */,
+				80FEA9E82F05B99D00523496 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		80FEA7472F059FBF00523496 /* Build configuration list for PBXNativeTarget "Art" */ = {
+		80FEA9E92F05B99D00523496 /* Build configuration list for PBXNativeTarget "Location" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				80FEA7482F059FBF00523496 /* Debug */,
-				80FEA7492F059FBF00523496 /* Release */,
+				80FEA9EA2F05B99D00523496 /* Debug */,
+				80FEA9EB2F05B99D00523496 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		80FEA74A2F059FBF00523496 /* Build configuration list for PBXNativeTarget "ArtTests" */ = {
+		80FEA9EC2F05B99D00523496 /* Build configuration list for PBXNativeTarget "LocationTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				80FEA74B2F059FBF00523496 /* Debug */,
-				80FEA74C2F059FBF00523496 /* Release */,
+				80FEA9ED2F05B99D00523496 /* Debug */,
+				80FEA9EE2F05B99D00523496 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 80FEA72A2F059FBF00523496 /* Project object */;
+	rootObject = 80FEA9CC2F05B99C00523496 /* Project object */;
 }

@@ -38,6 +38,12 @@
 		806247E72F0492900055EA41 /* CoreContracts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DE2F0492900055EA41 /* CoreContracts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		806247E82F0492900055EA41 /* Dashboard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DF2F0492900055EA41 /* Dashboard.framework */; };
 		806247E92F0492900055EA41 /* Dashboard.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247DF2F0492900055EA41 /* Dashboard.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8064F1012F0500000055EA41 /* Art.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8064F1002F0500000055EA41 /* Art.framework */; };
+		8064F1022F0500000055EA41 /* Art.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8064F1002F0500000055EA41 /* Art.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		80FEABDE2F05B9CE00523496 /* Location.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEABDD2F05B9CE00523496 /* Location.framework */; };
+		80FEB0272F05C9ED00523496 /* Revenue.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEB0262F05C9ED00523496 /* Revenue.framework */; };
+		80FEB0292F05C9ED00523496 /* Sports.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEB0282F05C9ED00523496 /* Sports.framework */; };
+		80FEB2542F05CC6D00523496 /* Deeplinking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEB2532F05CC6D00523496 /* Deeplinking.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +63,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				8064F1022F0500000055EA41 /* Art.framework in Embed Frameworks */,
 				806247E32F0492900055EA41 /* Builder.framework in Embed Frameworks */,
 				8062442C2F048CAD0055EA41 /* NetworkClient.framework in Embed Frameworks */,
 				806247E12F0492900055EA41 /* AppFeatureFlags.framework in Embed Frameworks */,
@@ -110,6 +117,11 @@
 		806247DD2F0492900055EA41 /* CladsExamples.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CladsExamples.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		806247DE2F0492900055EA41 /* CoreContracts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreContracts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		806247DF2F0492900055EA41 /* Dashboard.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Dashboard.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8064F1002F0500000055EA41 /* Art.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Art.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80FEABDD2F05B9CE00523496 /* Location.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Location.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80FEB0262F05C9ED00523496 /* Revenue.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Revenue.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80FEB0282F05C9ED00523496 /* Sports.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Sports.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80FEB2532F05CC6D00523496 /* Deeplinking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Deeplinking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -143,6 +155,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80FEB2542F05CC6D00523496 /* Deeplinking.framework in Frameworks */,
+				80FEB0272F05C9ED00523496 /* Revenue.framework in Frameworks */,
+				80FEB0292F05C9ED00523496 /* Sports.framework in Frameworks */,
+				80FEABDE2F05B9CE00523496 /* Location.framework in Frameworks */,
+				8064F1012F0500000055EA41 /* Art.framework in Frameworks */,
 				806247E22F0492900055EA41 /* Builder.framework in Frameworks */,
 				806247E02F0492900055EA41 /* AppFeatureFlags.framework in Frameworks */,
 				806244312F048CAD0055EA41 /* PhotosService.framework in Frameworks */,
@@ -192,7 +209,12 @@
 		800AE2652EFCB33200F18C75 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				80FEB2532F05CC6D00523496 /* Deeplinking.framework */,
+				80FEB0262F05C9ED00523496 /* Revenue.framework */,
+				80FEB0282F05C9ED00523496 /* Sports.framework */,
+				80FEABDD2F05B9CE00523496 /* Location.framework */,
 				806247DB2F0492900055EA41 /* AppFeatureFlags.framework */,
+				8064F1002F0500000055EA41 /* Art.framework */,
 				806247DC2F0492900055EA41 /* Builder.framework */,
 				806247DD2F0492900055EA41 /* CladsExamples.framework */,
 				806247DE2F0492900055EA41 /* CoreContracts.framework */,

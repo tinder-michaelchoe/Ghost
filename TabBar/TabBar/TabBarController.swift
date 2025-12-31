@@ -64,7 +64,6 @@ final class TabBarController: UITabBarController {
                 }
                 return viewController
             }
-        print("All View controllers: \(viewControllers)")
         setViewControllers(viewControllers, animated: false)
     }
 }

@@ -13,22 +13,28 @@ import UIKit
 /// Container view controller for the weather widget.
 /// Provides both front (weather display) and back (city picker) views
 /// for the flippable dashboard widget.
-final class WeatherWidgetContainer: UIViewController, FlippableWidgetProviding {
+final class WeatherWidgetContainer: UIViewController, CoordinatedWidgetProviding {
 
     // MARK: - Properties
 
     private let weatherService: WeatherService
     private let persistenceService: PersistenceService
+    private let locationService: LocationService
 
-    private lazy var _frontViewController: UIViewController = {
+    private lazy var _frontViewController: WeatherWidgetFrontViewController = {
         WeatherWidgetFrontViewController(
             weatherService: weatherService,
             persistenceService: persistenceService
         )
     }()
 
-    private lazy var _backViewController: UIViewController = {
-        WeatherCityPickerViewController(persistenceService: persistenceService)
+    private lazy var _backViewController: WeatherCityPickerViewController = {
+        let picker = WeatherCityPickerViewController(
+            persistenceService: persistenceService,
+            locationService: locationService
+        )
+        picker.delegate = self
+        return picker
     }()
 
     // MARK: - FlippableWidgetProviding
@@ -36,11 +42,21 @@ final class WeatherWidgetContainer: UIViewController, FlippableWidgetProviding {
     var frontViewController: UIViewController { _frontViewController }
     var backViewController: UIViewController? { _backViewController }
 
+    // MARK: - CoordinatedWidgetProviding
+
+    weak var coordinator: WidgetCoordinator?
+    var widgetId: String { "weather" }
+
     // MARK: - Init
 
-    init(weatherService: WeatherService, persistenceService: PersistenceService) {
+    init(
+        weatherService: WeatherService,
+        persistenceService: PersistenceService,
+        locationService: LocationService
+    ) {
         self.weatherService = weatherService
         self.persistenceService = persistenceService
+        self.locationService = locationService
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -55,9 +71,22 @@ final class WeatherWidgetContainer: UIViewController, FlippableWidgetProviding {
     }
 }
 
+// MARK: - WeatherCityPickerDelegate
+
+extension WeatherWidgetContainer: WeatherCityPickerDelegate {
+    func cityPickerDidChangeCity() {
+        print("[WeatherWidget] cityPickerDidChangeCity called")
+        // Refresh our own front view
+        _frontViewController.refreshContent()
+        // Notify the coordinator so other widgets can refresh
+        print("[WeatherWidget] coordinator is \(coordinator == nil ? "nil" : "set")")
+        coordinator?.widgetDidChangeSettings(widgetId: widgetId)
+    }
+}
+
 // MARK: - Weather Widget Front View Controller
 
-final class WeatherWidgetFrontViewController: UIViewController {
+final class WeatherWidgetFrontViewController: UIViewController, RefreshableWidget {
 
     // MARK: - Properties
 
@@ -140,7 +169,6 @@ final class WeatherWidgetFrontViewController: UIViewController {
         super.viewDidLoad()
         setupLocation()
         setupUI()
-        setupObservers()
         loadWeather()
     }
 
@@ -150,43 +178,60 @@ final class WeatherWidgetFrontViewController: UIViewController {
         currentLocation = WeatherLocations.selectedLocation(from: persistenceService)
     }
 
+    // MARK: - RefreshableWidget
+
+    func refreshContent() {
+        print("[WeatherWidget] refreshContent called")
+        currentLocation = WeatherLocations.selectedLocation(from: persistenceService)
+        print("[WeatherWidget] New location: \(currentLocation?.name ?? "nil")")
+        loadWeather()
+    }
+
     private func setupUI() {
         view.backgroundColor = .systemGray6
 
-        // Left side: date, location, temp
-        let leftStack = UIStackView(arrangedSubviews: [dateLabel, locationLabel])
-        leftStack.axis = .vertical
-        leftStack.spacing = 2
-        leftStack.translatesAutoresizingMaskIntoConstraints = false
+        // Top section: date and location (full width)
+        let headerStack = UIStackView(arrangedSubviews: [dateLabel, locationLabel])
+        headerStack.axis = .vertical
+        headerStack.spacing = 2
+        headerStack.translatesAutoresizingMaskIntoConstraints = false
 
+        // Temperature section with icon
         let tempStack = UIStackView(arrangedSubviews: [conditionIcon, temperatureLabel])
         tempStack.axis = .horizontal
         tempStack.spacing = 4
         tempStack.alignment = .center
         tempStack.translatesAutoresizingMaskIntoConstraints = false
 
-        view.addSubview(leftStack)
-        view.addSubview(tempStack)
-        view.addSubview(highLowLabel)
+        // Left column: temp + high/low
+        let leftColumn = UIStackView(arrangedSubviews: [tempStack, highLowLabel])
+        leftColumn.axis = .vertical
+        leftColumn.spacing = 2
+        leftColumn.alignment = .leading
+        leftColumn.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(headerStack)
+        view.addSubview(leftColumn)
         view.addSubview(forecastStackView)
         view.addSubview(loadingIndicator)
 
         NSLayoutConstraint.activate([
-            leftStack.topAnchor.constraint(equalTo: view.topAnchor, constant: 12),
-            leftStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            // Header at top, spanning full width
+            headerStack.topAnchor.constraint(equalTo: view.topAnchor, constant: 12),
+            headerStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            headerStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
 
-            tempStack.topAnchor.constraint(equalTo: leftStack.bottomAnchor, constant: 4),
-            tempStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
+            // Left column (temp + high/low) below header
+            leftColumn.topAnchor.constraint(equalTo: headerStack.bottomAnchor, constant: 12),
+            leftColumn.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
 
             conditionIcon.widthAnchor.constraint(equalToConstant: 28),
             conditionIcon.heightAnchor.constraint(equalToConstant: 28),
 
-            highLowLabel.topAnchor.constraint(equalTo: tempStack.bottomAnchor, constant: 2),
-            highLowLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 12),
-
+            // Forecast aligned with top of temperature, 22px gap from left column
+            forecastStackView.topAnchor.constraint(equalTo: tempStack.topAnchor),
+            forecastStackView.leadingAnchor.constraint(equalTo: leftColumn.trailingAnchor, constant: 22),
             forecastStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
-            forecastStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            forecastStackView.leadingAnchor.constraint(equalTo: locationLabel.trailingAnchor, constant: 16),
 
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
@@ -197,20 +242,6 @@ final class WeatherWidgetFrontViewController: UIViewController {
             let dayView = DayForecastView()
             forecastStackView.addArrangedSubview(dayView)
         }
-    }
-
-    private func setupObservers() {
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(locationDidChange),
-            name: WeatherLocations.didChangeNotification,
-            object: nil
-        )
-    }
-
-    @objc private func locationDidChange() {
-        currentLocation = WeatherLocations.selectedLocation(from: persistenceService)
-        loadWeather()
     }
 
     // MARK: - Data Loading
