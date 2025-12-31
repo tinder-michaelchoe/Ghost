@@ -168,7 +168,7 @@ let componentShowcaseJSON = """
     "children": [
       {
         "type": "sectionLayout",
-        "sectionSpacing": 32,
+        "sectionSpacing": 52,
         "sections": [
           {
             "id": "header",

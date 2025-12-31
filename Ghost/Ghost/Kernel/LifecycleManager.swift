@@ -32,6 +32,3 @@ final class LifecycleManager {
         }
     }
 }
-
-
-

@@ -30,7 +30,7 @@ final class WeatherWidgetViewController: UIViewController {
 
     private let locationLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 13, weight: .semibold)
+        label.font = .systemFont(ofSize: 26, weight: .semibold)
         label.textColor = .label
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -133,7 +133,7 @@ final class WeatherWidgetViewController: UIViewController {
 
             forecastStackView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -12),
             forecastStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            forecastStackView.widthAnchor.constraint(equalToConstant: 140),
+            forecastStackView.leadingAnchor.constraint(equalTo: locationLabel.trailingAnchor, constant: 16),
 
             loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             loadingIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor)
@@ -245,7 +245,7 @@ private final class DayForecastView: UIView {
 
     private let dayLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 10, weight: .medium)
+        label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .secondaryLabel
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -261,7 +261,7 @@ private final class DayForecastView: UIView {
 
     private let tempLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 10, weight: .medium)
+        label.font = .systemFont(ofSize: 12, weight: .medium)
         label.textColor = .label
         label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -288,14 +288,14 @@ private final class DayForecastView: UIView {
 
             iconView.topAnchor.constraint(equalTo: dayLabel.bottomAnchor, constant: 2),
             iconView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            iconView.widthAnchor.constraint(equalToConstant: 16),
-            iconView.heightAnchor.constraint(equalToConstant: 16),
+            iconView.widthAnchor.constraint(equalToConstant: 24),
+            iconView.heightAnchor.constraint(equalToConstant: 24),
 
             tempLabel.topAnchor.constraint(equalTo: iconView.bottomAnchor, constant: 2),
             tempLabel.centerXAnchor.constraint(equalTo: centerXAnchor),
             tempLabel.bottomAnchor.constraint(equalTo: bottomAnchor),
 
-            widthAnchor.constraint(equalToConstant: 24)
+            widthAnchor.constraint(equalToConstant: 32)
         ])
     }
 

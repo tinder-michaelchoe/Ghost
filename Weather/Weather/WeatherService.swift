@@ -203,36 +203,39 @@ public final class WeatherServiceProvider: ServiceProvider {
     public init() {}
 
     public func registerServices(_ registry: ServiceRegistry) {
-        registry.register(WeatherService.self) { context in
-            let networkClient = context.services.resolve(NetworkClient.self)!
+        registry.register(
+            WeatherService.self,
+            dependencies: (
+                NetworkClient.self,
+                SecretsProvider.self
+            ),
+            factory: { _, networkClient, secrets in
+                // Check for configured service type, fallback to default
+                let serviceType = Self.defaultServiceType
 
-            // Check for configured service type, fallback to default
-            let serviceType = context.services.resolve(WeatherServiceType.self) ?? Self.defaultServiceType
+                switch serviceType {
+                case .weatherKit:
+                    let configuration = try! WeatherKitConfiguration(
+                        teamID: secrets.secret(for: .weatherKitTeamID),
+                        serviceID: secrets.secret(for: .weatherKitServiceID),
+                        keyID: secrets.secret(for: .weatherKitKeyID),
+                        privateKey: secrets.secret(for: .weatherKitPrivateKey)
+                    )
+                    return WeatherKitService(networkClient: networkClient, configuration: configuration)
 
-            switch serviceType {
-            case .weatherKit:
-                guard let secrets = context.services.resolve(SecretsProvider.self) else {
-                    fatalError("WeatherKit requires SecretsProvider to be registered")
+                case .nws:
+                    // Use secrets for user agent, fallback to default
+                    let userAgent: String
+                    if let secret = try? secrets.secret(for: .nwsUserAgent) {
+                        userAgent = secret
+                    } else {
+                        userAgent = "GhostApp/1.0 (ghost@example.com)"
+                    }
+                    return NWSWeatherService(networkClient: networkClient, userAgent: userAgent)
+                @unknown default:
+                    fatalError("Must implement")
                 }
-                let configuration = try! WeatherKitConfiguration(
-                    teamID: secrets.secret(for: .weatherKitTeamID),
-                    serviceID: secrets.secret(for: .weatherKitServiceID),
-                    keyID: secrets.secret(for: .weatherKitKeyID),
-                    privateKey: secrets.secret(for: .weatherKitPrivateKey)
-                )
-                return WeatherKitService(networkClient: networkClient, configuration: configuration)
-
-            case .nws:
-                // Use secrets if available, otherwise use a default user agent
-                let userAgent: String
-                if let secrets = context.services.resolve(SecretsProvider.self),
-                   let secret = try? secrets.secret(for: .nwsUserAgent) {
-                    userAgent = secret
-                } else {
-                    userAgent = "GhostApp/1.0 (ghost@example.com)"
-                }
-                return NWSWeatherService(networkClient: networkClient, userAgent: userAgent)
             }
-        }
+        )
     }
 }

@@ -38,24 +38,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
-        print("🎬 SceneDelegate: scene willConnectTo")
-        
         // Step 1: Get ServiceManager from BootstrapCoordinator (with bootstrap services already registered)
         let serviceManager = appDelegate?.bootstrapServiceManager ?? ServiceManager()
-        print("✅ SceneDelegate: Got ServiceManager from BootstrapCoordinator")
         
         // Step 2: Create AppCoordinator with bootstrap ServiceManager
         coordinator = AppCoordinator(serviceManager: serviceManager)
-        print("✅ SceneDelegate: Created AppCoordinator")
         
         // Step 3: Initialize module system asynchronously
         Task {
             await initializeApp(windowScene: windowScene)
+            
+            // Step 4: Notify SceneDelegate listeners (after AppCoordinator is created)
+            _ = listenerCollection.notifyWillConnect(scene, session: session, options: connectionOptions)
         }
-        
-        // Step 4: Notify SceneDelegate listeners (after AppCoordinator is created)
-        _ = listenerCollection.notifyWillConnect(scene, session: session, options: connectionOptions)
-        print("✅ SceneDelegate: Notified listeners")
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
@@ -86,8 +81,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 extension SceneDelegate {
     private func initializeApp(windowScene: UIWindowScene) async {
-        guard let coordinator = coordinator else {
-            print("❌ SceneDelegate: AppCoordinator not available")
+        guard let coordinator else {
             return
         }
         
@@ -103,7 +97,6 @@ extension SceneDelegate {
             await coordinator.runPhase(.sceneConnect)
             
             // Get main view contribution (direct access to UI manager)
-            print("🔍 Looking up contributions for AppUISurface.mainView")
             let mainViewContributions = coordinator.uiManager.contributions(for: AppUISurface.mainView)
             print("🔍 Found \(mainViewContributions.count) contribution(s)")
 
@@ -115,12 +108,9 @@ extension SceneDelegate {
             var rootViewController: UIViewController?
             // Build the main view controller from contribution
             if let uiKitContrib = mainViewContribution as? UIKitViewContribution {
-                print("✅ SceneDelegate: Using UIKitViewContribution")
                 let anyVC = uiKitContrib.makeViewController(context: context)
                 rootViewController = anyVC.build() as? UIViewController
-                print("✅ SceneDelegate: View controller built: \(type(of: rootViewController))")
             } else if let swiftUIContrib = mainViewContribution as? SwiftUIViewContribution {
-                print("✅ SceneDelegate: Using SwiftUIViewContribution")
                 let swiftUIView = swiftUIContrib.makeSwiftUIView(context: context)
                 rootViewController = UIHostingController(rootView: swiftUIView)
             } else {

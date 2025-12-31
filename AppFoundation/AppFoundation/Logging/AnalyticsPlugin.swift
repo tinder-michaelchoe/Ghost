@@ -13,7 +13,7 @@ public final class AnalyticsServiceProvider: ServiceProvider, LifecycleParticipa
     public init() {}
     
     public func registerServices(_ registry: ServiceRegistry) {
-        registry.register(AnalyticsService.self, factory: { context in
+        registry.register(AnalyticsService.self) { _ in
             // Get all registered logging services
             // For now, create with default loggers
             // In a more sophisticated system, you might query the service container
@@ -22,7 +22,7 @@ public final class AnalyticsServiceProvider: ServiceProvider, LifecycleParticipa
                 ConsoleLogger(),
                 FileLogger()
             ])
-        })
+        }
     }
     
     public func run(phase: LifecyclePhase, context: AppContext) async {

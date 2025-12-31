@@ -12,6 +12,8 @@
 		806241C52F046D750055EA41 /* Weather.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806240242F03A5550055EA41 /* Weather.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		806247D22F0492530055EA41 /* CoreContracts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247D12F0492530055EA41 /* CoreContracts.framework */; };
 		806247D32F0492530055EA41 /* CoreContracts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247D12F0492530055EA41 /* CoreContracts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		80FEA7182F04D82900523496 /* TestHarness.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEA7172F04D82900523496 /* TestHarness.framework */; };
+		80FEA7192F04D82900523496 /* TestHarness.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 80FEA7172F04D82900523496 /* TestHarness.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +70,17 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		80FEA71A2F04D82900523496 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				80FEA7192F04D82900523496 /* TestHarness.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -77,6 +90,7 @@
 		806241A72F046D6B0055EA41 /* WeatherAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		806241B12F046D6B0055EA41 /* WeatherAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WeatherAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		806247D12F0492530055EA41 /* CoreContracts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreContracts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		80FEA7172F04D82900523496 /* TestHarness.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = TestHarness.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -134,6 +148,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				806240302F03A5550055EA41 /* Weather.framework in Frameworks */,
+				80FEA7182F04D82900523496 /* TestHarness.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -190,6 +205,7 @@
 		806241C32F046D750055EA41 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				80FEA7172F04D82900523496 /* TestHarness.framework */,
 				806247D12F0492530055EA41 /* CoreContracts.framework */,
 			);
 			name = Frameworks;
@@ -239,6 +255,7 @@
 				8062402B2F03A5550055EA41 /* Sources */,
 				8062402C2F03A5550055EA41 /* Frameworks */,
 				8062402D2F03A5550055EA41 /* Resources */,
+				80FEA71A2F04D82900523496 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

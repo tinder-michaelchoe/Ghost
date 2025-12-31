@@ -14,8 +14,8 @@ public final class AppFeatureFlagServiceProvider: ServiceProvider {
     public init() {}
     
     public func registerServices(_ registry: ServiceRegistry) {
-        registry.register(AppFeatureFlagsService.self, factory: { _ in
+        registry.register(AppFeatureFlagsService.self) { _ in
             AppFeatureFlagsServiceImpl()
-        })
+        }
     }
 }

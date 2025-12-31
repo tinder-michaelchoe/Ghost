@@ -1,14 +1,14 @@
 //
-//  GhostTests.swift
-//  GhostTests
+//  TestHarnessTests.swift
+//  TestHarnessTests
 //
-//  Created by mexicanpizza on 12/24/25.
+//  Created by mexicanpizza on 12/30/25.
 //
 
 import Testing
-@testable import Ghost
+@testable import TestHarness
 
-struct GhostTests {
+struct TestHarnessTests {
 
     @Test func example() async throws {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.

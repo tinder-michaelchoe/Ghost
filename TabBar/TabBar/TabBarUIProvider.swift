@@ -33,10 +33,7 @@ public final class TabBarUIProvider: UIProvider {
             }
         }
         
-        print("✅ TabBarUIProvider: Registering mainView contribution")
-
         let contribution = MainViewContribution { context in
-            print("✅ TabBarUIProvider: Creating test view controller")
             return AnyViewController {
                 TabBarController(context: context, uiRegistry: registry)
             }
@@ -44,6 +41,5 @@ public final class TabBarUIProvider: UIProvider {
 
         // Register contribution synchronously
         registry.contribute(to: AppUISurface.mainView, item: contribution)
-        print("✅ TabBarUIProvider: Contribution registered to AppUISurface.mainView")
     }
 }

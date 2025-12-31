@@ -1,0 +1,71 @@
+{
+  "" : {
+    "const-values" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/Weather-primary.swiftconstvalues",
+    "dependencies" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/Weather-primary.d",
+    "diagnostics" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/Weather-primary.dia",
+    "emit-module-dependencies" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/Weather-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/Weather-primary-emit-module.dia",
+    "pch" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/Weather-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/Weather-primary.swiftdeps"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/Manifest.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/Manifest.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/Manifest.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/Manifest.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/NWSAPIModels.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/NWSAPIModels.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/NWSAPIModels.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/NWSAPIModels.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/NWSWeatherService.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/NWSWeatherService.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/NWSWeatherService.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/NWSWeatherService.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/WeatherKitAPIModels.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherKitAPIModels.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherKitAPIModels.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherKitAPIModels.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/WeatherKitConfiguration.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherKitConfiguration.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherKitConfiguration.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherKitConfiguration.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/WeatherKitTokenGenerator.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherKitTokenGenerator.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherKitTokenGenerator.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherKitTokenGenerator.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/WeatherService.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherService.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherService.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherService.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/Widget/WeatherCityPickerViewController.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherCityPickerViewController.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherCityPickerViewController.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherCityPickerViewController.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/Widget/WeatherLocationStore.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherLocationStore.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherLocationStore.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherLocationStore.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/Widget/WeatherUIProvider.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherUIProvider.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherUIProvider.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherUIProvider.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/Widget/WeatherWidgetContribution.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherWidgetContribution.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherWidgetContribution.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherWidgetContribution.o"
+  },
+  "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/Weather/Widget/WeatherWidgetViewController.swift" : {
+    "index-unit-output-path" : "/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherWidgetViewController.o",
+    "llvm-bc" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherWidgetViewController.bc",
+    "object" : "/Users/mexicanpizza/Desktop/PROGRAMMING/LUCAS/GhostApp/Weather/build/Weather.build/Release-iphoneos/Weather.build/Objects-normal/arm64/WeatherWidgetViewController.o"
+  }
+}

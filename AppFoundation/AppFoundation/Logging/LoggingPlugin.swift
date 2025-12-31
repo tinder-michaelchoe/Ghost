@@ -13,9 +13,9 @@ public final class LoggingServiceProvider: ServiceProvider, LifecycleParticipant
     public init() {}
     
     public func registerServices(_ registry: ServiceRegistry) {
-        registry.register(LoggingService.self, factory: { _ in
+        registry.register(LoggingService.self) { _ in
             ConsoleLogger()
-        })
+        }
     }
     
     public func run(phase: LifecyclePhase, context: AppContext) async {

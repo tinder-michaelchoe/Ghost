@@ -44,6 +44,9 @@
       location = "container:TabBar/TabBar.xcodeproj">
    </FileRef>
    <FileRef
+      location = "container:TestHarness/TestHarness.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "container:Weather/Weather.xcodeproj">
    </FileRef>
 </Workspace>
