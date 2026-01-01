@@ -10,11 +10,24 @@ import UIKit
 /// A collection of SceneDelegateListener instances that can be notified of SceneDelegate events.
 public struct SceneDelegateListenerCollection: HandlerCollection {
     public typealias EventHandler = SceneDelegateListener
-    
-    public var handlers: [SceneDelegateListener] = []
-    
+
+    public private(set) var handlers: [SceneDelegateListener] = []
+
     public init() {}
-    
+
+    public mutating func add(handler: SceneDelegateListener) {
+        handlers.append(handler)
+    }
+
+    /// Configure all listeners with the service resolver.
+    /// Called after services are registered so listeners can obtain their dependencies.
+    /// - Parameter resolver: The service resolver to pass to listeners
+    public func configureAll(with resolver: ServiceResolver) {
+        execute { listener in
+            listener.configure(with: resolver)
+        }
+    }
+
     /// Notify all listeners about scene connection.
     /// - Parameters:
     ///   - scene: The scene that is connecting
@@ -68,6 +81,16 @@ public struct SceneDelegateListenerCollection: HandlerCollection {
     public func notifyDidDisconnect(_ scene: UIScene) {
         execute { listener in
             listener.sceneDidDisconnect(scene)
+        }
+    }
+
+    /// Notify all listeners about URLs to open.
+    /// - Parameters:
+    ///   - scene: The scene receiving the URLs
+    ///   - urlContexts: The URL contexts containing the URLs to open
+    public func notifyOpenURLContexts(_ scene: UIScene, urlContexts: Set<UIOpenURLContext>) {
+        execute { listener in
+            listener.scene(scene, openURLContexts: urlContexts)
         }
     }
 }

@@ -11,6 +11,7 @@ import Builder
 import CladsExamples
 import CoreContracts
 import Dashboard
+import Deeplinking
 import Foundation
 import Location
 import NetworkClient
@@ -96,6 +97,7 @@ extension AppManifest {
             AppFoundationModules.self,
             BuilderManifest.self,
             CladsExamplesManifest.self,
+            DeeplinkingManifest.self,
             TabBarManifest.self
         ]
     }

@@ -8,5 +8,15 @@
 import CoreContracts
 
 struct HandlerGroup<EventHandler>: HandlerCollection {
-    var handlers: [EventHandler]
+    private(set) var handlers: [EventHandler] = []
+
+    init() {}
+
+    init(handlers: [EventHandler]) {
+        self.handlers = handlers
+    }
+
+    mutating func add(handler: EventHandler) {
+        handlers.append(handler)
+    }
 }

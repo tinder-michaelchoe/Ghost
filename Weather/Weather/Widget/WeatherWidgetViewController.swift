@@ -170,6 +170,23 @@ final class WeatherWidgetFrontViewController: UIViewController, RefreshableWidge
         setupLocation()
         setupUI()
         loadWeather()
+
+        // Listen for deeplink-triggered location changes
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleLocationChange),
+            name: .weatherLocationDidChange,
+            object: nil
+        )
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    @objc private func handleLocationChange() {
+        print("[WeatherWidget] Location changed via deeplink, refreshing...")
+        refreshContent()
     }
 
     // MARK: - Setup

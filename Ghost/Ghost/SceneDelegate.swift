@@ -47,12 +47,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Step 3: Initialize module system asynchronously
         Task {
             await initializeApp(windowScene: windowScene)
-            
-            // Step 4: Notify SceneDelegate listeners (after AppCoordinator is created)
+
+            // Step 4: Configure all listeners with the service resolver
+            configureListeners()
+
+            // Step 5: Notify SceneDelegate listeners (after services are registered and configured)
             _ = listenerCollection.notifyWillConnect(scene, session: session, options: connectionOptions)
         }
     }
-    
+
+    func scene(_ scene: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
+        // Handle URLs when app is already running
+        print("[SceneDelegate] openURLContexts called with \(urlContexts.count) URL(s)")
+        for context in urlContexts {
+            print("[SceneDelegate] URL: \(context.url)")
+        }
+        listenerCollection.notifyOpenURLContexts(scene, urlContexts: urlContexts)
+    }
+
     func sceneDidDisconnect(_ scene: UIScene) {
         // Notify all listeners
         listenerCollection.notifyDidDisconnect(scene)
@@ -80,6 +92,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 }
 
 extension SceneDelegate {
+
+    /// Configure all listeners with the service resolver.
+    /// Called after services are registered so listeners can obtain their dependencies.
+    private func configureListeners() {
+        guard let resolver = coordinator?.serviceManager.serviceContainer else { return }
+        listenerCollection.configureAll(with: resolver)
+    }
+
     private func initializeApp(windowScene: UIWindowScene) async {
         guard let coordinator else {
             return

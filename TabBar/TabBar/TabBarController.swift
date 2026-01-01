@@ -31,6 +31,7 @@ final class TabBarController: UITabBarController {
 
     private func buildTabs() {
         // Get tab bar contributions for each tab surface
+        // Note: Order must match NavigationServiceHolder.tabIdentifiers
         let tabSurfaces: [TabBarUISurface] = [.home, .builder, .dashboard, .settings]
 
         var allResolved: [ResolvedContribution] = []

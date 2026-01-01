@@ -10,10 +10,14 @@ import UIKit
 /// A collection of AppDelegateListener instances that can be notified of AppDelegate events.
 public struct AppDelegateListenerCollection: HandlerCollection {
     public typealias EventHandler = AppDelegateListener
-    
-    public var handlers: [AppDelegateListener] = []
-    
+
+    public private(set) var handlers: [AppDelegateListener] = []
+
     public init() {}
+
+    public mutating func add(handler: AppDelegateListener) {
+        handlers.append(handler)
+    }
     
     /// Notify all listeners about application launch.
     /// - Parameters:

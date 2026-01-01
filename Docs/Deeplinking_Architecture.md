@@ -24,24 +24,29 @@ Deep linking allows external sources (Safari, other apps, push notifications, Sh
 
 **URL Scheme:** `ghost://`
 
+**URL Format:** `ghost://[tab]/[feature]/[action]?[params]`
+
 **Example URLs:**
-- `ghost://weather` - Open weather widget
-- `ghost://weather/city?name=Chicago` - Open weather for specific city
-- `ghost://art/refresh` - Trigger art refresh
-- `ghost://dashboard` - Navigate to dashboard
+- `ghost://dashboard` - Navigate to dashboard tab
+- `ghost://dashboard/weather` - Open dashboard and focus weather
+- `ghost://dashboard/weather/city?name=Chicago` - Open weather for specific city
+- `ghost://dashboard/art/refresh` - Trigger art refresh
+- `ghost://settings` - Navigate to settings tab
 
 ---
 
 ## URL Scheme Format
 
 ```
-ghost://[host]/[path]?[query_parameters]
-   │       │      │           │
-   │       │      │           └── Optional key-value pairs (e.g., name=Chicago&units=fahrenheit)
-   │       │      │
-   │       │      └── Action or sub-route (e.g., /city, /refresh, /settings)
-   │       │
-   │       └── Module identifier / primary route (e.g., weather, art, dashboard)
+ghost://[tab]/[feature]/[action]?[query_parameters]
+   │      │       │         │           │
+   │      │       │         │           └── Optional key-value pairs (e.g., name=Chicago)
+   │      │       │         │
+   │      │       │         └── Action within the feature (e.g., city, refresh, settings)
+   │      │       │
+   │      │       └── Feature/module identifier (e.g., weather, art)
+   │      │
+   │      └── Tab to navigate to (e.g., dashboard, settings)
    │
    └── Custom URL scheme registered in Info.plist
 ```
@@ -51,27 +56,52 @@ ghost://[host]/[path]?[query_parameters]
 | Component | Description | Example |
 |-----------|-------------|---------|
 | Scheme | App identifier, registered in Info.plist | `ghost` |
-| Host | Primary route, typically module name | `weather`, `art`, `dashboard` |
-| Path | Action or sub-route within the module | `/city`, `/refresh`, `/settings` |
-| Query | Parameters as key-value pairs | `name=Chicago&units=fahrenheit` |
+| Host | Tab to navigate to | `dashboard`, `settings` |
+| Path[0] | Feature/module identifier | `weather`, `art` |
+| Path[1+] | Action within the feature | `city`, `refresh` |
+| Query | Parameters as key-value pairs | `name=Chicago` |
+
+### Example URLs
+
+| URL | Tab | Feature | Action | Parameters |
+|-----|-----|---------|--------|------------|
+| `ghost://dashboard` | dashboard | - | - | - |
+| `ghost://dashboard/weather` | dashboard | weather | - | - |
+| `ghost://dashboard/weather/city?name=Chicago` | dashboard | weather | city | name=Chicago |
+| `ghost://dashboard/art/refresh` | dashboard | art | refresh | - |
+| `ghost://settings` | settings | - | - | - |
 
 ### Parsed Deeplink Structure
 
 ```swift
-// Input URL: ghost://weather/city?name=Chicago&units=fahrenheit
+// Input URL: ghost://dashboard/weather/city?name=Chicago
 
 Deeplink(
     scheme: "ghost",
-    host: "weather",
-    path: "/city",
-    pathComponents: ["city"],
-    queryParameters: [
-        "name": "Chicago",
-        "units": "fahrenheit"
-    ],
-    originalURL: URL(string: "ghost://weather/city?name=Chicago&units=fahrenheit")!
+    tab: "dashboard",              // The host - which tab to navigate to
+    feature: "weather",            // First path component - which feature handles this
+    action: "city",                // Second path component - what action to perform
+    pathComponents: ["weather", "city"],
+    queryParameters: ["name": "Chicago"],
+    originalURL: URL(string: "ghost://dashboard/weather/city?name=Chicago")!
 )
 ```
+
+### Routing Strategy
+
+Handlers register by **feature** (first path component), not by tab:
+
+```swift
+// WeatherDeeplinkHandler registers for feature "weather"
+// It receives deeplinks like:
+//   - ghost://dashboard/weather
+//   - ghost://dashboard/weather/city?name=Chicago
+//   - ghost://settings/weather/units  (if weather settings lived on settings tab)
+```
+
+The handler is responsible for:
+1. Navigating to the correct tab (from `deeplink.tab`)
+2. Performing the feature-specific action (from `deeplink.action`)
 
 ---
 
@@ -391,19 +421,26 @@ iOS uses different delivery mechanisms depending on app state:
 
 ```swift
 /// Represents a parsed deep link URL.
+/// URL format: ghost://[tab]/[feature]/[action]?[query]
 public struct Deeplink: Sendable, Equatable {
 
     /// The URL scheme (e.g., "ghost")
     public let scheme: String
 
-    /// The host/primary route (e.g., "weather", "art")
-    /// This is typically used to identify which module handles the link.
-    public let host: String?
+    /// The tab to navigate to (from URL host)
+    /// e.g., "dashboard", "settings"
+    public let tab: String?
 
-    /// The path component (e.g., "/city", "/refresh")
-    public let path: String
+    /// The feature that should handle this deeplink (first path component)
+    /// e.g., "weather", "art"
+    /// Handlers register by feature name.
+    public let feature: String?
 
-    /// Path split into components (e.g., ["city"] for "/city")
+    /// The action to perform within the feature (second path component)
+    /// e.g., "city", "refresh"
+    public let action: String?
+
+    /// All path components for more complex routing
     public let pathComponents: [String]
 
     /// Query parameters as key-value pairs
@@ -420,15 +457,23 @@ public struct Deeplink: Sendable, Equatable {
         guard let scheme = url.scheme else { return nil }
 
         self.scheme = scheme
-        self.host = url.host
-        self.path = url.path
-        self.pathComponents = url.pathComponents.filter { $0 != "/" }
+        self.tab = url.host
         self.originalURL = url
+
+        // Parse path components (filter out empty strings from leading "/")
+        let components = url.pathComponents.filter { $0 != "/" && !$0.isEmpty }
+        self.pathComponents = components
+
+        // First path component is the feature
+        self.feature = components.first
+
+        // Second path component is the action
+        self.action = components.count > 1 ? components[1] : nil
 
         // Parse query parameters
         var params: [String: String] = [:]
-        if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-           let queryItems = components.queryItems {
+        if let urlComponents = URLComponents(url: url, resolvingAgainstBaseURL: false),
+           let queryItems = urlComponents.queryItems {
             for item in queryItems {
                 params[item.name] = item.value ?? ""
             }
@@ -438,14 +483,15 @@ public struct Deeplink: Sendable, Equatable {
 
     // MARK: - Convenience
 
-    /// Returns the first path component, if any.
-    public var action: String? {
-        pathComponents.first
-    }
-
     /// Returns a query parameter value for the given key.
     public func parameter(_ key: String) -> String? {
         queryParameters[key]
+    }
+
+    /// Returns path components after feature and action (for deeper routing)
+    public var remainingPath: [String] {
+        guard pathComponents.count > 2 else { return [] }
+        return Array(pathComponents.dropFirst(2))
     }
 }
 ```
@@ -454,18 +500,41 @@ public struct Deeplink: Sendable, Equatable {
 
 ```swift
 /// Protocol for modules that handle deep links.
-/// Each handler is responsible for a specific host (e.g., "weather", "art").
+/// Each handler is responsible for a specific feature (e.g., "weather", "art").
 @MainActor
 public protocol DeeplinkHandler: AnyObject {
 
-    /// The host this handler responds to (e.g., "weather", "art").
+    /// The feature this handler responds to (first path component).
+    /// e.g., "weather", "art"
     /// The router uses this to match incoming deeplinks.
-    var host: String { get }
+    var feature: String { get }
 
     /// Handles a deep link.
+    /// The handler is responsible for:
+    /// 1. Navigating to the correct tab (from deeplink.tab) if needed
+    /// 2. Performing the feature-specific action (from deeplink.action)
     /// - Parameter deeplink: The parsed deep link
     /// - Returns: true if the deep link was handled, false otherwise
     func handle(_ deeplink: Deeplink) -> Bool
+}
+```
+
+#### NavigationService (Protocol)
+
+```swift
+/// Protocol for tab navigation.
+/// Implemented by TabBar, used by deeplink handlers to switch tabs.
+@MainActor
+public protocol NavigationService: AnyObject {
+
+    /// Switches to the specified tab.
+    /// - Parameter identifier: The tab identifier (e.g., "dashboard", "settings")
+    /// - Returns: true if the tab was found and switched to
+    @discardableResult
+    func switchToTab(_ identifier: String) -> Bool
+
+    /// Returns the currently selected tab identifier.
+    var currentTab: String? { get }
 }
 ```
 
@@ -539,14 +608,19 @@ This pattern allows any listener to receive dependencies without SceneDelegate n
 
 ```swift
 /// Central router for deep links.
-/// Maintains a registry of handlers and routes incoming links to the appropriate handler.
+/// Maintains a registry of handlers keyed by feature name.
+/// Routes incoming links to the appropriate handler based on the first path component.
 @MainActor
 public final class DeeplinkRouter: DeeplinkService {
 
     // MARK: - Properties
 
-    /// Registered handlers, keyed by host
+    /// Registered handlers, keyed by feature name
     private var handlers: [String: DeeplinkHandler] = [:]
+
+    /// Handler for tab-only deeplinks (no feature specified)
+    /// e.g., ghost://dashboard with no path
+    private var tabOnlyHandler: ((Deeplink) -> Bool)?
 
     /// Expected URL scheme
     private let scheme: String
@@ -560,13 +634,18 @@ public final class DeeplinkRouter: DeeplinkService {
     // MARK: - DeeplinkService
 
     public func register(handler: DeeplinkHandler) {
-        handlers[handler.host] = handler
-        print("[DeeplinkRouter] Registered handler for host: \(handler.host)")
+        handlers[handler.feature] = handler
+        print("[DeeplinkRouter] Registered handler for feature: \(handler.feature)")
     }
 
     public func unregister(handler: DeeplinkHandler) {
-        handlers.removeValue(forKey: handler.host)
-        print("[DeeplinkRouter] Unregistered handler for host: \(handler.host)")
+        handlers.removeValue(forKey: handler.feature)
+        print("[DeeplinkRouter] Unregistered handler for feature: \(handler.feature)")
+    }
+
+    /// Sets a handler for tab-only deeplinks (ghost://dashboard with no feature path)
+    public func setTabOnlyHandler(_ handler: @escaping (Deeplink) -> Bool) {
+        self.tabOnlyHandler = handler
     }
 
     public func handle(_ deeplink: Deeplink) -> Bool {
@@ -576,24 +655,35 @@ public final class DeeplinkRouter: DeeplinkService {
             return false
         }
 
-        // Find handler for host
-        guard let host = deeplink.host,
-              let handler = handlers[host] else {
-            print("[DeeplinkRouter] No handler for host: \(deeplink.host ?? "nil")")
+        // If no feature specified, this is a tab-only deeplink
+        guard let feature = deeplink.feature else {
+            print("[DeeplinkRouter] Tab-only deeplink for tab: \(deeplink.tab ?? "nil")")
+            return tabOnlyHandler?(deeplink) ?? false
+        }
+
+        // Find handler for feature
+        guard let handler = handlers[feature] else {
+            print("[DeeplinkRouter] No handler for feature: \(feature)")
             return false
         }
 
         // Delegate to handler
-        print("[DeeplinkRouter] Routing to handler: \(host)")
+        print("[DeeplinkRouter] Routing to handler for feature: \(feature)")
         return handler.handle(deeplink)
     }
 
     public func canHandle(_ url: URL) -> Bool {
-        guard url.scheme == scheme,
-              let host = url.host else {
-            return false
+        guard url.scheme == scheme else { return false }
+
+        // Parse to get feature
+        guard let deeplink = Deeplink(url: url) else { return false }
+
+        // Tab-only deeplinks are handleable if we have a tab handler
+        guard let feature = deeplink.feature else {
+            return tabOnlyHandler != nil
         }
-        return handlers[host] != nil
+
+        return handlers[feature] != nil
     }
 }
 ```
@@ -1148,19 +1238,22 @@ import CoreContracts
 import UIKit
 
 /// Handles deep links for the Weather module.
+/// Registered for feature "weather".
 @MainActor
 final class WeatherDeeplinkHandler: DeeplinkHandler {
 
     // MARK: - Properties
 
-    let host = "weather"
+    let feature = "weather"
 
+    private let navigationService: NavigationService
     private let persistenceService: PersistenceService
     private weak var widgetRefreshDelegate: RefreshableWidget?
 
     // MARK: - Initialization
 
-    init(persistenceService: PersistenceService) {
+    init(navigationService: NavigationService, persistenceService: PersistenceService) {
+        self.navigationService = navigationService
         self.persistenceService = persistenceService
     }
 
@@ -1169,14 +1262,20 @@ final class WeatherDeeplinkHandler: DeeplinkHandler {
     func handle(_ deeplink: Deeplink) -> Bool {
         print("[WeatherDeeplink] Handling: \(deeplink.originalURL)")
 
-        // Route based on path
+        // Step 1: Navigate to the correct tab (if specified)
+        if let tab = deeplink.tab {
+            navigationService.switchToTab(tab)
+        }
+
+        // Step 2: Perform the action
         switch deeplink.action {
-        case nil, "":
-            // ghost://weather - Just show weather
-            return showWeather()
+        case nil:
+            // ghost://dashboard/weather - Just navigate to tab (already done)
+            print("[WeatherDeeplink] Navigated to weather on \(deeplink.tab ?? "current") tab")
+            return true
 
         case "city":
-            // ghost://weather/city?name=Chicago
+            // ghost://dashboard/weather/city?name=Chicago
             guard let cityName = deeplink.parameter("name") else {
                 print("[WeatherDeeplink] Missing 'name' parameter")
                 return false
@@ -1184,11 +1283,11 @@ final class WeatherDeeplinkHandler: DeeplinkHandler {
             return selectCity(named: cityName)
 
         case "settings":
-            // ghost://weather/settings
+            // ghost://dashboard/weather/settings
             return showSettings()
 
         case "refresh":
-            // ghost://weather/refresh
+            // ghost://dashboard/weather/refresh
             return refreshWeather()
 
         default:
@@ -1198,13 +1297,6 @@ final class WeatherDeeplinkHandler: DeeplinkHandler {
     }
 
     // MARK: - Actions
-
-    private func showWeather() -> Bool {
-        // Navigate to weather widget
-        // Implementation depends on navigation system
-        print("[WeatherDeeplink] Showing weather")
-        return true
-    }
 
     private func selectCity(named name: String) -> Bool {
         // Find city in available locations
@@ -1237,17 +1329,78 @@ final class WeatherDeeplinkHandler: DeeplinkHandler {
 }
 ```
 
+### Example: TabBar NavigationService Implementation
+
+```swift
+import CoreContracts
+import UIKit
+
+/// TabBar implements NavigationService to allow deeplink handlers to switch tabs.
+extension TabBarController: NavigationService {
+
+    public var currentTab: String? {
+        guard let index = selectedIndex as Int?,
+              index < tabIdentifiers.count else {
+            return nil
+        }
+        return tabIdentifiers[index]
+    }
+
+    @discardableResult
+    public func switchToTab(_ identifier: String) -> Bool {
+        guard let index = tabIdentifiers.firstIndex(of: identifier) else {
+            print("[TabBar] Unknown tab: \(identifier)")
+            return false
+        }
+
+        selectedIndex = index
+        print("[TabBar] Switched to tab: \(identifier)")
+        return true
+    }
+}
+
+// TabBar also registers as a service
+final class TabBarServiceProvider: ServiceProvider {
+    static var dependencies: [ServiceKey] { [] }
+
+    static func register(in container: ServiceContainer) {
+        // The actual TabBarController instance is set later during UI setup
+        container.register(NavigationService.self) { resolver in
+            // This would be the actual tab bar instance
+            // Could use a wrapper/proxy pattern if needed
+            resolver.resolve(TabBarController.self)
+        }
+    }
+}
+```
+
+### Example: Setting Up Tab-Only Handler
+
+```swift
+// During app initialization, set up handling for tab-only deeplinks
+// like ghost://dashboard (no feature path)
+
+func setupDeeplinking(deeplinkService: DeeplinkService, navigationService: NavigationService) {
+    // Handle tab-only deeplinks by just switching tabs
+    if let router = deeplinkService as? DeeplinkRouter {
+        router.setTabOnlyHandler { deeplink in
+            guard let tab = deeplink.tab else { return false }
+            return navigationService.switchToTab(tab)
+        }
+    }
+}
+```
+
 ### Supported URL Patterns
 
-| URL | Action |
-|-----|--------|
-| `ghost://weather` | Show weather widget |
-| `ghost://weather/city?name=Chicago` | Set city and refresh |
-| `ghost://weather/settings` | Show weather settings |
-| `ghost://weather/refresh` | Refresh weather data |
-| `ghost://art` | Show art widget |
-| `ghost://art/refresh` | Load new artwork |
-| `ghost://dashboard` | Navigate to dashboard |
+| URL | Tab Navigation | Feature Action |
+|-----|----------------|----------------|
+| `ghost://dashboard` | → dashboard | (none) |
+| `ghost://dashboard/weather` | → dashboard | show weather |
+| `ghost://dashboard/weather/city?name=Chicago` | → dashboard | set city to Chicago |
+| `ghost://dashboard/weather/refresh` | → dashboard | refresh weather |
+| `ghost://dashboard/art/refresh` | → dashboard | refresh art |
+| `ghost://settings` | → settings | (none) |
 
 ---
 
@@ -1260,6 +1413,7 @@ final class WeatherDeeplinkHandler: DeeplinkHandler {
 | `Deeplink.swift` | CoreContracts/Deeplinking/ | Parsed deeplink struct |
 | `DeeplinkHandler.swift` | CoreContracts/Deeplinking/ | Handler protocol |
 | `DeeplinkService.swift` | CoreContracts/Deeplinking/ | Service protocol |
+| `NavigationService.swift` | CoreContracts/Navigation/ | Tab navigation protocol |
 | `DeeplinkRouter.swift` | Deeplinking/ | Router implementation |
 | `DeeplinkSceneDelegateListener.swift` | Deeplinking/ | SceneDelegate listener |
 | `Manifest.swift` | Deeplinking/ | Module manifest |
@@ -1273,6 +1427,8 @@ final class WeatherDeeplinkHandler: DeeplinkHandler {
 | `SceneDelegate.swift` | Add `scene(_:openURLContexts:)` implementation, add `configureListeners()` call |
 | `Info.plist` | Add `CFBundleURLTypes` with "ghost" scheme |
 | `AppManifest.swift` | Add `DeeplinkingManifest` to manifests |
+| `TabBarController.swift` | Implement `NavigationService` protocol |
+| `TabBarManifest.swift` | Register `NavigationService` |
 
 ### Optional Feature Module Files
 
@@ -1289,23 +1445,24 @@ final class WeatherDeeplinkHandler: DeeplinkHandler {
 
 ```bash
 # Open URL in simulator
-xcrun simctl openurl booted "ghost://weather"
-xcrun simctl openurl booted "ghost://weather/city?name=Chicago"
-xcrun simctl openurl booted "ghost://art/refresh"
+xcrun simctl openurl booted "ghost://dashboard"
+xcrun simctl openurl booted "ghost://dashboard/weather"
+xcrun simctl openurl booted "ghost://dashboard/weather/city?name=Chicago"
+xcrun simctl openurl booted "ghost://dashboard/art/refresh"
 ```
 
 ### Device Testing
 
 Create a note or message with the URL and tap it:
 ```
-ghost://weather/city?name=Los%20Angeles
+ghost://dashboard/weather/city?name=Los%20Angeles
 ```
 
 ### Safari Testing
 
 Type in Safari address bar:
 ```
-ghost://weather
+ghost://dashboard
 ```
 
 ---
