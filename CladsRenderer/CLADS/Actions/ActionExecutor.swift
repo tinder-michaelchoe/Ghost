@@ -18,13 +18,16 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
     /// Custom action closures injected at view creation time
     private let customActions: [String: ActionClosure]
 
+    /// Alert presenter for showing alerts (injectable for testing)
+    private let alertPresenter: AlertPresenting
+
     /// Delegate for handling custom actions
     public weak var actionDelegate: CladsActionDelegate?
 
     /// Callback to dismiss the current view
     public var dismissHandler: (() -> Void)?
 
-    /// Callback to present an alert
+    /// Callback to present an alert (legacy - prefer alertPresenter)
     public var alertHandler: ((AlertConfiguration) -> Void)?
 
     /// Callback for navigation
@@ -33,15 +36,17 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
     public init(
         stateStore: StateStore,
         actionDefinitions: [String: Document.Action],
-        registry: ActionRegistry = .shared,
+        registry: ActionRegistry,
         customActions: [String: ActionClosure] = [:],
-        actionDelegate: CladsActionDelegate? = nil
+        actionDelegate: CladsActionDelegate? = nil,
+        alertPresenter: AlertPresenting = UIKitAlertPresenter()
     ) {
         self.stateStore = stateStore
         self.actionDefinitions = actionDefinitions
         self.registry = registry
         self.customActions = customActions
         self.actionDelegate = actionDelegate
+        self.alertPresenter = alertPresenter
     }
 
     // MARK: - ActionExecutionContext
@@ -200,6 +205,8 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
         case .stringValue(let v): return v
         case .boolValue(let v): return v
         case .nullValue: return NSNull()
+        case .arrayValue(let arr): return arr.map { stateValueToAny($0) }
+        case .objectValue(let obj): return obj.mapValues { stateValueToAny($0) }
         }
     }
 
@@ -208,9 +215,14 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
         dismissHandler?()
     }
 
-    /// Present an alert
+    /// Present an alert using the injected alert presenter
     public func presentAlert(_ config: AlertConfiguration) {
-        alertHandler?(config)
+        // Use legacy handler if set, otherwise use injected presenter
+        if let handler = alertHandler {
+            handler(config)
+        } else {
+            alertPresenter.present(config)
+        }
     }
 
     /// Navigate to another view
@@ -272,13 +284,39 @@ public struct AlertConfiguration {
     }
 }
 
+// MARK: - Alert Presenting Protocol
+
+/// Protocol for presenting alerts, enabling dependency injection for testing.
+///
+/// Example test usage:
+/// ```swift
+/// class MockAlertPresenter: AlertPresenting {
+///     var presentedAlerts: [AlertConfiguration] = []
+///     func present(_ config: AlertConfiguration) {
+///         presentedAlerts.append(config)
+///     }
+/// }
+///
+/// let mockPresenter = MockAlertPresenter()
+/// let context = ActionContext(stateStore: store, alertPresenter: mockPresenter, ...)
+/// // ... trigger action ...
+/// XCTAssertEqual(mockPresenter.presentedAlerts.count, 1)
+/// ```
+public protocol AlertPresenting: Sendable {
+    @MainActor
+    func present(_ config: AlertConfiguration)
+}
+
 // MARK: - UIKit Alert Presenter
 
-/// Helper to present UIAlertController from SwiftUI
-public struct AlertPresenter {
+/// Default UIKit implementation of AlertPresenting.
+/// Uses UIAlertController to present alerts.
+public struct UIKitAlertPresenter: AlertPresenting {
+
+    public init() {}
 
     @MainActor
-    public static func present(_ config: AlertConfiguration) {
+    public func present(_ config: AlertConfiguration) {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let rootViewController = windowScene.windows.first?.rootViewController else {
             return
@@ -311,5 +349,16 @@ public struct AlertPresenter {
         }
 
         topController.present(alert, animated: true)
+    }
+}
+
+// MARK: - Legacy Support
+
+/// Legacy static interface for backward compatibility.
+/// Prefer using UIKitAlertPresenter instance for new code.
+public enum AlertPresenter {
+    @MainActor
+    public static func present(_ config: AlertConfiguration) {
+        UIKitAlertPresenter().present(config)
     }
 }

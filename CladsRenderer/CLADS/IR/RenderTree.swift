@@ -68,6 +68,70 @@ public struct RootNode {
     }
 }
 
+// MARK: - Render Node Kind
+
+/// Type-safe render node kind identifier.
+///
+/// Uses struct with static constants for compile-time safety while remaining extensible.
+/// External modules can add new render node kinds without modifying core code.
+///
+/// Built-in kinds are accessed via static properties:
+/// ```swift
+/// RenderNodeKind.text
+/// RenderNodeKind.button
+/// ```
+///
+/// External modules can extend with new kinds:
+/// ```swift
+/// extension RenderNodeKind {
+///     public static let chart = RenderNodeKind(rawValue: "chart")
+/// }
+/// ```
+public struct RenderNodeKind: Hashable, Sendable {
+    public let rawValue: String
+
+    public init(rawValue: String) {
+        self.rawValue = rawValue
+    }
+}
+
+// MARK: - Built-in Render Node Kinds
+
+extension RenderNodeKind {
+    public static let container = RenderNodeKind(rawValue: "container")
+    public static let sectionLayout = RenderNodeKind(rawValue: "sectionLayout")
+    public static let text = RenderNodeKind(rawValue: "text")
+    public static let button = RenderNodeKind(rawValue: "button")
+    public static let textField = RenderNodeKind(rawValue: "textField")
+    public static let toggle = RenderNodeKind(rawValue: "toggle")
+    public static let slider = RenderNodeKind(rawValue: "slider")
+    public static let image = RenderNodeKind(rawValue: "image")
+    public static let gradient = RenderNodeKind(rawValue: "gradient")
+    public static let spacer = RenderNodeKind(rawValue: "spacer")
+    public static let custom = RenderNodeKind(rawValue: "custom")
+}
+
+// MARK: - Custom Render Node Protocol
+
+/// Protocol for custom render nodes defined by external modules.
+///
+/// Implement this protocol to create custom component render nodes.
+///
+/// Example:
+/// ```swift
+/// struct ChartNode: CustomRenderNode {
+///     static let kind = RenderNodeKind(rawValue: "chart")
+///
+///     let dataPoints: [Double]
+///     let chartType: String
+///     let style: IR.Style
+/// }
+/// ```
+public protocol CustomRenderNode: Sendable {
+    /// The kind identifier for this custom node
+    static var kind: RenderNodeKind { get }
+}
+
 // MARK: - Render Node
 
 /// A node in the render tree - either a container or a leaf component
@@ -82,23 +146,11 @@ public enum RenderNode {
     case image(ImageNode)
     case gradient(GradientNode)
     case spacer
-
-    /// Identifies the type of render node (for renderer dispatch)
-    public enum Kind: CaseIterable, Sendable {
-        case container
-        case sectionLayout
-        case text
-        case button
-        case textField
-        case toggle
-        case slider
-        case image
-        case gradient
-        case spacer
-    }
+    /// Custom render node for extensible components
+    case custom(kind: RenderNodeKind, node: any CustomRenderNode)
 
     /// The kind of this render node
-    public var kind: Kind {
+    public var kind: RenderNodeKind {
         switch self {
         case .container: return .container
         case .sectionLayout: return .sectionLayout
@@ -110,6 +162,7 @@ public enum RenderNode {
         case .image: return .image
         case .gradient: return .gradient
         case .spacer: return .spacer
+        case .custom(let kind, _): return kind
         }
     }
 }

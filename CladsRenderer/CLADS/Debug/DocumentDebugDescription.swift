@@ -140,11 +140,41 @@ extension Document.LayoutNode {
             return layout.debugDescription(indent: indent)
         case .sectionLayout(let sectionLayout):
             return sectionLayout.debugDescription(indent: indent)
+        case .forEach(let forEach):
+            return forEach.debugDescription(indent: indent)
         case .component(let component):
             return component.debugDescription(indent: indent)
         case .spacer:
             return prefix + "spacer"
         }
+    }
+}
+
+// MARK: - ForEach Debug
+
+extension Document.ForEach {
+    func debugDescription(indent: Int) -> String {
+        let prefix = String(repeating: "  ", count: indent)
+        var lines: [String] = []
+
+        var desc = "forEach"
+        var props: [String] = []
+        props.append("items: \(items)")
+        props.append("var: \(itemVariable)")
+        props.append("layout: \(layout.rawValue)")
+        if let spacing = spacing { props.append("spacing: \(Int(spacing))") }
+        desc += " (\(props.joined(separator: ", ")))"
+        lines.append(prefix + desc)
+
+        lines.append(prefix + "  template:")
+        lines.append(template.debugDescription(indent: indent + 2))
+
+        if let emptyView = emptyView {
+            lines.append(prefix + "  emptyView:")
+            lines.append(emptyView.debugDescription(indent: indent + 2))
+        }
+
+        return lines.joined(separator: "\n")
     }
 }
 
@@ -269,6 +299,14 @@ extension Document.StateValue {
         case .stringValue(let v): return "\"\(v)\""
         case .boolValue(let v): return "\(v)"
         case .nullValue: return "null"
+        case .arrayValue(let arr):
+            let items = arr.map { $0.debugValue }.joined(separator: ", ")
+            return "[\(items)]"
+        case .objectValue(let obj):
+            let pairs = obj.sorted(by: { $0.key < $1.key })
+                .map { "\($0.key): \($0.value.debugValue)" }
+                .joined(separator: ", ")
+            return "{\(pairs)}"
         }
     }
 }

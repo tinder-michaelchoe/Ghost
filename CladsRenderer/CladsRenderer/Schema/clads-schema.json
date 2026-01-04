@@ -1,0 +1,671 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://ghost.app/schemas/clads-v1.json",
+  "title": "CLADS Document",
+  "description": "Schema for CLADS (Component Layout and Design System) server-driven UI documents",
+  "type": "object",
+  "required": ["id", "root"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the document"
+    },
+    "version": {
+      "type": "string",
+      "description": "Document version"
+    },
+    "state": {
+      "type": "object",
+      "description": "Global state values",
+      "additionalProperties": {
+        "$ref": "#/$defs/stateValue"
+      }
+    },
+    "styles": {
+      "type": "object",
+      "description": "Named style definitions",
+      "additionalProperties": {
+        "$ref": "#/$defs/style"
+      }
+    },
+    "dataSources": {
+      "type": "object",
+      "description": "Named data source definitions",
+      "additionalProperties": {
+        "$ref": "#/$defs/dataSource"
+      }
+    },
+    "actions": {
+      "type": "object",
+      "description": "Named action definitions",
+      "additionalProperties": {
+        "$ref": "#/$defs/action"
+      }
+    },
+    "root": {
+      "$ref": "#/$defs/rootComponent"
+    }
+  },
+  "$defs": {
+    "stateValue": {
+      "description": "A state value (string, number, boolean, or null)",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "null" },
+        { "type": "array" },
+        { "type": "object" }
+      ]
+    },
+    "hexColor": {
+      "type": "string",
+      "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+      "description": "Hex color in #RRGGBB or #RRGGBBAA format"
+    },
+    "fontWeight": {
+      "type": "string",
+      "enum": ["ultraLight", "thin", "light", "regular", "medium", "semibold", "bold", "heavy", "black"],
+      "description": "Font weight"
+    },
+    "textAlignment": {
+      "type": "string",
+      "enum": ["leading", "center", "trailing"],
+      "description": "Text alignment"
+    },
+    "horizontalAlignment": {
+      "type": "string",
+      "enum": ["leading", "center", "trailing"],
+      "description": "Horizontal alignment for stacks"
+    },
+    "verticalAlignment": {
+      "type": "string",
+      "enum": ["top", "center", "bottom"],
+      "description": "Vertical alignment"
+    },
+    "padding": {
+      "type": "object",
+      "description": "Padding configuration",
+      "properties": {
+        "top": { "type": "number" },
+        "bottom": { "type": "number" },
+        "leading": { "type": "number" },
+        "trailing": { "type": "number" },
+        "horizontal": { "type": "number", "description": "Applies to leading and trailing" },
+        "vertical": { "type": "number", "description": "Applies to top and bottom" },
+        "all": { "type": "number", "description": "Applies to all sides" }
+      },
+      "additionalProperties": false
+    },
+    "style": {
+      "type": "object",
+      "description": "Style definition",
+      "properties": {
+        "inherits": {
+          "type": "string",
+          "description": "Parent style ID for inheritance"
+        },
+        "fontFamily": { "type": "string" },
+        "fontSize": { "type": "number" },
+        "fontWeight": { "$ref": "#/$defs/fontWeight" },
+        "textColor": { "$ref": "#/$defs/hexColor" },
+        "textAlignment": { "$ref": "#/$defs/textAlignment" },
+        "backgroundColor": { "$ref": "#/$defs/hexColor" },
+        "cornerRadius": { "type": "number" },
+        "borderWidth": { "type": "number" },
+        "borderColor": { "$ref": "#/$defs/hexColor" },
+        "tintColor": { "$ref": "#/$defs/hexColor" },
+        "width": { "type": "number" },
+        "height": { "type": "number" },
+        "minWidth": { "type": "number" },
+        "minHeight": { "type": "number" },
+        "maxWidth": { "type": "number" },
+        "maxHeight": { "type": "number" },
+        "padding": { "$ref": "#/$defs/padding" }
+      },
+      "additionalProperties": false
+    },
+    "dataSource": {
+      "type": "object",
+      "description": "Data source for dynamic content",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["static", "binding"]
+        },
+        "value": { "type": "string" },
+        "path": { "type": "string" },
+        "template": { "type": "string" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "imageSource": {
+      "type": "object",
+      "description": "Image source configuration",
+      "properties": {
+        "system": {
+          "type": "string",
+          "description": "SF Symbol name"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Remote image URL"
+        }
+      },
+      "additionalProperties": false
+    },
+    "gradientStop": {
+      "type": "object",
+      "description": "Gradient color stop",
+      "properties": {
+        "color": { "$ref": "#/$defs/hexColor" },
+        "lightColor": { "$ref": "#/$defs/hexColor" },
+        "darkColor": { "$ref": "#/$defs/hexColor" },
+        "location": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": ["location"],
+      "additionalProperties": false
+    },
+    "gradientPoint": {
+      "type": "string",
+      "enum": ["top", "bottom", "leading", "trailing"],
+      "description": "Gradient direction point"
+    },
+    "actionBinding": {
+      "description": "Reference to an action (string ID) or inline action",
+      "oneOf": [
+        { "type": "string" },
+        { "$ref": "#/$defs/action" }
+      ]
+    },
+    "setValue": {
+      "description": "Value for setState action (literal or expression)",
+      "oneOf": [
+        { "type": "string" },
+        { "type": "number" },
+        { "type": "boolean" },
+        { "type": "null" },
+        {
+          "type": "object",
+          "properties": {
+            "$expr": { "type": "string" }
+          },
+          "required": ["$expr"]
+        }
+      ]
+    },
+    "action": {
+      "type": "object",
+      "description": "Action definition",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Action type"
+        }
+      },
+      "required": ["type"],
+      "allOf": [
+        {
+          "if": { "properties": { "type": { "const": "dismiss" } } },
+          "then": {
+            "properties": {
+              "type": { "const": "dismiss" }
+            },
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "setState" } } },
+          "then": {
+            "properties": {
+              "type": { "const": "setState" },
+              "path": { "type": "string" },
+              "value": { "$ref": "#/$defs/setValue" }
+            },
+            "required": ["type", "path", "value"],
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "toggleState" } } },
+          "then": {
+            "properties": {
+              "type": { "const": "toggleState" },
+              "path": { "type": "string" }
+            },
+            "required": ["type", "path"],
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "showAlert" } } },
+          "then": {
+            "properties": {
+              "type": { "const": "showAlert" },
+              "title": { "type": "string" },
+              "message": {
+                "oneOf": [
+                  { "type": "string" },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "type": { "const": "binding" },
+                      "template": { "type": "string" }
+                    },
+                    "required": ["type", "template"]
+                  }
+                ]
+              },
+              "buttons": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "label": { "type": "string" },
+                    "style": {
+                      "type": "string",
+                      "enum": ["default", "cancel", "destructive"]
+                    },
+                    "action": { "type": "string" }
+                  },
+                  "required": ["label"]
+                }
+              }
+            },
+            "required": ["type", "title"],
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "navigate" } } },
+          "then": {
+            "properties": {
+              "type": { "const": "navigate" },
+              "destination": { "type": "string" },
+              "presentation": {
+                "type": "string",
+                "enum": ["push", "present", "fullScreen"]
+              }
+            },
+            "required": ["type", "destination"],
+            "additionalProperties": false
+          }
+        },
+        {
+          "if": { "properties": { "type": { "const": "sequence" } } },
+          "then": {
+            "properties": {
+              "type": { "const": "sequence" },
+              "steps": {
+                "type": "array",
+                "items": { "$ref": "#/$defs/action" }
+              }
+            },
+            "required": ["type", "steps"],
+            "additionalProperties": false
+          }
+        }
+      ]
+    },
+    "componentActions": {
+      "type": "object",
+      "description": "Component action bindings",
+      "properties": {
+        "onTap": { "$ref": "#/$defs/actionBinding" },
+        "onValueChanged": { "$ref": "#/$defs/actionBinding" }
+      },
+      "additionalProperties": false
+    },
+    "localState": {
+      "type": "object",
+      "description": "Local state initialization",
+      "additionalProperties": {
+        "$ref": "#/$defs/stateValue"
+      }
+    },
+    "buttonStyles": {
+      "type": "object",
+      "description": "Button state-specific styles",
+      "properties": {
+        "normal": { "type": "string" },
+        "selected": { "type": "string" },
+        "disabled": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "labelComponent": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "label" },
+        "id": { "type": "string" },
+        "text": { "type": "string" },
+        "styleId": { "type": "string" },
+        "padding": { "$ref": "#/$defs/padding" },
+        "dataSourceId": { "type": "string" },
+        "bind": { "type": "string" },
+        "localBind": { "type": "string" },
+        "state": { "$ref": "#/$defs/localState" },
+        "actions": { "$ref": "#/$defs/componentActions" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "buttonComponent": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "button" },
+        "id": { "type": "string" },
+        "text": { "type": "string" },
+        "styleId": { "type": "string" },
+        "styles": { "$ref": "#/$defs/buttonStyles" },
+        "padding": { "$ref": "#/$defs/padding" },
+        "fillWidth": { "type": "boolean" },
+        "isSelectedBinding": { "type": "string" },
+        "actions": { "$ref": "#/$defs/componentActions" },
+        "state": { "$ref": "#/$defs/localState" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "textfieldComponent": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "textfield" },
+        "id": { "type": "string" },
+        "placeholder": { "type": "string" },
+        "styleId": { "type": "string" },
+        "padding": { "$ref": "#/$defs/padding" },
+        "bind": { "type": "string" },
+        "localBind": { "type": "string" },
+        "actions": { "$ref": "#/$defs/componentActions" },
+        "state": { "$ref": "#/$defs/localState" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "imageComponent": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "image" },
+        "id": { "type": "string" },
+        "image": { "$ref": "#/$defs/imageSource" },
+        "styleId": { "type": "string" },
+        "padding": { "$ref": "#/$defs/padding" },
+        "state": { "$ref": "#/$defs/localState" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "toggleComponent": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "toggle" },
+        "id": { "type": "string" },
+        "styleId": { "type": "string" },
+        "padding": { "$ref": "#/$defs/padding" },
+        "bind": { "type": "string" },
+        "localBind": { "type": "string" },
+        "actions": { "$ref": "#/$defs/componentActions" },
+        "state": { "$ref": "#/$defs/localState" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "sliderComponent": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "slider" },
+        "id": { "type": "string" },
+        "styleId": { "type": "string" },
+        "padding": { "$ref": "#/$defs/padding" },
+        "bind": { "type": "string" },
+        "localBind": { "type": "string" },
+        "minValue": { "type": "number" },
+        "maxValue": { "type": "number" },
+        "actions": { "$ref": "#/$defs/componentActions" },
+        "state": { "$ref": "#/$defs/localState" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "gradientComponent": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "gradient" },
+        "id": { "type": "string" },
+        "gradientColors": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/gradientStop" }
+        },
+        "gradientStart": { "$ref": "#/$defs/gradientPoint" },
+        "gradientEnd": { "$ref": "#/$defs/gradientPoint" },
+        "styleId": { "type": "string" },
+        "padding": { "$ref": "#/$defs/padding" },
+        "state": { "$ref": "#/$defs/localState" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "spacer": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "spacer" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "zstackAlignment": {
+      "type": "object",
+      "properties": {
+        "horizontal": { "$ref": "#/$defs/horizontalAlignment" },
+        "vertical": { "$ref": "#/$defs/verticalAlignment" }
+      },
+      "additionalProperties": false
+    },
+    "vstackLayout": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "vstack" },
+        "id": { "type": "string" },
+        "alignment": { "$ref": "#/$defs/horizontalAlignment" },
+        "spacing": { "type": "number" },
+        "padding": { "$ref": "#/$defs/padding" },
+        "styleId": { "type": "string" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/layoutNode" }
+        },
+        "state": { "$ref": "#/$defs/localState" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "hstackLayout": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "hstack" },
+        "id": { "type": "string" },
+        "alignment": { "$ref": "#/$defs/verticalAlignment" },
+        "spacing": { "type": "number" },
+        "padding": { "$ref": "#/$defs/padding" },
+        "styleId": { "type": "string" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/layoutNode" }
+        },
+        "state": { "$ref": "#/$defs/localState" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "zstackLayout": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "zstack" },
+        "id": { "type": "string" },
+        "alignment": { "$ref": "#/$defs/zstackAlignment" },
+        "padding": { "$ref": "#/$defs/padding" },
+        "styleId": { "type": "string" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/layoutNode" }
+        },
+        "state": { "$ref": "#/$defs/localState" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "sectionLayoutType": {
+      "type": "string",
+      "enum": ["horizontal", "list", "grid", "flow"]
+    },
+    "snapBehavior": {
+      "type": "string",
+      "enum": ["none", "viewAligned", "paging"]
+    },
+    "gridColumns": {
+      "oneOf": [
+        { "type": "integer", "minimum": 1 },
+        {
+          "type": "object",
+          "properties": {
+            "adaptive": {
+              "type": "object",
+              "properties": {
+                "minWidth": { "type": "number" }
+              },
+              "required": ["minWidth"]
+            }
+          },
+          "required": ["adaptive"]
+        }
+      ]
+    },
+    "sectionLayoutConfig": {
+      "type": "object",
+      "properties": {
+        "type": { "$ref": "#/$defs/sectionLayoutType" },
+        "alignment": { "$ref": "#/$defs/horizontalAlignment" },
+        "itemSpacing": { "type": "number" },
+        "lineSpacing": { "type": "number" },
+        "contentInsets": { "$ref": "#/$defs/padding" },
+        "showsIndicators": { "type": "boolean" },
+        "isPagingEnabled": { "type": "boolean" },
+        "snapBehavior": { "$ref": "#/$defs/snapBehavior" },
+        "columns": { "$ref": "#/$defs/gridColumns" },
+        "showsDividers": { "type": "boolean" }
+      },
+      "required": ["type"],
+      "additionalProperties": false
+    },
+    "sectionDefinition": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "layout": { "$ref": "#/$defs/sectionLayoutConfig" },
+        "header": { "$ref": "#/$defs/layoutNode" },
+        "footer": { "$ref": "#/$defs/layoutNode" },
+        "stickyHeader": { "type": "boolean" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/layoutNode" }
+        },
+        "dataSource": { "type": "string" },
+        "itemTemplate": { "$ref": "#/$defs/layoutNode" }
+      },
+      "additionalProperties": false
+    },
+    "sectionLayout": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "sectionLayout" },
+        "id": { "type": "string" },
+        "sectionSpacing": { "type": "number" },
+        "sections": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/sectionDefinition" }
+        },
+        "state": { "$ref": "#/$defs/localState" }
+      },
+      "required": ["type", "sections"],
+      "additionalProperties": false
+    },
+    "layoutNode": {
+      "description": "A layout node (component, layout, or spacer)",
+      "oneOf": [
+        { "$ref": "#/$defs/labelComponent" },
+        { "$ref": "#/$defs/buttonComponent" },
+        { "$ref": "#/$defs/textfieldComponent" },
+        { "$ref": "#/$defs/imageComponent" },
+        { "$ref": "#/$defs/toggleComponent" },
+        { "$ref": "#/$defs/sliderComponent" },
+        { "$ref": "#/$defs/gradientComponent" },
+        { "$ref": "#/$defs/spacer" },
+        { "$ref": "#/$defs/vstackLayout" },
+        { "$ref": "#/$defs/hstackLayout" },
+        { "$ref": "#/$defs/zstackLayout" },
+        { "$ref": "#/$defs/sectionLayout" }
+      ]
+    },
+    "edgeInsetValue": {
+      "oneOf": [
+        { "type": "number" },
+        {
+          "type": "object",
+          "properties": {
+            "positioning": {
+              "type": "string",
+              "enum": ["safeArea", "absolute"]
+            },
+            "value": { "type": "number" }
+          },
+          "required": ["positioning", "value"]
+        }
+      ]
+    },
+    "edgeInsets": {
+      "type": "object",
+      "properties": {
+        "top": { "$ref": "#/$defs/edgeInsetValue" },
+        "bottom": { "$ref": "#/$defs/edgeInsetValue" },
+        "leading": { "$ref": "#/$defs/edgeInsetValue" },
+        "trailing": { "$ref": "#/$defs/edgeInsetValue" }
+      },
+      "additionalProperties": false
+    },
+    "rootActions": {
+      "type": "object",
+      "properties": {
+        "onAppear": { "$ref": "#/$defs/actionBinding" },
+        "onDisappear": { "$ref": "#/$defs/actionBinding" }
+      },
+      "additionalProperties": false
+    },
+    "rootComponent": {
+      "type": "object",
+      "description": "Root screen configuration",
+      "properties": {
+        "backgroundColor": { "$ref": "#/$defs/hexColor" },
+        "colorScheme": {
+          "type": "string",
+          "enum": ["light", "dark", "system"]
+        },
+        "edgeInsets": { "$ref": "#/$defs/edgeInsets" },
+        "styleId": { "type": "string" },
+        "actions": { "$ref": "#/$defs/rootActions" },
+        "children": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/layoutNode" }
+        }
+      },
+      "required": ["children"],
+      "additionalProperties": false
+    }
+  }
+}

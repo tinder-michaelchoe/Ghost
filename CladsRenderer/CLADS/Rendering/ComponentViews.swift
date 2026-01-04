@@ -63,7 +63,7 @@ struct TextFieldView: View {
 
 // MARK: - Style Modifiers
 
-extension View {
+public extension View {
     func applyTextStyle(_ style: IR.Style) -> some View {
         self
             .font(style.font)

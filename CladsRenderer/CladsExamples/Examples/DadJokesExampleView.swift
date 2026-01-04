@@ -6,6 +6,7 @@
 //
 
 import CLADS
+import CladsModules
 import SwiftUI
 
 // MARK: - Dad Jokes Example View

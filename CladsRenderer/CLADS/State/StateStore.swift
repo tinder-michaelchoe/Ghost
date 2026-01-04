@@ -2,6 +2,9 @@
 //  StateStore.swift
 //  CladsRendererFramework
 //
+//  Observable state store for CLADS documents.
+//  Provides key-value storage with dirty tracking and change notifications.
+//
 
 import Foundation
 import Combine
@@ -12,29 +15,104 @@ import SwiftUI
 /// Callback invoked when state changes
 public typealias StateChangeCallback = (_ path: String, _ oldValue: Any?, _ newValue: Any?) -> Void
 
-// MARK: - State Store
+// MARK: - State Storing Protocol
 
-/// Observable state store for documents with dirty tracking
+/// Protocol for state storage, enabling dependency injection and testing.
 @MainActor
-public final class StateStore: ObservableObject {
-    @Published private var values: [String: Any] = [:]
+public protocol StateStoring: AnyObject, ObservableObject {
+    // MARK: - Reading State
+
+    func get(_ keypath: String) -> Any?
+    func get<T>(_ keypath: String, as type: T.Type) -> T?
+    func getArray(_ keypath: String) -> [Any]?
+    func getArrayCount(_ keypath: String) -> Int
+    func arrayContains(_ keypath: String, value: Any) -> Bool
+
+    // MARK: - Writing State
+
+    func set(_ keypath: String, value: Any?)
+    func initialize(from state: [String: Document.StateValue]?)
+
+    // MARK: - Array Operations
+
+    func appendToArray(_ keypath: String, value: Any)
+    func removeFromArray(_ keypath: String, value: Any)
+    func removeFromArray(_ keypath: String, at index: Int)
+    func toggleInArray(_ keypath: String, value: Any)
 
     // MARK: - Dirty Tracking
 
-    /// Paths that have been modified since last sync
+    var hasDirtyPaths: Bool { get }
+    func consumeDirtyPaths() -> Set<String>
+    func isDirty(_ path: String) -> Bool
+    func clearDirtyPaths()
+
+    // MARK: - Callbacks
+
+    @discardableResult
+    func onStateChange(_ callback: @escaping StateChangeCallback) -> UUID
+    func removeStateChangeCallback(_ id: UUID)
+    func removeAllCallbacks()
+
+    // MARK: - Snapshot
+
+    func snapshot() -> [String: Any]
+    func restore(from snapshot: [String: Any])
+
+    // MARK: - Expression Evaluation
+
+    func evaluate(expression: String) -> Any
+    func interpolate(_ template: String) -> String
+
+    // MARK: - Bindings
+
+    func binding(for keypath: String) -> Binding<String>
+}
+
+// MARK: - State Store
+
+/// Observable state store for documents with dirty tracking.
+///
+/// Provides:
+/// - Key-value storage with nested keypath access
+/// - Dirty path tracking for efficient updates
+/// - Change callbacks for reactive updates
+/// - Expression evaluation and template interpolation
+///
+/// Example:
+/// ```swift
+/// let store = StateStore()
+/// store.set("user.name", value: "John")
+/// let name = store.get("user.name") as? String  // "John"
+///
+/// store.onStateChange { path, old, new in
+///     print("\(path) changed from \(old) to \(new)")
+/// }
+/// ```
+@MainActor
+public final class StateStore: ObservableObject, StateStoring {
+    @Published private var values: [String: Any] = [:]
+
+    // MARK: - Dependencies
+
+    private let keypathAccessor = KeypathAccessor()
+    private let expressionEvaluator = ExpressionEvaluator()
+
+    // MARK: - Dirty Tracking
+
     private var dirtyPaths: Set<String> = []
 
-    /// Whether any paths are dirty
     public var hasDirtyPaths: Bool { !dirtyPaths.isEmpty }
 
     // MARK: - Callbacks
 
-    /// Registered callbacks for state changes
     private var changeCallbacks: [UUID: StateChangeCallback] = [:]
+
+    // MARK: - Initialization
 
     public init() {}
 
-    /// Initialize with state from a document
+    /// Initialize with state from a document.
     public func initialize(from state: [String: Document.StateValue]?) {
         guard let state = state else { return }
         for (key, value) in state {
@@ -42,77 +120,105 @@ public final class StateStore: ObservableObject {
         }
     }
 
-    /// Get a value at the given keypath
+    // MARK: - Reading State
+
+    /// Get a value at the given keypath.
+    ///
+    /// Supports:
+    /// - Simple keys: `"count"`
+    /// - Nested keys: `"user.name"`
+    /// - Array indices: `"items[0]"` or `"items.0"`
+    /// - Mixed: `"users[0].name"`
     public func get(_ keypath: String) -> Any? {
-        // Support nested keypaths like "user.name"
-        let components = keypath.split(separator: ".").map(String.init)
-        var current: Any? = values
-
-        for component in components {
-            if let dict = current as? [String: Any] {
-                current = dict[component]
-            } else if components.count == 1 {
-                return values[keypath]
-            } else {
-                return nil
-            }
-        }
-        return current
+        keypathAccessor.get(keypath, from: values)
     }
 
-    /// Get a value as a specific type
+    /// Get a value as a specific type.
     public func get<T>(_ keypath: String, as type: T.Type = T.self) -> T? {
-        return get(keypath) as? T
+        get(keypath) as? T
     }
 
-    /// Set a value at the given keypath
+    /// Get an array at the given keypath.
+    public func getArray(_ keypath: String) -> [Any]? {
+        get(keypath) as? [Any]
+    }
+
+    /// Get the count of an array at the given keypath.
+    public func getArrayCount(_ keypath: String) -> Int {
+        getArray(keypath)?.count ?? 0
+    }
+
+    /// Check if an array contains a value.
+    public func arrayContains(_ keypath: String, value: Any) -> Bool {
+        guard let array = getArray(keypath) else { return false }
+        return array.contains { areEqual($0, value) }
+    }
+
+    // MARK: - Writing State
+
+    /// Set a value at the given keypath.
     public func set(_ keypath: String, value: Any?) {
         let oldValue = get(keypath)
-        let components = keypath.split(separator: ".").map(String.init)
-
-        if components.count == 1 {
-            values[keypath] = value
-        } else {
-            // Handle nested keypaths
-            setNested(components: components, value: value, in: &values)
-        }
-
-        // Track dirty paths
+        keypathAccessor.set(keypath, value: value, in: &values)
         markDirty(keypath)
-
-        // Notify callbacks
         notifyCallbacks(path: keypath, oldValue: oldValue, newValue: value)
     }
 
-    // MARK: - Dirty Path Tracking
+    // MARK: - Array Operations
 
-    /// Mark a path as dirty (modified)
+    /// Append a value to an array.
+    public func appendToArray(_ keypath: String, value: Any) {
+        var array = getArray(keypath) ?? []
+        array.append(value)
+        set(keypath, value: array)
+    }
+
+    /// Remove a value from an array.
+    public func removeFromArray(_ keypath: String, value: Any) {
+        guard var array = getArray(keypath) else { return }
+        array.removeAll { areEqual($0, value) }
+        set(keypath, value: array)
+    }
+
+    /// Remove an item at a specific index from an array.
+    public func removeFromArray(_ keypath: String, at index: Int) {
+        guard var array = getArray(keypath), index >= 0, index < array.count else { return }
+        array.remove(at: index)
+        set(keypath, value: array)
+    }
+
+    /// Toggle a value in an array (add if missing, remove if present).
+    public func toggleInArray(_ keypath: String, value: Any) {
+        var array = getArray(keypath) ?? []
+        if let index = array.firstIndex(where: { areEqual($0, value) }) {
+            array.remove(at: index)
+        } else {
+            array.append(value)
+        }
+        set(keypath, value: array)
+    }
+
+    // MARK: - Dirty Tracking
+
+    /// Mark a path as dirty (modified).
     private func markDirty(_ path: String) {
         dirtyPaths.insert(path)
 
         // Also mark parent paths as dirty
-        // e.g., if "user.profile.name" changes, "user.profile" and "user" are also affected
-        let components = path.split(separator: ".").map(String.init)
-        var parentPath = ""
-        for component in components.dropLast() {
-            if !parentPath.isEmpty {
-                parentPath += "."
-            }
-            parentPath += component
+        for parentPath in keypathAccessor.parentPaths(of: path) {
             dirtyPaths.insert(parentPath)
         }
     }
 
-    /// Consume and return all dirty paths, clearing the dirty set
+    /// Consume and return all dirty paths, clearing the dirty set.
     public func consumeDirtyPaths() -> Set<String> {
         let paths = dirtyPaths
         dirtyPaths = []
         return paths
     }
 
-    /// Check if a specific path is dirty
+    /// Check if a specific path is dirty.
     public func isDirty(_ path: String) -> Bool {
-        // Direct match
         if dirtyPaths.contains(path) { return true }
 
         // Check if any child path is dirty
@@ -123,15 +229,14 @@ public final class StateStore: ObservableObject {
         return false
     }
 
-    /// Clear all dirty paths without consuming
+    /// Clear all dirty paths without consuming.
     public func clearDirtyPaths() {
         dirtyPaths = []
     }
 
     // MARK: - Callbacks
 
-    /// Register a callback for state changes
-    /// Returns an ID that can be used to unregister
+    /// Register a callback for state changes.
     @discardableResult
     public func onStateChange(_ callback: @escaping StateChangeCallback) -> UUID {
         let id = UUID()
@@ -139,12 +244,12 @@ public final class StateStore: ObservableObject {
         return id
     }
 
-    /// Unregister a callback
+    /// Unregister a callback.
     public func removeStateChangeCallback(_ id: UUID) {
         changeCallbacks.removeValue(forKey: id)
     }
 
-    /// Remove all callbacks
+    /// Remove all callbacks.
     public func removeAllCallbacks() {
         changeCallbacks.removeAll()
     }
@@ -155,25 +260,50 @@ public final class StateStore: ObservableObject {
         }
     }
 
-    // MARK: - State Snapshot
+    // MARK: - Snapshot
 
-    /// Get a snapshot of the current state
+    /// Get a snapshot of the current state.
     public func snapshot() -> [String: Any] {
-        return values
+        values
     }
 
-    /// Restore state from a snapshot
+    /// Restore state from a snapshot.
     public func restore(from snapshot: [String: Any]) {
         values = snapshot
-        // Mark all paths as dirty after restore
         for key in snapshot.keys {
             markDirty(key)
         }
     }
 
+    // MARK: - Expression Evaluation
+
+    /// Evaluate an expression with state interpolation.
+    public func evaluate(expression: String) -> Any {
+        expressionEvaluator.evaluate(expression, using: self)
+    }
+
+    /// Interpolate template strings like "You pressed ${count} times".
+    public func interpolate(_ template: String) -> String {
+        expressionEvaluator.interpolate(template, using: self)
+    }
+
+    // MARK: - Bindings
+
+    /// Get a binding for two-way data binding.
+    public func binding(for keypath: String) -> Binding<String> {
+        Binding(
+            get: { [weak self] in
+                self?.get(keypath) as? String ?? ""
+            },
+            set: { [weak self] newValue in
+                self?.set(keypath, value: newValue)
+            }
+        )
+    }
+
     // MARK: - Typed State Support
 
-    /// Get state as a typed Codable object
+    /// Get state as a typed Codable object.
     public func getTyped<T: Decodable>(_ type: T.Type = T.self) -> T? {
         do {
             let data = try JSONSerialization.data(withJSONObject: values, options: [])
@@ -183,7 +313,7 @@ public final class StateStore: ObservableObject {
         }
     }
 
-    /// Get a nested value as a typed Codable object
+    /// Get a nested value as a typed Codable object.
     public func getTyped<T: Decodable>(_ keypath: String, as type: T.Type = T.self) -> T? {
         guard let value = get(keypath) else { return nil }
         do {
@@ -194,7 +324,7 @@ public final class StateStore: ObservableObject {
         }
     }
 
-    /// Set state from a typed Codable object
+    /// Set state from a typed Codable object.
     public func setTyped<T: Encodable>(_ value: T) {
         do {
             let data = try JSONEncoder().encode(value)
@@ -208,7 +338,7 @@ public final class StateStore: ObservableObject {
         }
     }
 
-    /// Set a nested value from a typed Codable object
+    /// Set a nested value from a typed Codable object.
     public func setTyped<T: Encodable>(_ keypath: String, value: T) {
         do {
             let data = try JSONEncoder().encode(value)
@@ -219,103 +349,21 @@ public final class StateStore: ObservableObject {
         }
     }
 
-    private func setNested(components: [String], value: Any?, in dict: inout [String: Any]) {
-        guard !components.isEmpty else { return }
+    // MARK: - Helpers
 
-        if components.count == 1 {
-            dict[components[0]] = value
-        } else {
-            let key = components[0]
-            var nested = dict[key] as? [String: Any] ?? [:]
-            setNested(components: Array(components.dropFirst()), value: value, in: &nested)
-            dict[key] = nested
+    /// Compare two Any values for equality.
+    private func areEqual(_ lhs: Any, _ rhs: Any) -> Bool {
+        switch (lhs, rhs) {
+        case (let l as Int, let r as Int): return l == r
+        case (let l as Double, let r as Double): return l == r
+        case (let l as String, let r as String): return l == r
+        case (let l as Bool, let r as Bool): return l == r
+        case (is NSNull, is NSNull): return true
+        default: return false
         }
     }
 
-    /// Get a binding for two-way data binding
-    public func binding(for keypath: String) -> Binding<String> {
-        Binding(
-            get: { [weak self] in
-                self?.get(keypath) as? String ?? ""
-            },
-            set: { [weak self] newValue in
-                self?.set(keypath, value: newValue)
-            }
-        )
-    }
-
-    /// Evaluate an expression with state interpolation
-    /// Supports expressions like "${count} + 1" or "Hello ${name}"
-    public func evaluate(expression: String) -> Any {
-        // Check if it's a simple arithmetic expression
-        if expression.contains("+") || expression.contains("-") {
-            return evaluateArithmetic(expression)
-        }
-
-        // Otherwise, just interpolate
-        return interpolate(expression)
-    }
-
-    /// Interpolate template strings like "You pressed ${count} times"
-    public func interpolate(_ template: String) -> String {
-        var result = template
-        let pattern = #"\$\{([^}]+)\}"#
-
-        guard let regex = try? NSRegularExpression(pattern: pattern) else {
-            return template
-        }
-
-        let matches = regex.matches(in: template, range: NSRange(template.startIndex..., in: template))
-
-        // Process matches in reverse to maintain string indices
-        for match in matches.reversed() {
-            guard let range = Range(match.range, in: template),
-                  let keypathRange = Range(match.range(at: 1), in: template) else {
-                continue
-            }
-
-            let keypath = String(template[keypathRange])
-            let value = get(keypath)
-            let replacement = stringValue(from: value)
-            result.replaceSubrange(range, with: replacement)
-        }
-
-        return result
-    }
-
-    private func evaluateArithmetic(_ expression: String) -> Any {
-        // Simple arithmetic: "${count} + 1"
-        let interpolated = interpolate(expression)
-
-        // Try to evaluate as simple addition/subtraction
-        let components = interpolated.components(separatedBy: "+").map { $0.trimmingCharacters(in: .whitespaces) }
-        if components.count == 2,
-           let left = Int(components[0]),
-           let right = Int(components[1]) {
-            return left + right
-        }
-
-        let subComponents = interpolated.components(separatedBy: "-").map { $0.trimmingCharacters(in: .whitespaces) }
-        if subComponents.count == 2,
-           let left = Int(subComponents[0]),
-           let right = Int(subComponents[1]) {
-            return left - right
-        }
-
-        return interpolated
-    }
-
-    private func stringValue(from value: Any?) -> String {
-        switch value {
-        case let int as Int: return String(int)
-        case let double as Double: return String(double)
-        case let string as String: return string
-        case let bool as Bool: return String(bool)
-        case nil: return ""
-        default: return String(describing: value)
-        }
-    }
-
+    /// Unwrap a Document.StateValue to a native type.
     private func unwrap(_ stateValue: Document.StateValue) -> Any {
         switch stateValue {
         case .intValue(let v): return v
@@ -323,6 +371,16 @@ public final class StateStore: ObservableObject {
         case .stringValue(let v): return v
         case .boolValue(let v): return v
         case .nullValue: return NSNull()
+        case .arrayValue(let arr): return arr.map { unwrap($0) }
+        case .objectValue(let obj): return obj.mapValues { unwrap($0) }
         }
+    }
+}
+
+// MARK: - StateValueReading Conformance
+
+extension StateStore: StateValueReading {
+    public func getValue(_ keypath: String) -> Any? {
+        get(keypath)
     }
 }

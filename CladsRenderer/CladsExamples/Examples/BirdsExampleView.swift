@@ -6,6 +6,7 @@
 //
 
 import CLADS
+import CladsModules
 import SwiftUI
 
 // MARK: - Birds Example View

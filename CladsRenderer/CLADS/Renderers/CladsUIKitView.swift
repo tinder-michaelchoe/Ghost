@@ -69,6 +69,7 @@ public final class CladsUIKitView: UIView {
     private let renderTree: RenderTree
     private let stateStore: StateStore
     private let actionContext: ActionContext
+    private let rendererRegistry: UIKitNodeRendererRegistry
     private var treeUpdater: ViewTreeUpdater?
     private var viewTreeRoot: ViewNode?
 
@@ -84,7 +85,8 @@ public final class CladsUIKitView: UIView {
     ///
     /// - Parameters:
     ///   - document: The document definition to render
-    ///   - actionRegistry: The global action registry (default: `.shared`)
+    ///   - actionRegistry: The action registry for handling actions
+    ///   - rendererRegistry: The UIKit node renderer registry
     ///   - customActions: View-specific action closures, keyed by action ID
     ///   - actionDelegate: Delegate for handling custom actions
     ///
@@ -92,6 +94,9 @@ public final class CladsUIKitView: UIView {
     /// ```swift
     /// let view = CladsUIKitView(
     ///     document: document,
+    ///     actionRegistry: actionRegistry,
+    ///     componentRegistry: componentRegistry,
+    ///     rendererRegistry: rendererRegistry,
     ///     customActions: [
     ///         "submitOrder": { params, context in
     ///             let orderId = context.stateStore.get("order.id") as? String
@@ -102,14 +107,17 @@ public final class CladsUIKitView: UIView {
     /// ```
     public init(
         document: Document.Definition,
-        actionRegistry: ActionRegistry = .shared,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        rendererRegistry: UIKitNodeRendererRegistry,
         customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil
     ) {
         self.document = document
+        self.rendererRegistry = rendererRegistry
 
         // Resolve with tracking for efficient updates
-        let resolver = Resolver(document: document)
+        let resolver = Resolver(document: document, componentRegistry: componentRegistry)
         do {
             let result = try resolver.resolveWithTracking()
             self.renderTree = result.renderTree
@@ -142,7 +150,9 @@ public final class CladsUIKitView: UIView {
     /// Initialize from a JSON string with optional custom action handlers.
     public convenience init?(
         jsonString: String,
-        actionRegistry: ActionRegistry = .shared,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        rendererRegistry: UIKitNodeRendererRegistry,
         customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil
     ) {
@@ -152,6 +162,8 @@ public final class CladsUIKitView: UIView {
         self.init(
             document: document,
             actionRegistry: actionRegistry,
+            componentRegistry: componentRegistry,
+            rendererRegistry: rendererRegistry,
             customActions: customActions,
             actionDelegate: actionDelegate
         )
@@ -383,6 +395,14 @@ public final class CladsUIKitView: UIView {
             view = renderGradient(gradient)
         case .spacer:
             view = renderSpacer()
+        case .custom(let kind, _):
+            // Use the UIKit renderer registry for custom nodes
+            let context = UIKitRenderContext(actionContext: actionContext, stateStore: renderTree.stateStore, colorScheme: renderTree.root.colorScheme, registry: rendererRegistry)
+            if rendererRegistry.hasRenderer(for: kind) {
+                view = rendererRegistry.render(node, context: context)
+            } else {
+                view = UIView() // No renderer registered
+            }
         }
 
         // Register view for efficient updates
@@ -835,17 +855,32 @@ open class CladsViewController: UIViewController, CladsRendererDelegate {
         return cladsView.stateSnapshot
     }
 
-    public init(document: Document.Definition, actionRegistry: ActionRegistry = .shared) {
+    public init(
+        document: Document.Definition,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        rendererRegistry: UIKitNodeRendererRegistry
+    ) {
         super.init(nibName: nil, bundle: nil)
-        cladsView = CladsUIKitView(document: document, actionRegistry: actionRegistry)
+        cladsView = CladsUIKitView(
+            document: document,
+            actionRegistry: actionRegistry,
+            componentRegistry: componentRegistry,
+            rendererRegistry: rendererRegistry
+        )
         cladsView.delegate = self
     }
 
-    public convenience init?(jsonString: String, actionRegistry: ActionRegistry = .shared) {
+    public convenience init?(
+        jsonString: String,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        rendererRegistry: UIKitNodeRendererRegistry
+    ) {
         guard let document = try? Document.Definition(jsonString: jsonString) else {
             return nil
         }
-        self.init(document: document, actionRegistry: actionRegistry)
+        self.init(document: document, actionRegistry: actionRegistry, componentRegistry: componentRegistry, rendererRegistry: rendererRegistry)
     }
 
     required public init?(coder: NSCoder) {

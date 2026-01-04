@@ -16,16 +16,24 @@ public struct CladsRendererView: View {
 
     @Environment(\.dismiss) private var dismiss
 
+    private let swiftuiRendererRegistry: SwiftUINodeRendererRegistry
+
     /// Initialize with a document and optional custom action handlers.
     ///
     /// - Parameters:
     ///   - document: The document definition to render
-    ///   - registry: The global action registry (default: `.shared`)
+    ///   - actionRegistry: Registry for action handlers (default: built-in actions)
+    ///   - componentRegistry: Registry for component resolvers (default: built-in components)
+    ///   - swiftuiRendererRegistry: Registry for SwiftUI renderers (default: built-in renderers)
     ///   - customActions: View-specific action closures, keyed by action ID
     ///   - actionDelegate: Delegate for handling custom actions
     ///
     /// Example:
     /// ```swift
+    /// // Simple usage with defaults
+    /// CladsRendererView(document: document)
+    ///
+    /// // With custom actions
     /// CladsRendererView(
     ///     document: document,
     ///     customActions: [
@@ -38,12 +46,16 @@ public struct CladsRendererView: View {
     /// ```
     public init(
         document: Document.Definition,
-        registry: ActionRegistry = .shared,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
         customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil
     ) {
+        self.swiftuiRendererRegistry = swiftuiRendererRegistry
+
         // Resolve Document (AST) into RenderTree (IR)
-        let resolver = Resolver(document: document)
+        let resolver = Resolver(document: document, componentRegistry: componentRegistry)
         let tree: RenderTree
         do {
             tree = try resolver.resolve()
@@ -60,7 +72,7 @@ public struct CladsRendererView: View {
         let ctx = ActionContext(
             stateStore: tree.stateStore,
             actionDefinitions: document.actions ?? [:],
-            registry: registry,
+            registry: actionRegistry,
             customActions: customActions,
             actionDelegate: actionDelegate
         )
@@ -69,7 +81,10 @@ public struct CladsRendererView: View {
 
     public var body: some View {
         // Use SwiftUIRenderer to render the RenderTree
-        let renderer = SwiftUIRenderer(actionContext: actionContext)
+        let renderer = SwiftUIRenderer(
+            actionContext: actionContext,
+            rendererRegistry: swiftuiRendererRegistry
+        )
         renderer.render(renderTree)
             .onAppear {
                 setupContext()
@@ -91,15 +106,11 @@ public struct CladsRendererView: View {
 
 extension CladsRendererView {
     /// Initialize from a JSON string
-    /// - Parameters:
-    ///   - jsonString: The JSON string to parse
-    ///   - registry: The action registry to use
-    ///   - customActions: View-specific action closures
-    ///   - actionDelegate: Delegate for handling custom actions
-    ///   - debugMode: Whether to print debug output when parsing
     public init?(
         jsonString: String,
-        registry: ActionRegistry = .shared,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
         customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
@@ -109,7 +120,9 @@ extension CladsRendererView {
         }
         self.init(
             document: document,
-            registry: registry,
+            actionRegistry: actionRegistry,
+            componentRegistry: componentRegistry,
+            swiftuiRendererRegistry: swiftuiRendererRegistry,
             customActions: customActions,
             actionDelegate: actionDelegate,
             debugMode: debugMode
@@ -119,13 +132,17 @@ extension CladsRendererView {
     /// Initialize from a Document with optional debug output
     public init(
         document: Document.Definition,
-        registry: ActionRegistry = .shared,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
         customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool
     ) {
+        self.swiftuiRendererRegistry = swiftuiRendererRegistry
+
         // Resolve Document (AST) into RenderTree (IR)
-        let resolver = Resolver(document: document)
+        let resolver = Resolver(document: document, componentRegistry: componentRegistry)
         let tree: RenderTree
         do {
             tree = try resolver.resolve()
@@ -149,7 +166,7 @@ extension CladsRendererView {
         let ctx = ActionContext(
             stateStore: tree.stateStore,
             actionDefinitions: document.actions ?? [:],
-            registry: registry,
+            registry: actionRegistry,
             customActions: customActions,
             actionDelegate: actionDelegate
         )
@@ -159,8 +176,8 @@ extension CladsRendererView {
 
 // MARK: - Binding-based API
 
-/// Configuration for CladsRendererView with external state binding
-public struct CladsRendererConfiguration<State: Codable> {
+/// Configuration for CladsRendererBindingView with external state binding
+public struct CladsRendererBindingConfiguration<State: Codable> {
     /// Initial typed state (will be merged with document state)
     public var initialState: State?
 
@@ -170,8 +187,14 @@ public struct CladsRendererConfiguration<State: Codable> {
     /// Called when an action is executed
     public var onAction: ((_ actionId: String, _ parameters: [String: Any]) -> Void)?
 
-    /// Custom action registry
+    /// Registry for action handlers
     public var actionRegistry: ActionRegistry
+
+    /// Registry for component resolvers
+    public var componentRegistry: ComponentResolverRegistry
+
+    /// Registry for SwiftUI renderers
+    public var swiftuiRendererRegistry: SwiftUINodeRendererRegistry
 
     /// View-specific action closures
     public var customActions: [String: ActionClosure]
@@ -186,7 +209,9 @@ public struct CladsRendererConfiguration<State: Codable> {
         initialState: State? = nil,
         onStateChange: ((_ path: String, _ oldValue: Any?, _ newValue: Any?) -> Void)? = nil,
         onAction: ((_ actionId: String, _ parameters: [String: Any]) -> Void)? = nil,
-        actionRegistry: ActionRegistry = .shared,
+        actionRegistry: ActionRegistry,
+        componentRegistry: ComponentResolverRegistry,
+        swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
         customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
@@ -195,6 +220,8 @@ public struct CladsRendererConfiguration<State: Codable> {
         self.onStateChange = onStateChange
         self.onAction = onAction
         self.actionRegistry = actionRegistry
+        self.componentRegistry = componentRegistry
+        self.swiftuiRendererRegistry = swiftuiRendererRegistry
         self.customActions = customActions
         self.actionDelegate = actionDelegate
         self.debugMode = debugMode
@@ -204,7 +231,7 @@ public struct CladsRendererConfiguration<State: Codable> {
 /// View wrapper that syncs state with an external Binding
 public struct CladsRendererBindingView<State: Codable & Equatable>: View {
     private let document: Document.Definition
-    private let configuration: CladsRendererConfiguration<State>
+    private let configuration: CladsRendererBindingConfiguration<State>
     @Binding private var state: State
 
     @StateObject private var renderContext: BindingRenderContext<State>
@@ -213,7 +240,7 @@ public struct CladsRendererBindingView<State: Codable & Equatable>: View {
     public init(
         document: Document.Definition,
         state: Binding<State>,
-        configuration: CladsRendererConfiguration<State> = CladsRendererConfiguration()
+        configuration: CladsRendererBindingConfiguration<State>
     ) {
         self.document = document
         self._state = state
@@ -230,7 +257,7 @@ public struct CladsRendererBindingView<State: Codable & Equatable>: View {
     public var body: some View {
         Group {
             if let renderTree = renderContext.renderTree {
-                let renderer = SwiftUIRenderer(actionContext: renderContext.actionContext)
+                let renderer = SwiftUIRenderer(actionContext: renderContext.actionContext, rendererRegistry: configuration.swiftuiRendererRegistry)
                 renderer.render(renderTree)
             } else {
                 Text("Loading...")
@@ -272,14 +299,14 @@ class BindingRenderContext<State: Codable>: ObservableObject {
     private var _actionContext: ActionContext!
     private var stateStore: StateStore!
     private var stateCallbackId: UUID?
-    private let configuration: CladsRendererConfiguration<State>
+    private let configuration: CladsRendererBindingConfiguration<State>
 
     @MainActor
-    init(document: Document.Definition, configuration: CladsRendererConfiguration<State>) {
+    init(document: Document.Definition, configuration: CladsRendererBindingConfiguration<State>) {
         self.configuration = configuration
 
         // Resolve document
-        let resolver = Resolver(document: document)
+        let resolver = Resolver(document: document, componentRegistry: configuration.componentRegistry)
         let tree: RenderTree
         do {
             tree = try resolver.resolve()
@@ -351,7 +378,7 @@ extension CladsRendererBindingView where State: Equatable {
     public init?(
         jsonString: String,
         state: Binding<State>,
-        configuration: CladsRendererConfiguration<State> = CladsRendererConfiguration()
+        configuration: CladsRendererBindingConfiguration<State>
     ) {
         guard let document = try? Document.Definition(jsonString: jsonString) else {
             return nil

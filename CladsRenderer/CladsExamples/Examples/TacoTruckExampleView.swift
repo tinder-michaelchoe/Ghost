@@ -6,6 +6,7 @@
 //
 
 import CLADS
+import CladsModules
 import SwiftUI
 
 // MARK: - State Model
@@ -74,7 +75,7 @@ public struct TacoTruckExampleView: View {
     @ViewBuilder
     private var cladsView: some View {
         if let document = try? Document.Definition(jsonString: tacoTruckJSON) {
-            let config = CladsRendererConfiguration<TacoOrderState>(
+            let config = CladsRendererBindingConfiguration<TacoOrderState>(
                 initialState: orderState,
                 onStateChange: { path, oldValue, newValue in
                     // This callback fires on every state mutation
@@ -88,8 +89,7 @@ public struct TacoTruckExampleView: View {
                 },
                 onAction: { actionId, params in
                     print("Action executed: \(actionId)")
-                },
-                debugMode: false
+                }
             )
 
             CladsRendererBindingView(

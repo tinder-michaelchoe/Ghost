@@ -447,8 +447,6 @@ struct SectionView: View {
             if let header = section.header {
                 RenderNodeView(node: header, tree: tree, actionContext: actionContext)
                     .frame(maxWidth: .infinity, alignment: Alignment(horizontal: section.config.alignment, vertical: .center))
-                    .padding(.leading, section.config.contentInsets.leading)
-                    .padding(.trailing, section.config.contentInsets.trailing)
             }
 
             // Content based on layout type
@@ -462,8 +460,6 @@ struct SectionView: View {
             if let footer = section.footer {
                 RenderNodeView(node: footer, tree: tree, actionContext: actionContext)
                     .frame(maxWidth: .infinity, alignment: Alignment(horizontal: section.config.alignment, vertical: .center))
-                    .padding(.leading, section.config.contentInsets.leading)
-                    .padding(.trailing, section.config.contentInsets.trailing)
             }
         }
     }

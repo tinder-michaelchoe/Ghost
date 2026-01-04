@@ -38,6 +38,11 @@ public struct ResolutionResult {
 /// ```swift
 /// let resolver = Resolver(document: document)
 /// let renderTree = try resolver.resolve()
+///
+/// // For testing, inject a pre-configured StateStore:
+/// let stateStore = StateStore()
+/// stateStore.set("testValue", value: 42)
+/// let renderTree = try resolver.resolve(into: stateStore)
 /// ```
 public struct Resolver {
     private let document: Document.Definition
@@ -48,7 +53,7 @@ public struct Resolver {
 
     public init(
         document: Document.Definition,
-        componentRegistry: ComponentResolverRegistry = .default
+        componentRegistry: ComponentResolverRegistry
     ) {
         self.document = document
         self.componentRegistry = componentRegistry
@@ -58,10 +63,44 @@ public struct Resolver {
     // MARK: - Public API
 
     /// Resolve the document into a render tree (without dependency tracking)
+    ///
+    /// Creates a new StateStore and initializes it from the document state.
     @MainActor
     public func resolve() throws -> RenderTree {
         let stateStore = StateStore()
         stateStore.initialize(from: document.state)
+        return try resolve(into: stateStore)
+    }
+
+    /// Resolve the document into a render tree using a provided StateStore.
+    ///
+    /// This allows injecting a pre-configured StateStore for testing,
+    /// or reusing an existing StateStore.
+    ///
+    /// - Parameter stateStore: The state store to use. Document state will be
+    ///   merged into this store (existing values are preserved, document values added).
+    /// - Parameter initializeFromDocument: Whether to initialize state from the document.
+    ///   Set to `false` if the store is already configured. Default is `true`.
+    /// - Returns: The resolved render tree.
+    ///
+    /// Example:
+    /// ```swift
+    /// // For testing with pre-set state:
+    /// let stateStore = StateStore()
+    /// stateStore.set("count", value: 10)
+    /// let tree = try resolver.resolve(into: stateStore, initializeFromDocument: false)
+    ///
+    /// // The tree uses the injected state, not the document's initial state
+    /// XCTAssertEqual(tree.stateStore.get("count") as? Int, 10)
+    /// ```
+    @MainActor
+    public func resolve(
+        into stateStore: StateStore,
+        initializeFromDocument: Bool = true
+    ) throws -> RenderTree {
+        if initializeFromDocument {
+            stateStore.initialize(from: document.state)
+        }
 
         let context = ResolutionContext.withoutTracking(
             document: document,
@@ -79,10 +118,30 @@ public struct Resolver {
     }
 
     /// Resolve the document with full dependency tracking
+    ///
+    /// Creates a new StateStore and initializes it from the document state.
     @MainActor
     public func resolveWithTracking() throws -> ResolutionResult {
         let stateStore = StateStore()
         stateStore.initialize(from: document.state)
+        return try resolveWithTracking(into: stateStore)
+    }
+
+    /// Resolve the document with full dependency tracking using a provided StateStore.
+    ///
+    /// This allows injecting a pre-configured StateStore for testing.
+    ///
+    /// - Parameter stateStore: The state store to use.
+    /// - Parameter initializeFromDocument: Whether to initialize state from the document.
+    /// - Returns: The resolution result including render tree and view tree.
+    @MainActor
+    public func resolveWithTracking(
+        into stateStore: StateStore,
+        initializeFromDocument: Bool = true
+    ) throws -> ResolutionResult {
+        if initializeFromDocument {
+            stateStore.initialize(from: document.state)
+        }
 
         let treeUpdater = ViewTreeUpdater()
         let tracker = treeUpdater.dependencyTracker
@@ -200,6 +259,9 @@ public struct Resolver {
         case .sectionLayout(let sectionLayout):
             let sectionResolver = SectionLayoutResolver(componentRegistry: componentRegistry)
             return try sectionResolver.resolve(sectionLayout, context: context)
+
+        case .forEach:
+            return try layoutResolver.resolveNode(node, context: context)
 
         case .component(let component):
             let result = try componentRegistry.resolve(component, context: context)

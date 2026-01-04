@@ -40,12 +40,12 @@ public final nonisolated(unsafe) class UIKitRenderContext {
 /// Protocol for rendering specific RenderNode types to UIKit views.
 ///
 /// Implement this protocol to create a renderer for a specific node type.
-/// Each implementation handles one `RenderNode.Kind`.
+/// Each implementation handles one `RenderNodeKind`.
 ///
 /// Example:
 /// ```swift
 /// public struct TextNodeRenderer: UIKitNodeRendering {
-///     public static let nodeKind: RenderNode.Kind = .text
+///     public static let nodeKind: RenderNodeKind = .text
 ///
 ///     public func render(_ node: RenderNode, context: UIKitRenderContext) -> UIView {
 ///         guard case .text(let textNode) = node else {
@@ -56,8 +56,8 @@ public final nonisolated(unsafe) class UIKitRenderContext {
 /// }
 /// ```
 public protocol UIKitNodeRendering {
-    /// The RenderNode.Kind this renderer handles
-    static var nodeKind: RenderNode.Kind { get }
+    /// The RenderNodeKind this renderer handles
+    static var nodeKind: RenderNodeKind { get }
 
     /// Initialize the renderer
     init()

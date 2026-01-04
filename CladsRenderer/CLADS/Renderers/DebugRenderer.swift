@@ -134,6 +134,9 @@ public struct DebugRenderer: Renderer {
 
         case .spacer:
             return "\(prefix)spacer"
+
+        case .custom(let kind, _):
+            return "\(prefix)custom (kind: \(kind.rawValue))"
         }
     }
 

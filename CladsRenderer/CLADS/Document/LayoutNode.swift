@@ -9,9 +9,10 @@ import Foundation
 
 extension Document {
     /// A node in the layout tree - can be either a layout container or a component
-    public enum LayoutNode: Codable {
+    public indirect enum LayoutNode: Codable {
         case layout(Layout)
         case sectionLayout(SectionLayout)
+        case forEach(ForEach)
         case component(Component)
         case spacer
 
@@ -28,6 +29,8 @@ extension Document {
                 self = .layout(try Layout(from: decoder))
             case "sectionLayout":
                 self = .sectionLayout(try SectionLayout(from: decoder))
+            case "forEach":
+                self = .forEach(try ForEach(from: decoder))
             case "spacer":
                 self = .spacer
             default:
@@ -42,6 +45,8 @@ extension Document {
                 try layout.encode(to: encoder)
             case .sectionLayout(let sectionLayout):
                 try sectionLayout.encode(to: encoder)
+            case .forEach(let forEach):
+                try forEach.encode(to: encoder)
             case .component(let component):
                 try component.encode(to: encoder)
             case .spacer:
@@ -223,6 +228,119 @@ extension Document {
             self.padding = padding
             self.children = children
             self.state = state
+        }
+    }
+}
+
+// MARK: - ForEach
+
+extension Document {
+    /// ForEach layout that iterates over an array and renders a template for each item
+    ///
+    /// Example JSON:
+    /// ```json
+    /// {
+    ///   "type": "forEach",
+    ///   "items": "interests",
+    ///   "itemVariable": "item",
+    ///   "indexVariable": "index",
+    ///   "layout": "hstack",
+    ///   "spacing": 8,
+    ///   "template": {
+    ///     "type": "button",
+    ///     "text": "${item}",
+    ///     "actions": { "onTap": "selectItem" }
+    ///   },
+    ///   "emptyView": {
+    ///     "type": "label",
+    ///     "text": "No items"
+    ///   }
+    /// }
+    /// ```
+    public struct ForEach: Codable {
+        /// The type identifier (always "forEach")
+        public let type: String
+
+        /// State path to the array to iterate over
+        public let items: String
+
+        /// Variable name for the current item (default: "item")
+        public let itemVariable: String
+
+        /// Variable name for the current index (default: "index")
+        public let indexVariable: String
+
+        /// Layout type for arranging items: "vstack", "hstack", or "zstack" (default: "vstack")
+        public let layout: LayoutType
+
+        /// Spacing between items
+        public let spacing: CGFloat?
+
+        /// Alignment for the layout
+        public let alignment: HorizontalAlignment?
+
+        /// Padding around the forEach container
+        public let padding: Padding?
+
+        /// Template to render for each item
+        public let template: LayoutNode
+
+        /// Optional view to show when the array is empty
+        public let emptyView: LayoutNode?
+
+        enum CodingKeys: String, CodingKey {
+            case type, items, itemVariable, indexVariable, layout, spacing, alignment, padding, template, emptyView
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+            type = try container.decode(String.self, forKey: .type)
+            items = try container.decode(String.self, forKey: .items)
+            itemVariable = try container.decodeIfPresent(String.self, forKey: .itemVariable) ?? "item"
+            indexVariable = try container.decodeIfPresent(String.self, forKey: .indexVariable) ?? "index"
+            layout = try container.decodeIfPresent(LayoutType.self, forKey: .layout) ?? .vstack
+            spacing = try container.decodeIfPresent(CGFloat.self, forKey: .spacing)
+            alignment = try container.decodeIfPresent(HorizontalAlignment.self, forKey: .alignment)
+            padding = try container.decodeIfPresent(Padding.self, forKey: .padding)
+            template = try container.decode(LayoutNode.self, forKey: .template)
+            emptyView = try container.decodeIfPresent(LayoutNode.self, forKey: .emptyView)
+        }
+
+        public func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(type, forKey: .type)
+            try container.encode(items, forKey: .items)
+            try container.encode(itemVariable, forKey: .itemVariable)
+            try container.encode(indexVariable, forKey: .indexVariable)
+            try container.encode(layout, forKey: .layout)
+            try container.encodeIfPresent(spacing, forKey: .spacing)
+            try container.encodeIfPresent(alignment, forKey: .alignment)
+            try container.encodeIfPresent(padding, forKey: .padding)
+            try container.encode(template, forKey: .template)
+            try container.encodeIfPresent(emptyView, forKey: .emptyView)
+        }
+
+        public init(
+            items: String,
+            itemVariable: String = "item",
+            indexVariable: String = "index",
+            layout: LayoutType = .vstack,
+            spacing: CGFloat? = nil,
+            alignment: HorizontalAlignment? = nil,
+            padding: Padding? = nil,
+            template: LayoutNode,
+            emptyView: LayoutNode? = nil
+        ) {
+            self.type = "forEach"
+            self.items = items
+            self.itemVariable = itemVariable
+            self.indexVariable = indexVariable
+            self.layout = layout
+            self.spacing = spacing
+            self.alignment = alignment
+            self.padding = padding
+            self.template = template
+            self.emptyView = emptyView
         }
     }
 }

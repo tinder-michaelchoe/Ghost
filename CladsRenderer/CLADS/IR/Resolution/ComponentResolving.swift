@@ -50,7 +50,7 @@ public struct NodeResolutionResult {
 
 /// Protocol for resolvers that handle specific component types.
 ///
-/// Each implementation handles one `Document.Component.Kind` and knows how to:
+/// Each implementation handles one `Document.ComponentKind` and knows how to:
 /// 1. Build the appropriate `RenderNode`
 /// 2. Build a `ViewNode` for dependency tracking (when enabled)
 /// 3. Track state dependencies
@@ -58,7 +58,7 @@ public struct NodeResolutionResult {
 /// Example:
 /// ```swift
 /// struct TextComponentResolver: ComponentResolving {
-///     static let componentKind: Document.Component.Kind = .label
+///     static let componentKind: Document.ComponentKind = .label
 ///
 ///     func resolve(_ component: Document.Component, context: ResolutionContext) throws -> ComponentResolutionResult {
 ///         // Build TextNode and optionally ViewNode
@@ -67,7 +67,7 @@ public struct NodeResolutionResult {
 /// ```
 public protocol ComponentResolving {
     /// The component kind this resolver handles
-    static var componentKind: Document.Component.Kind { get }
+    static var componentKind: Document.ComponentKind { get }
 
     /// Resolves a component into render and view nodes
     /// - Parameters:

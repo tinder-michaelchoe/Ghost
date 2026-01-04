@@ -19,7 +19,7 @@ public struct UIKitRenderer: Renderer {
 
     public init(
         actionContext: ActionContext,
-        registry: UIKitNodeRendererRegistry = .default
+        registry: UIKitNodeRendererRegistry
     ) {
         self.actionContext = actionContext
         self.registry = registry
@@ -136,7 +136,7 @@ final class RenderTreeUIView: UIView {
 
 // MARK: - UIKit Style Extensions
 
-extension UILabel {
+public extension UILabel {
     func applyStyle(_ style: IR.Style) {
         if let textColor = style.textColor {
             self.textColor = UIColor(textColor)
@@ -148,7 +148,7 @@ extension UILabel {
     }
 }
 
-extension UIButton {
+public extension UIButton {
     func applyStyle(_ style: IR.Style) {
         if let textColor = style.textColor {
             setTitleColor(UIColor(textColor), for: .normal)
@@ -164,7 +164,7 @@ extension UIButton {
     }
 }
 
-extension UITextField {
+public extension UITextField {
     func applyStyle(_ style: IR.Style) {
         if let textColor = style.textColor {
             self.textColor = UIColor(textColor)
@@ -199,7 +199,7 @@ extension Font.Weight {
     }
 }
 
-extension SwiftUI.TextAlignment {
+public extension SwiftUI.TextAlignment {
     func toUIKit() -> NSTextAlignment {
         switch self {
         case .leading: return .natural

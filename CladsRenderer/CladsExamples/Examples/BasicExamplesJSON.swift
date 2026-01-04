@@ -494,7 +494,7 @@ let basicExampleJSON = """
             "template": "You've pressed this ${notYetCount} time(s)"
           },
           "buttons": [
-            { "text": "OK", "style": "default" }
+            { "label": "OK", "style": "default" }
           ]
         }
       ]
@@ -780,7 +780,7 @@ let sectionLayoutJSON = """
 }
 """
 
-// MARK: - Interests (Flow Layout)
+// MARK: - Interests (Flow Layout with Array State)
 
 let interestsJSON = """
 {
@@ -788,18 +788,7 @@ let interestsJSON = """
   "version": "1.0",
 
   "state": {
-    "selected.technology": false,
-    "selected.sports": false,
-    "selected.music": false,
-    "selected.artDesign": false,
-    "selected.travel": false,
-    "selected.food": false,
-    "selected.gaming": false,
-    "selected.fitness": false,
-    "selected.photography": false,
-    "selected.movies": false,
-    "selected.books": false,
-    "selected.science": false
+    "selectedInterests": []
   },
 
   "styles": {
@@ -813,6 +802,11 @@ let interestsJSON = """
       "fontSize": 15,
       "fontWeight": "regular",
       "textColor": "#666666"
+    },
+    "countStyle": {
+      "fontSize": 14,
+      "fontWeight": "medium",
+      "textColor": "#007AFF"
     },
     "pillButton": {
       "fontSize": 15,
@@ -856,7 +850,12 @@ let interestsJSON = """
             "alignment": "leading",
             "children": [
               { "type": "label", "text": "Choose Your Interests", "styleId": "titleStyle" },
-              { "type": "label", "text": "Select topics you'd like to follow", "styleId": "subtitleStyle" }
+              { "type": "label", "text": "Select topics you'd like to follow", "styleId": "subtitleStyle" },
+              {
+                "type": "label",
+                "data": { "type": "binding", "template": "${selectedInterests.count} selected" },
+                "styleId": "countStyle"
+              }
             ]
           },
           {
@@ -873,85 +872,85 @@ let interestsJSON = """
                     "type": "button",
                     "text": "Technology",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.technology",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.technology" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Technology')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Technology" } }
                   },
                   {
                     "type": "button",
                     "text": "Sports",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.sports",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.sports" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Sports')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Sports" } }
                   },
                   {
                     "type": "button",
                     "text": "Music",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.music",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.music" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Music')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Music" } }
                   },
                   {
                     "type": "button",
                     "text": "Art & Design",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.artDesign",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.artDesign" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Art & Design')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Art & Design" } }
                   },
                   {
                     "type": "button",
                     "text": "Travel",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.travel",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.travel" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Travel')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Travel" } }
                   },
                   {
                     "type": "button",
                     "text": "Food",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.food",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.food" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Food')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Food" } }
                   },
                   {
                     "type": "button",
                     "text": "Gaming",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.gaming",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.gaming" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Gaming')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Gaming" } }
                   },
                   {
                     "type": "button",
                     "text": "Fitness",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.fitness",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.fitness" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Fitness')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Fitness" } }
                   },
                   {
                     "type": "button",
                     "text": "Photography",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.photography",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.photography" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Photography')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Photography" } }
                   },
                   {
                     "type": "button",
                     "text": "Movies",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.movies",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.movies" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Movies')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Movies" } }
                   },
                   {
                     "type": "button",
                     "text": "Books",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.books",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.books" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Books')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Books" } }
                   },
                   {
                     "type": "button",
                     "text": "Science",
                     "styles": { "normal": "pillButton", "selected": "pillButtonSelected" },
-                    "isSelectedBinding": "selected.science",
-                    "actions": { "onTap": { "type": "toggleState", "path": "selected.science" } }
+                    "isSelectedBinding": "${selectedInterests.contains('Science')}",
+                    "actions": { "onTap": { "type": "toggleInArray", "path": "selectedInterests", "value": "Science" } }
                   }
                 ]
               }

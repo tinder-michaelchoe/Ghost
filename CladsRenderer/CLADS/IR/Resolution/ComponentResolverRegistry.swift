@@ -13,29 +13,16 @@ import Foundation
 ///
 /// Usage:
 /// ```swift
-/// let registry = ComponentResolverRegistry.default
+/// let registry = ComponentResolverRegistry()
+/// registry.register(TextComponentResolver())
+/// // ... register other resolvers
 /// let result = try registry.resolve(component, context: context)
 /// ```
 public final class ComponentResolverRegistry {
 
-    // MARK: - Singleton
-
-    /// The default registry with all built-in component resolvers
-    public static let `default`: ComponentResolverRegistry = {
-        let registry = ComponentResolverRegistry()
-        registry.register(TextComponentResolver())
-        registry.register(ButtonComponentResolver())
-        registry.register(TextFieldComponentResolver())
-        registry.register(ToggleComponentResolver())
-        registry.register(SliderComponentResolver())
-        registry.register(ImageComponentResolver())
-        registry.register(GradientComponentResolver())
-        return registry
-    }()
-
     // MARK: - Storage
 
-    private var resolvers: [Document.Component.Kind: any ComponentResolving] = [:]
+    private var resolvers: [Document.ComponentKind: any ComponentResolving] = [:]
 
     // MARK: - Initialization
 
@@ -51,7 +38,7 @@ public final class ComponentResolverRegistry {
 
     /// Unregisters a resolver for a component kind
     /// - Parameter kind: The component kind to unregister
-    public func unregister(_ kind: Document.Component.Kind) {
+    public func unregister(_ kind: Document.ComponentKind) {
         resolvers.removeValue(forKey: kind)
     }
 
@@ -77,21 +64,22 @@ public final class ComponentResolverRegistry {
     /// Checks if a resolver is registered for a component kind
     /// - Parameter kind: The component kind to check
     /// - Returns: true if a resolver is registered
-    public func hasResolver(for kind: Document.Component.Kind) -> Bool {
+    public func hasResolver(for kind: Document.ComponentKind) -> Bool {
         resolvers[kind] != nil
     }
 
     /// Returns all registered component kinds
-    public var registeredKinds: [Document.Component.Kind] {
+    public var registeredKinds: [Document.ComponentKind] {
         Array(resolvers.keys)
     }
+
 }
 
 // MARK: - Errors
 
 /// Errors that can occur during component resolution
 public enum ComponentResolutionError: Error, LocalizedError {
-    case unknownKind(Document.Component.Kind)
+    case unknownKind(Document.ComponentKind)
 
     public var errorDescription: String? {
         switch self {

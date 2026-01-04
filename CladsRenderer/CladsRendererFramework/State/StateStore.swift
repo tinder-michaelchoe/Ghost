@@ -7,6 +7,24 @@ import Foundation
 import Combine
 import SwiftUI
 
+// MARK: - State Reading Protocol
+
+/// Protocol for reading state values, used by ExpressionEvaluator.
+/// This allows the evaluator to work with any state source.
+public protocol StateValueReading {
+    /// Get a value at the given keypath
+    func getValue(_ keypath: String) -> Any?
+
+    /// Get an array at the given keypath
+    func getArray(_ keypath: String) -> [Any]?
+
+    /// Check if an array contains a value
+    func arrayContains(_ keypath: String, value: Any) -> Bool
+
+    /// Get the count of an array
+    func getArrayCount(_ keypath: String) -> Int
+}
+
 // MARK: - State Change Callback
 
 /// Callback invoked when state changes
@@ -245,75 +263,17 @@ public final class StateStore: ObservableObject {
     }
 
     /// Evaluate an expression with state interpolation
-    /// Supports expressions like "${count} + 1" or "Hello ${name}"
+    /// Supports expressions like "${count} + 1", "Hello ${name}", or ternary expressions
     public func evaluate(expression: String) -> Any {
-        // Check if it's a simple arithmetic expression
-        if expression.contains("+") || expression.contains("-") {
-            return evaluateArithmetic(expression)
-        }
-
-        // Otherwise, just interpolate
-        return interpolate(expression)
+        let evaluator = ExpressionEvaluator()
+        return evaluator.evaluate(expression, using: self)
     }
 
     /// Interpolate template strings like "You pressed ${count} times"
+    /// Also handles ternary expressions like "${isOn ? 'ON' : 'OFF'}"
     public func interpolate(_ template: String) -> String {
-        var result = template
-        let pattern = #"\$\{([^}]+)\}"#
-
-        guard let regex = try? NSRegularExpression(pattern: pattern) else {
-            return template
-        }
-
-        let matches = regex.matches(in: template, range: NSRange(template.startIndex..., in: template))
-
-        // Process matches in reverse to maintain string indices
-        for match in matches.reversed() {
-            guard let range = Range(match.range, in: template),
-                  let keypathRange = Range(match.range(at: 1), in: template) else {
-                continue
-            }
-
-            let keypath = String(template[keypathRange])
-            let value = get(keypath)
-            let replacement = stringValue(from: value)
-            result.replaceSubrange(range, with: replacement)
-        }
-
-        return result
-    }
-
-    private func evaluateArithmetic(_ expression: String) -> Any {
-        // Simple arithmetic: "${count} + 1"
-        let interpolated = interpolate(expression)
-
-        // Try to evaluate as simple addition/subtraction
-        let components = interpolated.components(separatedBy: "+").map { $0.trimmingCharacters(in: .whitespaces) }
-        if components.count == 2,
-           let left = Int(components[0]),
-           let right = Int(components[1]) {
-            return left + right
-        }
-
-        let subComponents = interpolated.components(separatedBy: "-").map { $0.trimmingCharacters(in: .whitespaces) }
-        if subComponents.count == 2,
-           let left = Int(subComponents[0]),
-           let right = Int(subComponents[1]) {
-            return left - right
-        }
-
-        return interpolated
-    }
-
-    private func stringValue(from value: Any?) -> String {
-        switch value {
-        case let int as Int: return String(int)
-        case let double as Double: return String(double)
-        case let string as String: return string
-        case let bool as Bool: return String(bool)
-        case nil: return ""
-        default: return String(describing: value)
-        }
+        let evaluator = ExpressionEvaluator()
+        return evaluator.interpolate(template, using: self)
     }
 
     private func unwrap(_ stateValue: Document.StateValue) -> Any {
@@ -324,5 +284,34 @@ public final class StateStore: ObservableObject {
         case .boolValue(let v): return v
         case .nullValue: return NSNull()
         }
+    }
+}
+
+// MARK: - StateValueReading Conformance
+
+extension StateStore: StateValueReading {
+    public func getValue(_ keypath: String) -> Any? {
+        get(keypath)
+    }
+
+    public func getArray(_ keypath: String) -> [Any]? {
+        get(keypath) as? [Any]
+    }
+
+    public func arrayContains(_ keypath: String, value: Any) -> Bool {
+        guard let array = getArray(keypath) else { return false }
+        return array.contains { item in
+            if let itemStr = item as? String, let valueStr = value as? String {
+                return itemStr == valueStr
+            }
+            if let itemInt = item as? Int, let valueInt = value as? Int {
+                return itemInt == valueInt
+            }
+            return false
+        }
+    }
+
+    public func getArrayCount(_ keypath: String) -> Int {
+        getArray(keypath)?.count ?? 0
     }
 }

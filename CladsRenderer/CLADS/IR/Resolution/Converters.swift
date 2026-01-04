@@ -123,6 +123,8 @@ public enum StateValueConverter {
         case .stringValue(let v): return v
         case .boolValue(let v): return v
         case .nullValue: return NSNull()
+        case .arrayValue(let arr): return arr.map { unwrap($0) }
+        case .objectValue(let obj): return obj.mapValues { unwrap($0) }
         }
     }
 
@@ -150,6 +152,10 @@ public enum StateValueConverter {
             return .stringValue(stringVal)
         } else if let boolVal = value as? Bool {
             return .boolValue(boolVal)
+        } else if let arrayVal = value as? [Any] {
+            return .arrayValue(arrayVal.map { anyToStateValue($0) })
+        } else if let dictVal = value as? [String: Any] {
+            return .objectValue(dictVal.mapValues { anyToStateValue($0) })
         } else {
             return .nullValue
         }

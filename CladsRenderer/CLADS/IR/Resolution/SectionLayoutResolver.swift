@@ -13,7 +13,7 @@ public struct SectionLayoutResolver: SectionLayoutResolving {
 
     private let componentRegistry: ComponentResolverRegistry
 
-    public init(componentRegistry: ComponentResolverRegistry = .default) {
+    public init(componentRegistry: ComponentResolverRegistry) {
         self.componentRegistry = componentRegistry
     }
 
@@ -205,6 +205,11 @@ public struct SectionLayoutResolver: SectionLayoutResolving {
 
         case .sectionLayout(let sectionLayout):
             return try resolve(sectionLayout, context: context)
+
+        case .forEach:
+            // ForEach is handled by LayoutResolver
+            let layoutResolver = LayoutResolver(componentRegistry: componentRegistry)
+            return try layoutResolver.resolveNode(node, context: context)
 
         case .component(let component):
             let result = try componentRegistry.resolve(component, context: context)

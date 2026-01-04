@@ -10,6 +10,8 @@
 		806246172F04911E0055EA41 /* Builder.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8062460B2F04911E0055EA41 /* Builder.framework */; };
 		806247A62F0491B20055EA41 /* CoreContracts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247A52F0491B20055EA41 /* CoreContracts.framework */; };
 		806247A72F0491B20055EA41 /* CoreContracts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806247A52F0491B20055EA41 /* CoreContracts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		806247B02F0491B20055EA41 /* CLADS.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247AF2F0491B20055EA41 /* CLADS.framework */; };
+		806247B22F0491B20055EA41 /* CladsModules.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806247B12F0491B20055EA41 /* CladsModules.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +42,8 @@
 		8062460B2F04911E0055EA41 /* Builder.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Builder.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		806246162F04911E0055EA41 /* BuilderTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BuilderTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		806247A52F0491B20055EA41 /* CoreContracts.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CoreContracts.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806247AF2F0491B20055EA41 /* CLADS.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CLADS.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		806247B12F0491B20055EA41 /* CladsModules.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = CladsModules.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -61,6 +65,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				806247A62F0491B20055EA41 /* CoreContracts.framework in Frameworks */,
+				806247B02F0491B20055EA41 /* CLADS.framework in Frameworks */,
+				806247B22F0491B20055EA41 /* CladsModules.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -98,6 +104,8 @@
 			isa = PBXGroup;
 			children = (
 				806247A52F0491B20055EA41 /* CoreContracts.framework */,
+				806247AF2F0491B20055EA41 /* CLADS.framework */,
+				806247B12F0491B20055EA41 /* CladsModules.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

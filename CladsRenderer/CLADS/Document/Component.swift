@@ -7,33 +7,70 @@ import Foundation
 
 // MARK: - Component
 
+// MARK: - Component Kind
+
+extension Document {
+    /// Type-safe component kind identifier.
+    ///
+    /// Uses struct with static constants for compile-time safety while remaining extensible.
+    /// External modules can add new component kinds without modifying core code.
+    ///
+    /// Built-in kinds are accessed via static properties:
+    /// ```swift
+    /// ComponentKind.label
+    /// ComponentKind.button
+    /// ```
+    ///
+    /// External modules can extend with new kinds:
+    /// ```swift
+    /// extension Document.ComponentKind {
+    ///     public static let chart = ComponentKind(rawValue: "chart")
+    /// }
+    /// ```
+    ///
+    /// When adding a new component type:
+    /// 1. Add a static constant here (or in an extension for external types)
+    /// 2. Create a corresponding `ComponentResolving` implementation
+    /// 3. Register it with `ComponentResolverRegistry`
+    public struct ComponentKind: Hashable, Codable, Sendable, RawRepresentable {
+        public let rawValue: String
+
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
+    }
+}
+
+// MARK: - Built-in Component Kinds
+
+extension Document.ComponentKind {
+    /// Text label component
+    public static let label = Document.ComponentKind(rawValue: "label")
+
+    /// Tappable button component
+    public static let button = Document.ComponentKind(rawValue: "button")
+
+    /// Text input field component
+    public static let textfield = Document.ComponentKind(rawValue: "textfield")
+
+    /// Image component (SF Symbols or URL)
+    public static let image = Document.ComponentKind(rawValue: "image")
+
+    /// Gradient background component
+    public static let gradient = Document.ComponentKind(rawValue: "gradient")
+
+    /// Boolean toggle switch component
+    public static let toggle = Document.ComponentKind(rawValue: "toggle")
+
+    /// Value slider component
+    public static let slider = Document.ComponentKind(rawValue: "slider")
+}
+
+// MARK: - Component
+
 extension Document {
     /// A UI component (label, button, textfield, etc.)
     public struct Component: Codable {
-
-        // MARK: - Nested Types
-
-        /// Component types supported by the renderer.
-        ///
-        /// Each case's raw value corresponds exactly to the `"type"` field in JSON:
-        /// ```json
-        /// { "type": "label", ... }
-        /// { "type": "button", ... }
-        /// ```
-        ///
-        /// When adding a new component type:
-        /// 1. Add a case here with a raw value matching the JSON `type` string
-        /// 2. Create a corresponding `ComponentResolving` implementation
-        /// 3. Register it in `ComponentResolverRegistry.default`
-        public enum Kind: String, Codable, Sendable {
-            case label
-            case button
-            case textfield
-            case image
-            case gradient
-            case toggle
-            case slider
-        }
 
         /// An action binding - either an inline action or a reference to a document-level action.
         ///
@@ -114,7 +151,7 @@ extension Document {
 
         // MARK: - Properties
 
-        public let type: Kind
+        public let type: ComponentKind
         public let id: String?
         public let styleId: String?
         public let styles: ComponentStyles?
@@ -144,8 +181,12 @@ extension Document {
         public let gradientStart: String?  // "top", "bottom", "leading", etc.
         public let gradientEnd: String?
 
+        /// Additional properties for custom/extensible components.
+        /// Captures any JSON keys not defined in the standard properties.
+        public let additionalProperties: [String: AnyCodableValue]?
+
         public init(
-            type: Kind,
+            type: ComponentKind,
             id: String? = nil,
             styleId: String? = nil,
             styles: ComponentStyles? = nil,
@@ -165,7 +206,8 @@ extension Document {
             image: ImageSource? = nil,
             gradientColors: [GradientColorConfig]? = nil,
             gradientStart: String? = nil,
-            gradientEnd: String? = nil
+            gradientEnd: String? = nil,
+            additionalProperties: [String: AnyCodableValue]? = nil
         ) {
             self.type = type
             self.id = id
@@ -188,9 +230,82 @@ extension Document {
             self.gradientColors = gradientColors
             self.gradientStart = gradientStart
             self.gradientEnd = gradientEnd
+            self.additionalProperties = additionalProperties
+        }
+
+        // MARK: - Custom Decoding
+
+        /// Known coding keys for standard properties
+        private enum CodingKeys: String, CodingKey, CaseIterable {
+            case type, id, styleId, styles, padding, isSelectedBinding
+            case dataSourceId, text, placeholder, bind, localBind
+            case fillWidth, actions, data, state
+            case minValue, maxValue, image
+            case gradientColors, gradientStart, gradientEnd
+        }
+
+        public init(from decoder: Decoder) throws {
+            let container = try decoder.container(keyedBy: CodingKeys.self)
+
+            // Decode standard properties
+            type = try container.decode(ComponentKind.self, forKey: .type)
+            id = try container.decodeIfPresent(String.self, forKey: .id)
+            styleId = try container.decodeIfPresent(String.self, forKey: .styleId)
+            styles = try container.decodeIfPresent(ComponentStyles.self, forKey: .styles)
+            padding = try container.decodeIfPresent(Padding.self, forKey: .padding)
+            isSelectedBinding = try container.decodeIfPresent(String.self, forKey: .isSelectedBinding)
+            dataSourceId = try container.decodeIfPresent(String.self, forKey: .dataSourceId)
+            text = try container.decodeIfPresent(String.self, forKey: .text)
+            placeholder = try container.decodeIfPresent(String.self, forKey: .placeholder)
+            bind = try container.decodeIfPresent(String.self, forKey: .bind)
+            localBind = try container.decodeIfPresent(String.self, forKey: .localBind)
+            fillWidth = try container.decodeIfPresent(Bool.self, forKey: .fillWidth)
+            actions = try container.decodeIfPresent(Actions.self, forKey: .actions)
+            data = try container.decodeIfPresent(DataReference.self, forKey: .data)
+            state = try container.decodeIfPresent(LocalStateDeclaration.self, forKey: .state)
+            minValue = try container.decodeIfPresent(Double.self, forKey: .minValue)
+            maxValue = try container.decodeIfPresent(Double.self, forKey: .maxValue)
+            image = try container.decodeIfPresent(ImageSource.self, forKey: .image)
+            gradientColors = try container.decodeIfPresent([GradientColorConfig].self, forKey: .gradientColors)
+            gradientStart = try container.decodeIfPresent(String.self, forKey: .gradientStart)
+            gradientEnd = try container.decodeIfPresent(String.self, forKey: .gradientEnd)
+
+            // Capture additional properties using dynamic keys
+            let dynamicContainer = try decoder.container(keyedBy: DynamicCodingKey.self)
+            let knownKeys = Set(CodingKeys.allCases.map { $0.rawValue })
+            var additional: [String: AnyCodableValue] = [:]
+
+            for key in dynamicContainer.allKeys {
+                if !knownKeys.contains(key.stringValue) {
+                    if let value = try? dynamicContainer.decode(AnyCodableValue.self, forKey: key) {
+                        additional[key.stringValue] = value
+                    }
+                }
+            }
+
+            additionalProperties = additional.isEmpty ? nil : additional
         }
     }
 }
+
+// MARK: - Dynamic Coding Key
+
+/// Dynamic coding key for capturing unknown JSON keys
+struct DynamicCodingKey: CodingKey {
+    var stringValue: String
+    var intValue: Int?
+
+    init?(stringValue: String) {
+        self.stringValue = stringValue
+        self.intValue = nil
+    }
+
+    init?(intValue: Int) {
+        self.intValue = intValue
+        self.stringValue = String(intValue)
+    }
+}
+
 
 // MARK: - Gradient Color Config
 

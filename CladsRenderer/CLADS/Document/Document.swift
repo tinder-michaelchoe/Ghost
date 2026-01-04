@@ -59,25 +59,55 @@ extension Document {
 // MARK: - StateValue
 
 extension Document {
-    /// Represents a state value which can be static or computed
-    public enum StateValue: Codable {
+    /// Represents a state value which can be a primitive, array, or object.
+    ///
+    /// Supported types:
+    /// - Primitives: Int, Double, String, Bool, null
+    /// - Collections: Array of StateValues, Object (dictionary) of StateValues
+    ///
+    /// Example JSON:
+    /// ```json
+    /// {
+    ///   "count": 0,
+    ///   "name": "John",
+    ///   "interests": ["Music", "Sports", "Travel"],
+    ///   "user": { "name": "Jane", "age": 25 }
+    /// }
+    /// ```
+    public enum StateValue: Codable, Equatable {
         case intValue(Int)
         case doubleValue(Double)
         case stringValue(String)
         case boolValue(Bool)
         case nullValue
+        case arrayValue([StateValue])
+        case objectValue([String: StateValue])
 
         public init(from decoder: Decoder) throws {
             let container = try decoder.singleValueContainer()
 
-            if let intVal = try? container.decode(Int.self) {
+            // Try array first (before primitives)
+            if let arrayVal = try? container.decode([StateValue].self) {
+                self = .arrayValue(arrayVal)
+                return
+            }
+
+            // Try object/dictionary
+            if let objectVal = try? container.decode([String: StateValue].self) {
+                self = .objectValue(objectVal)
+                return
+            }
+
+            // Try primitives
+            if let boolVal = try? container.decode(Bool.self) {
+                // Check bool before int because JSON numbers can be decoded as bool
+                self = .boolValue(boolVal)
+            } else if let intVal = try? container.decode(Int.self) {
                 self = .intValue(intVal)
             } else if let doubleVal = try? container.decode(Double.self) {
                 self = .doubleValue(doubleVal)
             } else if let stringVal = try? container.decode(String.self) {
                 self = .stringValue(stringVal)
-            } else if let boolVal = try? container.decode(Bool.self) {
-                self = .boolValue(boolVal)
             } else if container.decodeNil() {
                 self = .nullValue
             } else {
@@ -96,11 +126,20 @@ extension Document {
             case .stringValue(let val): try container.encode(val)
             case .boolValue(let val): try container.encode(val)
             case .nullValue: try container.encodeNil()
+            case .arrayValue(let val): try container.encode(val)
+            case .objectValue(let val): try container.encode(val)
             }
         }
 
+        // MARK: - Primitive Accessors
+
         public var intValue: Int? {
             if case .intValue(let val) = self { return val }
+            return nil
+        }
+
+        public var doubleValue: Double? {
+            if case .doubleValue(let val) = self { return val }
             return nil
         }
 
@@ -112,6 +151,34 @@ extension Document {
         public var boolValue: Bool? {
             if case .boolValue(let val) = self { return val }
             return nil
+        }
+
+        // MARK: - Collection Accessors
+
+        public var arrayValue: [StateValue]? {
+            if case .arrayValue(let val) = self { return val }
+            return nil
+        }
+
+        public var objectValue: [String: StateValue]? {
+            if case .objectValue(let val) = self { return val }
+            return nil
+        }
+
+        /// Returns true if this is a null value
+        public var isNull: Bool {
+            if case .nullValue = self { return true }
+            return false
+        }
+
+        /// Returns the count for arrays, or nil for non-arrays
+        public var count: Int? {
+            arrayValue?.count
+        }
+
+        /// Returns true if this is an empty array
+        public var isEmpty: Bool? {
+            arrayValue?.isEmpty
         }
     }
 }

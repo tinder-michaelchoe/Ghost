@@ -12,17 +12,40 @@ import SwiftUI
 // MARK: - Clads Examples UI Provider
 
 /// UI provider that contributes the static examples view to the home tab.
+/// Injects WeatherService for the weather dashboard example.
 public final class CladsExamplesUIProvider: UIProvider {
     public init() {}
 
     public func registerUI(_ registry: UIRegistryContributing) {
-        guard let registry = registry as? TabBarUIContributing else { return }
         registry.contribute(
-            to: .home,
-            title: "CLADS",
-            normalIcon: "scribble.variable",
-            selectedIcon: nil,
-            factory: { CladsExamplesView() }
+            to: TabBarUISurface.home,
+            contribution: TabBarContribution(
+                title: "CLADS",
+                normalIcon: "scribble.variable",
+                selectedIcon: nil
+            ),
+            dependencies: (WeatherService.self),
+            factory: { weatherService in
+                CladsExamplesView(weatherService: weatherService)
+            }
         )
+    }
+}
+
+// MARK: - Tab Bar Contribution
+
+private struct TabBarContribution: ViewContribution, TabBarItemProviding, Sendable {
+    let id: ViewContributionID
+    let tabBarTitle: String?
+    let tabBarIconSystemName: String?
+
+    init(
+        title: String,
+        normalIcon: String,
+        selectedIcon: String?
+    ) {
+        self.id = ViewContributionID(rawValue: title)
+        self.tabBarTitle = title
+        self.tabBarIconSystemName = normalIcon
     }
 }
