@@ -22,7 +22,7 @@ import Foundation
 /// { "type": "appendToArray", "path": "items", "value": "New Item" }
 /// { "type": "appendToArray", "path": "items", "value": { "$expr": "${currentItem}" } }
 /// ```
-public struct AppendToArrayActionHandler: ActionHandler, Initializable {
+public struct AppendToArrayActionHandler: ActionHandler {
     public static let actionType = "appendToArray"
 
     public init() {}
@@ -63,7 +63,7 @@ public struct AppendToArrayActionHandler: ActionHandler, Initializable {
 /// { "type": "removeFromArray", "path": "items", "value": "Item to Remove" }
 /// { "type": "removeFromArray", "path": "items", "index": 0 }
 /// ```
-public struct RemoveFromArrayActionHandler: ActionHandler, Initializable {
+public struct RemoveFromArrayActionHandler: ActionHandler {
     public static let actionType = "removeFromArray"
 
     public init() {}
@@ -110,7 +110,7 @@ public struct RemoveFromArrayActionHandler: ActionHandler, Initializable {
 /// { "type": "toggleInArray", "path": "selectedItems", "value": "Item1" }
 /// { "type": "toggleInArray", "path": "selectedIds", "value": { "$expr": "${currentId}" } }
 /// ```
-public struct ToggleInArrayActionHandler: ActionHandler, Initializable {
+public struct ToggleInArrayActionHandler: ActionHandler {
     public static let actionType = "toggleInArray"
 
     public init() {}
@@ -150,7 +150,7 @@ public struct ToggleInArrayActionHandler: ActionHandler, Initializable {
 /// ```json
 /// { "type": "setArrayItem", "path": "items", "index": 0, "value": "Updated Item" }
 /// ```
-public struct SetArrayItemActionHandler: ActionHandler, Initializable {
+public struct SetArrayItemActionHandler: ActionHandler {
     public static let actionType = "setArrayItem"
 
     public init() {}
@@ -194,7 +194,7 @@ public struct SetArrayItemActionHandler: ActionHandler, Initializable {
 /// ```json
 /// { "type": "clearArray", "path": "selectedItems" }
 /// ```
-public struct ClearArrayActionHandler: ActionHandler, Initializable {
+public struct ClearArrayActionHandler: ActionHandler {
     public static let actionType = "clearArray"
 
     public init() {}

@@ -25,12 +25,6 @@ public final class ActionRegistry: @unchecked Sendable {
         }
     }
 
-    /// Register an action handler by type
-    /// - Parameter handlerType: The handler type to instantiate and register
-    public func register<T: ActionHandler>(_ handlerType: T.Type) where T: ActionHandler & Initializable {
-        register(handlerType.init())
-    }
-
     /// Get a handler for the given action type
     /// - Parameter actionType: The action type identifier
     /// - Returns: The registered handler, or nil if not found
@@ -62,9 +56,4 @@ public final class ActionRegistry: @unchecked Sendable {
         register(SequenceActionHandler())
         register(NavigateActionHandler())
     }
-}
-
-/// Protocol for types that can be initialized with no arguments
-public protocol Initializable {
-    init()
 }

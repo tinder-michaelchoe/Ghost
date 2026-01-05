@@ -7,7 +7,7 @@ import Foundation
 
 /// Handler for the "navigate" action
 /// Navigates to another view
-public struct NavigateActionHandler: ActionHandler, Initializable {
+public struct NavigateActionHandler: ActionHandler {
     public static let actionType = "navigate"
 
     public init() {}

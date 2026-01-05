@@ -15,9 +15,6 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
     private let actionDefinitions: [String: Document.Action]
     private let registry: ActionRegistry
 
-    /// Custom action closures injected at view creation time
-    private let customActions: [String: ActionClosure]
-
     /// Alert presenter for showing alerts (injectable for testing)
     private let alertPresenter: AlertPresenting
 
@@ -37,14 +34,12 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
         stateStore: StateStore,
         actionDefinitions: [String: Document.Action],
         registry: ActionRegistry,
-        customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil,
         alertPresenter: AlertPresenting = UIKitAlertPresenter()
     ) {
         self.stateStore = stateStore
         self.actionDefinitions = actionDefinitions
         self.registry = registry
-        self.customActions = customActions
         self.actionDelegate = actionDelegate
         self.alertPresenter = alertPresenter
     }
@@ -54,33 +49,42 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
     /// Execute an action by its ID.
     ///
     /// Resolution order:
-    /// 1. Custom action closures (injected at view creation)
-    /// 2. Action delegate
-    /// 3. Document action definitions
+    /// 1. Document action definitions (to get type + parameters)
+    /// 2. Action delegate (for intercepting, with parameters)
+    /// 3. Execute the action
+    ///
+    /// The action definition determines the action type and parameters,
+    /// which are then passed to `executeAction(type:parameters:)` for registry lookup.
     public func executeAction(id actionId: String) async {
-        // 1. Check custom action closures first
-        if let closure = customActions[actionId] {
-            await closure(ActionParameters(raw: [:]), self)
-            return
-        }
-
-        // 2. Check delegate
-        if let delegate = actionDelegate {
-            let handled = await delegate.cladsRenderer(
-                handleAction: actionId,
-                parameters: ActionParameters(raw: [:]),
-                context: self
-            )
-            if handled { return }
-        }
-
-        // 3. Fall back to document action definitions
+        // 1. Look up action definition to get type + parameters
         guard let action = actionDefinitions[actionId] else {
             print("ActionContext: Unknown action '\(actionId)'")
             return
         }
 
+        // 2. Check delegate (for intercepting, with parameters extracted from action)
+        if let delegate = actionDelegate {
+            let parameters = extractParameters(from: action)
+            let handled = await delegate.cladsRenderer(
+                handleAction: actionId,
+                parameters: parameters,
+                context: self
+            )
+            if handled { return }
+        }
+
+        // 3. Execute the action
         await executeAction(action)
+    }
+
+    /// Extract parameters from an action for delegate calls
+    private func extractParameters(from action: Document.Action) -> ActionParameters {
+        switch action {
+        case .custom(let customAction):
+            return ActionParameters(raw: customAction.parameters.mapValues { stateValueToAny($0) })
+        default:
+            return ActionParameters(raw: [:])
+        }
     }
 
     /// Execute a typed Action directly
@@ -116,13 +120,12 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
     /// Execute an action directly by type and parameters.
     ///
     /// Resolution order:
-    /// 1. Custom action closures (injected at view creation)
+    /// 1. Registry handlers (includes custom actions wrapped as ClosureActionHandler)
     /// 2. Action delegate
-    /// 3. Action registry (global handlers)
     public func executeAction(type actionType: String, parameters: ActionParameters) async {
-        // 1. Check custom action closures first
-        if let closure = customActions[actionType] {
-            await closure(parameters, self)
+        // 1. Check registry handlers first (includes ClosureActionHandler for custom actions)
+        if let handler = registry.handler(for: actionType) {
+            await handler.execute(parameters: parameters, context: self)
             return
         }
 
@@ -136,13 +139,7 @@ public final class ActionContext: ObservableObject, ActionExecutionContext {
             if handled { return }
         }
 
-        // 3. Fall back to registry
-        guard let handler = registry.handler(for: actionType) else {
-            print("ActionContext: No handler registered for action type '\(actionType)'")
-            return
-        }
-
-        await handler.execute(parameters: parameters, context: self)
+        print("ActionContext: No handler registered for action type '\(actionType)'")
     }
 
     // MARK: - Action Execution Helpers

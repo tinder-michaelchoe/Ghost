@@ -7,11 +7,12 @@ import Foundation
 
 // MARK: - Custom Action Types
 
-/// Closure type for custom actions injected at view creation time.
+/// Closure type for custom actions.
 ///
-/// Use this to provide view-specific action handlers without registering them globally.
+/// Custom actions can be registered directly on an ActionRegistry using `registerClosure(_:closure:)`
+/// or merged using `merging(customActions:)`.
 ///
-/// Example:
+/// Example (via CladsModules convenience initializers):
 /// ```swift
 /// CladsRendererView(
 ///     document: document,

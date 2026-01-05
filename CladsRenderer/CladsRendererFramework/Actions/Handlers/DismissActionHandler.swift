@@ -7,7 +7,7 @@ import Foundation
 
 /// Handler for the "dismiss" action
 /// Dismisses the current view
-public struct DismissActionHandler: ActionHandler, Initializable {
+public struct DismissActionHandler: ActionHandler {
     public static let actionType = "dismiss"
 
     public init() {}

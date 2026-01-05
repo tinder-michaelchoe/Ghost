@@ -8,7 +8,7 @@ import Foundation
 
 /// Handler for the "setState" action
 /// Updates a value in the state store
-public struct SetStateActionHandler: ActionHandler, Initializable {
+public struct SetStateActionHandler: ActionHandler {
     public static let actionType = "setState"
 
     public init() {}

@@ -85,32 +85,15 @@ public final class CladsUIKitView: UIView {
     ///
     /// - Parameters:
     ///   - document: The document definition to render
-    ///   - actionRegistry: The action registry for handling actions
+    ///   - actionRegistry: The action registry for handling actions (may include merged custom actions)
+    ///   - componentRegistry: The component resolver registry
     ///   - rendererRegistry: The UIKit node renderer registry
-    ///   - customActions: View-specific action closures, keyed by action ID
     ///   - actionDelegate: Delegate for handling custom actions
-    ///
-    /// Example:
-    /// ```swift
-    /// let view = CladsUIKitView(
-    ///     document: document,
-    ///     actionRegistry: actionRegistry,
-    ///     componentRegistry: componentRegistry,
-    ///     rendererRegistry: rendererRegistry,
-    ///     customActions: [
-    ///         "submitOrder": { params, context in
-    ///             let orderId = context.stateStore.get("order.id") as? String
-    ///             await OrderService.submit(orderId)
-    ///         }
-    ///     ]
-    /// )
-    /// ```
     public init(
         document: Document.Definition,
         actionRegistry: ActionRegistry,
         componentRegistry: ComponentResolverRegistry,
         rendererRegistry: UIKitNodeRendererRegistry,
-        customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil
     ) {
         self.document = document
@@ -136,7 +119,6 @@ public final class CladsUIKitView: UIView {
             stateStore: stateStore,
             actionDefinitions: document.actions ?? [:],
             registry: actionRegistry,
-            customActions: customActions,
             actionDelegate: actionDelegate
         )
 
@@ -147,13 +129,12 @@ public final class CladsUIKitView: UIView {
         setupActionHandlers()
     }
 
-    /// Initialize from a JSON string with optional custom action handlers.
+    /// Initialize from a JSON string.
     public convenience init?(
         jsonString: String,
         actionRegistry: ActionRegistry,
         componentRegistry: ComponentResolverRegistry,
         rendererRegistry: UIKitNodeRendererRegistry,
-        customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil
     ) {
         guard let document = try? Document.Definition(jsonString: jsonString) else {
@@ -164,7 +145,6 @@ public final class CladsUIKitView: UIView {
             actionRegistry: actionRegistry,
             componentRegistry: componentRegistry,
             rendererRegistry: rendererRegistry,
-            customActions: customActions,
             actionDelegate: actionDelegate
         )
     }

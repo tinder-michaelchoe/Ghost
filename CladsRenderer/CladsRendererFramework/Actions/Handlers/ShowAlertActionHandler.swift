@@ -7,7 +7,7 @@ import Foundation
 
 /// Handler for the "showAlert" action
 /// Presents a UIAlertController with the specified configuration
-public struct ShowAlertActionHandler: ActionHandler, Initializable {
+public struct ShowAlertActionHandler: ActionHandler {
     public static let actionType = "showAlert"
 
     public init() {}

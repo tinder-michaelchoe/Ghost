@@ -8,7 +8,7 @@ import Foundation
 
 /// Handler for the "sequence" action
 /// Executes multiple actions in order
-public struct SequenceActionHandler: ActionHandler, Initializable {
+public struct SequenceActionHandler: ActionHandler {
     public static let actionType = "sequence"
 
     public init() {}

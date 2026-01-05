@@ -3,6 +3,7 @@
 //  CladsModules
 //
 //  Convenience initializers for CladsUIKitView and CladsViewController that use default registries.
+//  Custom actions are merged into the action registry internally.
 //
 
 import CLADS
@@ -35,12 +36,14 @@ extension CladsUIKitView {
         customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil
     ) {
+        // Merge custom actions into the registry
+        let registry = ActionRegistry.default.merging(customActions: customActions)
+
         self.init(
             document: document,
-            actionRegistry: .default,
+            actionRegistry: registry,
             componentRegistry: .default,
             rendererRegistry: .default,
-            customActions: customActions,
             actionDelegate: actionDelegate
         )
     }
@@ -51,12 +54,18 @@ extension CladsUIKitView {
         customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil
     ) {
+        guard let document = try? Document.Definition(jsonString: jsonString) else {
+            return nil
+        }
+
+        // Merge custom actions into the registry
+        let registry = ActionRegistry.default.merging(customActions: customActions)
+
         self.init(
-            jsonString: jsonString,
-            actionRegistry: .default,
+            document: document,
+            actionRegistry: registry,
             componentRegistry: .default,
             rendererRegistry: .default,
-            customActions: customActions,
             actionDelegate: actionDelegate
         )
     }

@@ -18,38 +18,19 @@ public struct CladsRendererView: View {
 
     private let swiftuiRendererRegistry: SwiftUINodeRendererRegistry
 
-    /// Initialize with a document and optional custom action handlers.
+    /// Initialize with a document and registries.
     ///
     /// - Parameters:
     ///   - document: The document definition to render
-    ///   - actionRegistry: Registry for action handlers (default: built-in actions)
-    ///   - componentRegistry: Registry for component resolvers (default: built-in components)
-    ///   - swiftuiRendererRegistry: Registry for SwiftUI renderers (default: built-in renderers)
-    ///   - customActions: View-specific action closures, keyed by action ID
+    ///   - actionRegistry: Registry for action handlers (may include merged custom actions)
+    ///   - componentRegistry: Registry for component resolvers
+    ///   - swiftuiRendererRegistry: Registry for SwiftUI renderers
     ///   - actionDelegate: Delegate for handling custom actions
-    ///
-    /// Example:
-    /// ```swift
-    /// // Simple usage with defaults
-    /// CladsRendererView(document: document)
-    ///
-    /// // With custom actions
-    /// CladsRendererView(
-    ///     document: document,
-    ///     customActions: [
-    ///         "submitOrder": { params, context in
-    ///             let orderId = context.stateStore.get("order.id") as? String
-    ///             await OrderService.submit(orderId)
-    ///         }
-    ///     ]
-    /// )
-    /// ```
     public init(
         document: Document.Definition,
         actionRegistry: ActionRegistry,
         componentRegistry: ComponentResolverRegistry,
         swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
-        customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil
     ) {
         self.swiftuiRendererRegistry = swiftuiRendererRegistry
@@ -68,12 +49,11 @@ public struct CladsRendererView: View {
         }
         self.renderTree = tree
 
-        // Create ActionContext with the resolved state store and custom actions
+        // Create ActionContext with the resolved state store
         let ctx = ActionContext(
             stateStore: tree.stateStore,
             actionDefinitions: document.actions ?? [:],
             registry: actionRegistry,
-            customActions: customActions,
             actionDelegate: actionDelegate
         )
         _actionContext = StateObject(wrappedValue: ctx)
@@ -111,7 +91,6 @@ extension CladsRendererView {
         actionRegistry: ActionRegistry,
         componentRegistry: ComponentResolverRegistry,
         swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
-        customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
     ) {
@@ -123,7 +102,6 @@ extension CladsRendererView {
             actionRegistry: actionRegistry,
             componentRegistry: componentRegistry,
             swiftuiRendererRegistry: swiftuiRendererRegistry,
-            customActions: customActions,
             actionDelegate: actionDelegate,
             debugMode: debugMode
         )
@@ -135,7 +113,6 @@ extension CladsRendererView {
         actionRegistry: ActionRegistry,
         componentRegistry: ComponentResolverRegistry,
         swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
-        customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool
     ) {
@@ -162,12 +139,11 @@ extension CladsRendererView {
             print(debugRenderer.render(tree))
         }
 
-        // Create ActionContext with the resolved state store and custom actions
+        // Create ActionContext with the resolved state store
         let ctx = ActionContext(
             stateStore: tree.stateStore,
             actionDefinitions: document.actions ?? [:],
             registry: actionRegistry,
-            customActions: customActions,
             actionDelegate: actionDelegate
         )
         _actionContext = StateObject(wrappedValue: ctx)
@@ -187,7 +163,7 @@ public struct CladsRendererBindingConfiguration<State: Codable> {
     /// Called when an action is executed
     public var onAction: ((_ actionId: String, _ parameters: [String: Any]) -> Void)?
 
-    /// Registry for action handlers
+    /// Registry for action handlers (may include merged custom actions)
     public var actionRegistry: ActionRegistry
 
     /// Registry for component resolvers
@@ -195,9 +171,6 @@ public struct CladsRendererBindingConfiguration<State: Codable> {
 
     /// Registry for SwiftUI renderers
     public var swiftuiRendererRegistry: SwiftUINodeRendererRegistry
-
-    /// View-specific action closures
-    public var customActions: [String: ActionClosure]
 
     /// Delegate for handling custom actions
     public weak var actionDelegate: CladsActionDelegate?
@@ -212,7 +185,6 @@ public struct CladsRendererBindingConfiguration<State: Codable> {
         actionRegistry: ActionRegistry,
         componentRegistry: ComponentResolverRegistry,
         swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
-        customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
     ) {
@@ -222,7 +194,6 @@ public struct CladsRendererBindingConfiguration<State: Codable> {
         self.actionRegistry = actionRegistry
         self.componentRegistry = componentRegistry
         self.swiftuiRendererRegistry = swiftuiRendererRegistry
-        self.customActions = customActions
         self.actionDelegate = actionDelegate
         self.debugMode = debugMode
     }
@@ -318,12 +289,11 @@ class BindingRenderContext<State: Codable>: ObservableObject {
         self.renderTree = tree
         self.stateStore = tree.stateStore
 
-        // Create action context with custom actions
+        // Create action context
         self._actionContext = ActionContext(
             stateStore: tree.stateStore,
             actionDefinitions: document.actions ?? [:],
             registry: configuration.actionRegistry,
-            customActions: configuration.customActions,
             actionDelegate: configuration.actionDelegate
         )
 

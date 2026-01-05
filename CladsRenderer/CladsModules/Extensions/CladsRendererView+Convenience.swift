@@ -3,6 +3,7 @@
 //  CladsModules
 //
 //  Convenience initializers for CladsRendererView that use default registries.
+//  Custom actions are merged into the action registry internally.
 //
 
 import CLADS
@@ -35,12 +36,14 @@ extension CladsRendererView {
         customActions: [String: ActionClosure] = [:],
         actionDelegate: CladsActionDelegate? = nil
     ) {
+        // Merge custom actions into the registry
+        let registry = ActionRegistry.default.merging(customActions: customActions)
+
         self.init(
             document: document,
-            actionRegistry: .default,
+            actionRegistry: registry,
             componentRegistry: .default,
             swiftuiRendererRegistry: .default,
-            customActions: customActions,
             actionDelegate: actionDelegate
         )
     }
@@ -52,12 +55,18 @@ extension CladsRendererView {
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
     ) {
+        guard let document = try? Document.Definition(jsonString: jsonString) else {
+            return nil
+        }
+
+        // Merge custom actions into the registry
+        let registry = ActionRegistry.default.merging(customActions: customActions)
+
         self.init(
-            jsonString: jsonString,
-            actionRegistry: .default,
+            document: document,
+            actionRegistry: registry,
             componentRegistry: .default,
             swiftuiRendererRegistry: .default,
-            customActions: customActions,
             actionDelegate: actionDelegate,
             debugMode: debugMode
         )
@@ -70,12 +79,14 @@ extension CladsRendererView {
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool
     ) {
+        // Merge custom actions into the registry
+        let registry = ActionRegistry.default.merging(customActions: customActions)
+
         self.init(
             document: document,
-            actionRegistry: .default,
+            actionRegistry: registry,
             componentRegistry: .default,
             swiftuiRendererRegistry: .default,
-            customActions: customActions,
             actionDelegate: actionDelegate,
             debugMode: debugMode
         )
@@ -94,14 +105,16 @@ extension CladsRendererBindingConfiguration {
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
     ) {
+        // Merge custom actions into the registry
+        let registry = ActionRegistry.default.merging(customActions: customActions)
+
         self.init(
             initialState: initialState,
             onStateChange: onStateChange,
             onAction: onAction,
-            actionRegistry: .default,
+            actionRegistry: registry,
             componentRegistry: .default,
             swiftuiRendererRegistry: .default,
-            customActions: customActions,
             actionDelegate: actionDelegate,
             debugMode: debugMode
         )
