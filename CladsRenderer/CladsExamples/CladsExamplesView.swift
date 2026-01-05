@@ -97,6 +97,8 @@ struct CladsExamplesView: View {
                         TaskManagerExampleView()
                     case .weatherDashboard:
                         WeatherDashboardExampleView(weatherService: weatherService)
+                    case .deeplinks:
+                        DeeplinkExampleView()
                     default:
                         ExampleSheetView(example: example)
                     }
@@ -305,6 +307,7 @@ enum Example: String, CaseIterable, Identifiable {
     case shoppingCart
     case musicPlayer
     case weatherDashboard
+    case deeplinks
 
     var id: String { rawValue }
 
@@ -348,6 +351,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .shoppingCart: return "Shopping Cart"
         case .musicPlayer: return "Music Player"
         case .weatherDashboard: return "Weather Dashboard"
+        case .deeplinks: return "Deeplinks"
         }
     }
 
@@ -391,6 +395,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .shoppingCart: return "E-commerce cart with promo codes"
         case .musicPlayer: return "Player controls, queue & progress"
         case .weatherDashboard: return "Forecast with gradient backgrounds"
+        case .deeplinks: return "Tab navigation & sheet presentation"
         }
     }
 
@@ -434,6 +439,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .shoppingCart: return "cart.fill"
         case .musicPlayer: return "music.note.list"
         case .weatherDashboard: return "cloud.sun.fill"
+        case .deeplinks: return "link"
         }
     }
 
@@ -477,6 +483,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .shoppingCart: return .teal
         case .musicPlayer: return .teal
         case .weatherDashboard: return .indigo
+        case .deeplinks: return .blue
         }
     }
 
@@ -520,6 +527,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .shoppingCart: return shoppingCartJSON
         case .musicPlayer: return musicPlayerJSON
         case .weatherDashboard: return weatherDashboardJSON
+        case .deeplinks: return deeplinkExampleJSON
         }
     }
 
@@ -544,6 +552,7 @@ enum Example: String, CaseIterable, Identifiable {
         case .shoppingCart: return .fullSize
         case .musicPlayer: return .fullSize
         case .weatherDashboard: return .fullSize
+        case .deeplinks: return .fullSize
         }
     }
 
@@ -570,7 +579,7 @@ enum Example: String, CaseIterable, Identifiable {
     }
 
     static var complexExamples: [Example] {
-        [.dadJokes, .taskManager, .shoppingCart, .musicPlayer, .weatherDashboard]
+        [.dadJokes, .taskManager, .shoppingCart, .musicPlayer, .weatherDashboard, .deeplinks]
     }
 }
 

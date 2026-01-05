@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 /// Protocol for tab navigation.
 /// Implemented by TabBar, used by deeplink handlers to switch tabs.
@@ -22,4 +23,9 @@ public protocol NavigationService: AnyObject {
     /// Returns the currently selected tab identifier.
     @MainActor
     var currentTab: String? { get }
+
+    /// Returns the view controller for the current tab.
+    /// Useful for presenting sheets or other modal content.
+    @MainActor
+    var currentViewController: UIViewController? { get }
 }

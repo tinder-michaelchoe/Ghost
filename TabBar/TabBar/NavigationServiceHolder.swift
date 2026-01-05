@@ -48,4 +48,19 @@ public final class NavigationServiceHolder: NavigationService {
         guard index < Self.tabIdentifiers.count else { return nil }
         return Self.tabIdentifiers[index]
     }
+
+    @MainActor
+    public var currentViewController: UIViewController? {
+        guard let tabBar = tabBarController,
+              let viewControllers = tabBar.viewControllers,
+              tabBar.selectedIndex < viewControllers.count else {
+            return nil
+        }
+        let selectedVC = viewControllers[tabBar.selectedIndex]
+        // If it's a navigation controller, return the top view controller
+        if let navController = selectedVC as? UINavigationController {
+            return navController.topViewController ?? navController
+        }
+        return selectedVC
+    }
 }
