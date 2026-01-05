@@ -13,12 +13,11 @@ import UIKit
 /// Methods are MainActor-isolated since they interact with UI.
 public protocol NavigationService: AnyObject {
 
-    /// Switches to the specified tab.
+    /// Switches to the specified tab and waits for the transition to complete.
     /// - Parameter identifier: The tab identifier (e.g., "dashboard", "settings")
-    /// - Returns: true if the tab was found and switched to
+    /// - Returns: The view controller for the tab, or nil if tab not found
     @MainActor
-    @discardableResult
-    func switchToTab(_ identifier: String) -> Bool
+    func switchToTab(_ identifier: String) async -> UIViewController?
 
     /// Returns the currently selected tab identifier.
     @MainActor

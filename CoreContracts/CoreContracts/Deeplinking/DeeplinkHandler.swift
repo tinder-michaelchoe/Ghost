@@ -24,5 +24,5 @@ public protocol DeeplinkHandler: AnyObject {
     /// - Parameter deeplink: The parsed deep link
     /// - Returns: true if the deep link was handled, false otherwise
     @MainActor
-    func handle(_ deeplink: Deeplink) -> Bool
+    func handle(_ deeplink: Deeplink) async -> Bool
 }

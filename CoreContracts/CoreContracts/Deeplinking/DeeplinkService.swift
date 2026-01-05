@@ -26,7 +26,7 @@ public protocol DeeplinkService: AnyObject {
     /// - Parameter deeplink: The parsed deep link
     /// - Returns: true if a handler processed the link, false otherwise
     @MainActor
-    func handle(_ deeplink: Deeplink) -> Bool
+    func handle(_ deeplink: Deeplink) async -> Bool
 
     /// Checks if any registered handler can handle the given URL.
     /// - Parameter url: The URL to check

@@ -35,7 +35,7 @@ public final class WeatherDeeplinkHandler: DeeplinkHandler {
     // MARK: - DeeplinkHandler
 
     @MainActor
-    public func handle(_ deeplink: Deeplink) -> Bool {
+    public func handle(_ deeplink: Deeplink) async -> Bool {
         // Expecting: ghost://dashboard/weather/city?name=Seattle
         guard deeplink.action == "city" else {
             print("[WeatherDeeplink] Unknown action: \(deeplink.action ?? "nil")")

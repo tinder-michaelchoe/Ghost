@@ -30,7 +30,7 @@ public final class DeeplinkExampleHandler: DeeplinkHandler {
     // MARK: - DeeplinkHandler
 
     @MainActor
-    public func handle(_ deeplink: Deeplink) -> Bool {
+    public func handle(_ deeplink: Deeplink) async -> Bool {
         print("[ExamplesDeeplink] Handling deeplink: \(deeplink)")
 
         guard deeplink.action == "sheet" else {
@@ -43,32 +43,21 @@ public final class DeeplinkExampleHandler: DeeplinkHandler {
 
         print("[ExamplesDeeplink] Presenting sheet with title: \(title)")
 
-        // Present sheet directly on the current view controller
-        presentSheet(title: title, message: message)
-
-        return true
-    }
-
-    // MARK: - Private
-
-    @MainActor
-    private func presentSheet(title: String, message: String) {
-        // Small delay to ensure tab switch animation completes
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { [weak self] in
-            guard let viewController = self?.navigationService?.currentViewController else {
-                print("[ExamplesDeeplink] No current view controller to present on")
-                return
-            }
-
-            let sheetVC = DeeplinkSheetViewController(title: title, message: message)
-
-            if let sheet = sheetVC.sheetPresentationController {
-                sheet.detents = [.medium(), .large()]
-                sheet.prefersGrabberVisible = true
-                sheet.preferredCornerRadius = 20
-            }
-
-            viewController.present(sheetVC, animated: true)
+        // Get the current view controller (tab switch already completed by router)
+        guard let viewController = navigationService?.currentViewController else {
+            print("[ExamplesDeeplink] No current view controller to present on")
+            return false
         }
+
+        let sheetVC = DeeplinkSheetViewController(title: title, message: message)
+
+        if let sheet = sheetVC.sheetPresentationController {
+            sheet.detents = [.medium(), .large()]
+            sheet.prefersGrabberVisible = true
+            sheet.preferredCornerRadius = 20
+        }
+
+        viewController.present(sheetVC, animated: true)
+        return true
     }
 }

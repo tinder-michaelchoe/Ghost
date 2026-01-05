@@ -46,27 +46,31 @@ public final class DeeplinkSceneDelegateListener: SceneDelegateListener {
     ) -> ServiceManagerProtocol? {
         // Handle URLs from cold launch
         // Note: This is called AFTER initializeApp and configure, so services are ready
-        handleURLContexts(connectionOptions.urlContexts)
+        Task {
+            await handleURLContexts(connectionOptions.urlContexts)
+        }
         return nil
     }
 
     @MainActor
     public func scene(_ scene: UIScene, openURLContexts urlContexts: Set<UIOpenURLContext>) {
         // Handle URLs when app is already running
-        handleURLContexts(urlContexts)
+        Task {
+            await handleURLContexts(urlContexts)
+        }
     }
 
     // MARK: - Private
 
     @MainActor
-    private func handleURLContexts(_ urlContexts: Set<UIOpenURLContext>) {
+    private func handleURLContexts(_ urlContexts: Set<UIOpenURLContext>) async {
         for context in urlContexts {
-            handleURL(context.url)
+            await handleURL(context.url)
         }
     }
 
     @MainActor
-    private func handleURL(_ url: URL) {
+    private func handleURL(_ url: URL) async {
         print("[DeeplinkListener] Received URL: \(url)")
 
         guard let deeplink = Deeplink(url: url) else {
@@ -79,7 +83,7 @@ public final class DeeplinkSceneDelegateListener: SceneDelegateListener {
             return
         }
 
-        let handled = service.handle(deeplink)
+        let handled = await service.handle(deeplink)
         print("[DeeplinkListener] Deeplink handled: \(handled)")
     }
 }

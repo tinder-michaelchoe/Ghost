@@ -29,16 +29,28 @@ public final class NavigationServiceHolder: NavigationService {
     }
 
     @MainActor
-    @discardableResult
-    public func switchToTab(_ identifier: String) -> Bool {
+    public func switchToTab(_ identifier: String) async -> UIViewController? {
         guard let index = Self.tabIdentifiers.firstIndex(of: identifier),
               let tabBar = tabBarController,
               let viewControllers = tabBar.viewControllers,
               index < viewControllers.count else {
-            return false
+            return nil
         }
+
+        let targetVC = viewControllers[index]
         tabBar.selectedIndex = index
-        return true
+
+        // If there's a transition coordinator, wait for it to complete
+        if let coordinator = targetVC.transitionCoordinator {
+            await withCheckedContinuation { continuation in
+                coordinator.animate(alongsideTransition: nil) { _ in
+                    continuation.resume()
+                }
+            }
+        }
+
+        // Return the current view controller (unwrapping navigation controller if needed)
+        return currentViewController
     }
 
     @MainActor

@@ -54,7 +54,7 @@ public final class DeeplinkRouter: DeeplinkService {
     }
 
     @MainActor
-    public func handle(_ deeplink: Deeplink) -> Bool {
+    public func handle(_ deeplink: Deeplink) async -> Bool {
         // Validate scheme
         guard deeplink.scheme == scheme else {
             print("[DeeplinkRouter] Ignoring deeplink with scheme: \(deeplink.scheme)")
@@ -63,10 +63,11 @@ public final class DeeplinkRouter: DeeplinkService {
 
         var handled = false
 
-        // Step 1: Switch to tab if specified
+        // Step 1: Switch to tab if specified (async - waits for transition)
         if let tab = deeplink.tab {
             if let navService = navigationService {
-                let switched = navService.switchToTab(tab)
+                let viewController = await navService.switchToTab(tab)
+                let switched = viewController != nil
                 print("[DeeplinkRouter] Switched to tab '\(tab)': \(switched)")
                 handled = switched
             } else {
@@ -78,7 +79,7 @@ public final class DeeplinkRouter: DeeplinkService {
         if let feature = deeplink.feature {
             if let handler = handlers[feature] {
                 print("[DeeplinkRouter] Routing to handler for feature: \(feature)")
-                let featureHandled = handler.handle(deeplink)
+                let featureHandled = await handler.handle(deeplink)
                 handled = handled || featureHandled
             } else {
                 print("[DeeplinkRouter] No handler for feature: \(feature) (tab switch still applied)")
