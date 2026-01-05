@@ -20,7 +20,9 @@ public struct ImageNodeSwiftUIRenderer: SwiftUINodeRendering {
         guard case .image(let imageNode) = node else {
             return AnyView(EmptyView())
         }
-        return AnyView(ImageNodeView(node: imageNode))
+        return AnyView(
+            ImageNodeView(node: imageNode, actionContext: context.actionContext)
+        )
     }
 }
 
@@ -28,8 +30,21 @@ public struct ImageNodeSwiftUIRenderer: SwiftUINodeRendering {
 
 struct ImageNodeView: View {
     let node: ImageNode
+    let actionContext: ActionContext
 
     var body: some View {
+        if let onTap = node.onTap {
+            Button(action: { handleTap(onTap) }) {
+                imageContent
+            }
+            .buttonStyle(.plain)
+        } else {
+            imageContent
+        }
+    }
+
+    @ViewBuilder
+    private var imageContent: some View {
         Group {
             switch node.source {
             case .system(let name):
@@ -56,6 +71,17 @@ struct ImageNodeView: View {
         .frame(width: node.style.width, height: node.style.height)
         .frame(maxWidth: node.style.width == nil ? .infinity : nil)
         .clipShape(RoundedRectangle(cornerRadius: node.style.cornerRadius ?? 0))
+    }
+
+    private func handleTap(_ binding: Document.Component.ActionBinding) {
+        Task { @MainActor in
+            switch binding {
+            case .reference(let actionId):
+                await actionContext.executeAction(id: actionId)
+            case .inline(let action):
+                await actionContext.executeAction(action)
+            }
+        }
     }
 }
 

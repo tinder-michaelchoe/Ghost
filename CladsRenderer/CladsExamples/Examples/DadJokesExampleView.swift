@@ -244,7 +244,7 @@ let dadJokesJSON = """
                 "text": "Reveal",
                 "styleId": "revealButton",
                 "fillWidth": true,
-                "actions": { "onTap": "revealPunchline" }
+                "actions": { "onTap": { "type": "revealPunchline" } }
               },
               {
                 "type": "button",

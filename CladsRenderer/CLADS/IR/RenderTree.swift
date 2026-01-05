@@ -407,11 +407,18 @@ public struct ImageNode {
     public let id: String?
     public let source: Source
     public let style: IR.Style
+    public let onTap: Document.Component.ActionBinding?
 
-    public init(id: String? = nil, source: Source, style: IR.Style = IR.Style()) {
+    public init(
+        id: String? = nil,
+        source: Source,
+        style: IR.Style = IR.Style(),
+        onTap: Document.Component.ActionBinding? = nil
+    ) {
         self.id = id
         self.source = source
         self.style = style
+        self.onTap = onTap
     }
 }
 

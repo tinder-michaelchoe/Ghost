@@ -42,7 +42,8 @@ public struct ImageComponentResolver: ComponentResolving {
         let renderNode = RenderNode.image(ImageNode(
             id: component.id,
             source: source,
-            style: style
+            style: style,
+            onTap: component.actions?.onTap
         ))
 
         return ComponentResolutionResult(renderNode: renderNode, viewNode: viewNode)

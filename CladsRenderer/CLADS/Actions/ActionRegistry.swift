@@ -5,27 +5,6 @@
 
 import Foundation
 
-// MARK: - Closure Action Handler
-
-/// An ActionHandler that wraps a closure.
-/// This allows closures to be stored uniformly with other ActionHandler types.
-public struct ClosureActionHandler: ActionHandler {
-    public let actionType: String
-    private let closure: ActionClosure
-
-    public static var actionType: String { "" } // Not used, instance property is used instead
-
-    public init(actionType: String, closure: @escaping ActionClosure) {
-        self.actionType = actionType
-        self.closure = closure
-    }
-
-    @MainActor
-    public func execute(parameters: ActionParameters, context: ActionExecutionContext) async {
-        await closure(parameters, context)
-    }
-}
-
 // MARK: - Action Registry
 
 /// Registry for action handlers
@@ -89,6 +68,25 @@ public final class ActionRegistry: @unchecked Sendable {
             handlers[actionType] != nil
         }
     }
-
 }
 
+// MARK: - Closure Action Handler
+
+/// An ActionHandler that wraps a closure.
+/// This allows closures to be stored uniformly with other ActionHandler types.
+public struct ClosureActionHandler: ActionHandler {
+    public let actionType: String
+    private let closure: ActionClosure
+
+    public static var actionType: String { "" } // Not used, instance property is used instead
+
+    public init(actionType: String, closure: @escaping ActionClosure) {
+        self.actionType = actionType
+        self.closure = closure
+    }
+
+    @MainActor
+    public func execute(parameters: ActionParameters, context: ActionExecutionContext) async {
+        await closure(parameters, context)
+    }
+}

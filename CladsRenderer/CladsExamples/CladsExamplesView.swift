@@ -76,17 +76,6 @@ struct CladsExamplesView: View {
                     }
                 }
 
-                Section("Advanced Examples") {
-                    ForEach(Example.advancedExamples) { example in
-                        ExampleRow(
-                            example: example,
-                            selectedExample: $selectedExample,
-                            fullScreenExample: $fullScreenExample,
-                            jsonViewerExample: $jsonViewerExample
-                        )
-                    }
-                }
-
                 Section("Complex Examples") {
                     ForEach(Example.complexExamples) { example in
                         ExampleRow(
@@ -104,12 +93,8 @@ struct CladsExamplesView: View {
                     switch example {
                     case .dadJokes:
                         DadJokesExampleView()
-                    case .tacoTruck:
-                        TacoTruckExampleView()
-                    case .movieNight:
-                        MovieNightExampleView()
-                    case .birds:
-                        BirdsExampleView()
+                    case .taskManager:
+                        TaskManagerExampleView()
                     case .weatherDashboard:
                         WeatherDashboardExampleView(weatherService: weatherService)
                     default:
@@ -122,12 +107,8 @@ struct CladsExamplesView: View {
                 switch example {
                 case .dadJokes:
                     DadJokesExampleView()
-                case .tacoTruck:
-                    TacoTruckExampleView()
-                case .movieNight:
-                    MovieNightExampleView()
-                case .birds:
-                    BirdsExampleView()
+                case .taskManager:
+                    TaskManagerExampleView()
                 default:
                     ExampleSheetView(example: example)
                 }
@@ -318,16 +299,10 @@ enum Example: String, CaseIterable, Identifiable {
     case styleInheritance
     case conditionalStyles
 
-    // Advanced Examples
-    case dadJokes
-    case tacoTruck
-    case movieNight
-    case birds
-
     // Complex Examples (Combining CLADS Elements)
+    case dadJokes
     case taskManager
     case shoppingCart
-    case profileEditor
     case musicPlayer
     case weatherDashboard
 
@@ -367,15 +342,10 @@ enum Example: String, CaseIterable, Identifiable {
         case .basicStyles: return "Basic Styles"
         case .styleInheritance: return "Style Inheritance"
         case .conditionalStyles: return "Conditional Styles"
-        // Advanced
-        case .dadJokes: return "Dad Jokes"
-        case .tacoTruck: return "Taco Truck"
-        case .movieNight: return "Movie Night"
-        case .birds: return "Birds"
         // Complex
+        case .dadJokes: return "Dad Jokes"
         case .taskManager: return "Task Manager"
         case .shoppingCart: return "Shopping Cart"
-        case .profileEditor: return "Profile Editor"
         case .musicPlayer: return "Music Player"
         case .weatherDashboard: return "Weather Dashboard"
         }
@@ -415,15 +385,10 @@ enum Example: String, CaseIterable, Identifiable {
         case .basicStyles: return "Font, color, spacing"
         case .styleInheritance: return "Extending base styles"
         case .conditionalStyles: return "State-based styling"
-        // Advanced
-        case .dadJokes: return "Custom actions with REST API"
-        case .tacoTruck: return "Typed state, callbacks, binding API"
-        case .movieNight: return "UIKit renderer with delegate"
-        case .birds: return "Horizontal cards with API"
         // Complex
-        case .taskManager: return "Full todo app with filters & priorities"
+        case .dadJokes: return "Custom actions with REST API"
+        case .taskManager: return "Dynamic task list with state"
         case .shoppingCart: return "E-commerce cart with promo codes"
-        case .profileEditor: return "Form editing with live preview"
         case .musicPlayer: return "Player controls, queue & progress"
         case .weatherDashboard: return "Forecast with gradient backgrounds"
         }
@@ -463,15 +428,10 @@ enum Example: String, CaseIterable, Identifiable {
         case .basicStyles: return "paintpalette"
         case .styleInheritance: return "arrow.up.right.circle"
         case .conditionalStyles: return "questionmark.diamond"
-        // Advanced
-        case .dadJokes: return "face.smiling"
-        case .tacoTruck: return "fork.knife"
-        case .movieNight: return "film"
-        case .birds: return "bird"
         // Complex
+        case .dadJokes: return "face.smiling"
         case .taskManager: return "checklist"
         case .shoppingCart: return "cart.fill"
-        case .profileEditor: return "person.crop.circle"
         case .musicPlayer: return "music.note.list"
         case .weatherDashboard: return "cloud.sun.fill"
         }
@@ -511,15 +471,10 @@ enum Example: String, CaseIterable, Identifiable {
         case .basicStyles: return .pink
         case .styleInheritance: return .pink
         case .conditionalStyles: return .pink
-        // Advanced - Various
-        case .dadJokes: return .yellow
-        case .tacoTruck: return .orange
-        case .movieNight: return .red
-        case .birds: return .cyan
         // Complex - Teal/Indigo
+        case .dadJokes: return .yellow
         case .taskManager: return .indigo
         case .shoppingCart: return .teal
-        case .profileEditor: return .indigo
         case .musicPlayer: return .teal
         case .weatherDashboard: return .indigo
         }
@@ -559,15 +514,10 @@ enum Example: String, CaseIterable, Identifiable {
         case .basicStyles: return basicStylesJSON
         case .styleInheritance: return styleInheritanceJSON
         case .conditionalStyles: return conditionalStylesJSON
-        // Advanced
-        case .dadJokes: return nil
-        case .tacoTruck: return nil
-        case .movieNight: return nil
-        case .birds: return nil
         // Complex
+        case .dadJokes: return dadJokesJSON
         case .taskManager: return taskManagerJSON
         case .shoppingCart: return shoppingCartJSON
-        case .profileEditor: return profileEditorJSON
         case .musicPlayer: return musicPlayerJSON
         case .weatherDashboard: return weatherDashboardJSON
         }
@@ -588,15 +538,10 @@ enum Example: String, CaseIterable, Identifiable {
             return .detent(.medium)
         case .basicStyles, .styleInheritance, .conditionalStyles:
             return .detent(.medium)
-        // Advanced examples
-        case .dadJokes: return .detent(.medium)
-        case .tacoTruck: return .fullSize
-        case .movieNight: return .fullScreen
-        case .birds: return .fullScreen
         // Complex examples - full size sheets
+        case .dadJokes: return .detent(.medium)
         case .taskManager: return .fullSize
         case .shoppingCart: return .fullSize
-        case .profileEditor: return .fullSize
         case .musicPlayer: return .fullSize
         case .weatherDashboard: return .fullSize
         }
@@ -624,12 +569,8 @@ enum Example: String, CaseIterable, Identifiable {
         [.basicStyles, .styleInheritance, .conditionalStyles]
     }
 
-    static var advancedExamples: [Example] {
-        [.dadJokes, .tacoTruck, .movieNight, .birds]
-    }
-
     static var complexExamples: [Example] {
-        [.taskManager, .shoppingCart, .profileEditor, .musicPlayer, .weatherDashboard]
+        [.dadJokes, .taskManager, .shoppingCart, .musicPlayer, .weatherDashboard]
     }
 }
 
