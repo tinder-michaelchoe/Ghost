@@ -12,9 +12,23 @@ import SwiftUI
 public struct SectionLayoutResolver: SectionLayoutResolving {
 
     private let componentRegistry: ComponentResolverRegistry
+    private let layoutConfigRegistry: SectionLayoutConfigResolverRegistry?
 
     public init(componentRegistry: ComponentResolverRegistry) {
         self.componentRegistry = componentRegistry
+        self.layoutConfigRegistry = nil
+    }
+    
+    /// Initialize with registries for extensible resolution
+    /// - Parameters:
+    ///   - componentRegistry: Registry for component resolution
+    ///   - layoutConfigRegistry: Optional registry for layout config resolution. If nil, falls back to built-in switch.
+    public init(
+        componentRegistry: ComponentResolverRegistry,
+        layoutConfigRegistry: SectionLayoutConfigResolverRegistry?
+    ) {
+        self.componentRegistry = componentRegistry
+        self.layoutConfigRegistry = layoutConfigRegistry
     }
 
     @MainActor
@@ -53,8 +67,8 @@ public struct SectionLayoutResolver: SectionLayoutResolving {
 
     @MainActor
     private func resolveSection(_ section: Document.SectionDefinition, context: ResolutionContext) throws -> IR.Section {
-        let layoutType = resolveSectionType(section.layout)
-        let config = resolveSectionConfig(section.layout)
+        // Try registry-based resolution first, then fall back to built-in
+        let (layoutType, config) = resolveLayoutConfig(section.layout)
 
         // Resolve header and footer if present
         let header: RenderNode? = try section.header.map { try resolveNode($0, context: context).renderNode }
@@ -86,7 +100,23 @@ public struct SectionLayoutResolver: SectionLayoutResolving {
         )
     }
 
-    // MARK: - Section Type Resolution
+    // MARK: - Section Layout Config Resolution
+    
+    /// Resolve layout configuration using registry (if available) or built-in fallback.
+    private func resolveLayoutConfig(_ layout: Document.SectionLayoutConfig) -> (IR.SectionType, IR.SectionConfig) {
+        // Try registry-based resolution first
+        if let registry = layoutConfigRegistry,
+           let result = registry.resolve(config: layout) {
+            return (result.sectionType, result.sectionConfig)
+        }
+        
+        // Fall back to built-in resolution
+        let sectionType = resolveSectionType(layout)
+        let sectionConfig = resolveSectionConfig(layout)
+        return (sectionType, sectionConfig)
+    }
+
+    // MARK: - Built-in Section Type Resolution (Fallback)
 
     private func resolveSectionType(_ layout: Document.SectionLayoutConfig) -> IR.SectionType {
         switch layout.type {

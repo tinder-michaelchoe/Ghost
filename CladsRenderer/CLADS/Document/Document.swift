@@ -74,7 +74,7 @@ extension Document {
     ///   "user": { "name": "Jane", "age": 25 }
     /// }
     /// ```
-    public enum StateValue: Codable, Equatable {
+    public enum StateValue: Codable, Equatable, Sendable {
         case intValue(Int)
         case doubleValue(Double)
         case stringValue(String)

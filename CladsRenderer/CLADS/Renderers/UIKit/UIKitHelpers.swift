@@ -155,16 +155,16 @@ public final class GradientView: UIView {
         self.colorScheme = colorScheme
         super.init(frame: .zero)
         setupGradient()
+        registerForUserInterfaceStyleChanges()
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    override public func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        super.traitCollectionDidChange(previousTraitCollection)
-        if traitCollection.userInterfaceStyle != previousTraitCollection?.userInterfaceStyle {
-            updateColors()
+    private func registerForUserInterfaceStyleChanges() {
+        registerForTraitChanges([UITraitUserInterfaceStyle.self]) { [weak self] (_: GradientView, _: UITraitCollection) in
+            self?.updateColors()
         }
     }
 

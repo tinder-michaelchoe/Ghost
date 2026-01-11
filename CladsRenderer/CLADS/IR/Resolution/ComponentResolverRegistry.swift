@@ -10,12 +10,19 @@ import Foundation
 /// Registry that maps component kinds to their resolvers.
 ///
 /// This allows new component types to be added without modifying the core Resolver.
+/// Also supports custom components registered via `CustomComponentRegistry`.
 ///
 /// Usage:
 /// ```swift
 /// let registry = ComponentResolverRegistry()
 /// registry.register(TextComponentResolver())
 /// // ... register other resolvers
+///
+/// // For custom components:
+/// let customRegistry = CustomComponentRegistry()
+/// customRegistry.register(MyCustomComponent.self)
+/// registry.setCustomComponentRegistry(customRegistry)
+///
 /// let result = try registry.resolve(component, context: context)
 /// ```
 public final class ComponentResolverRegistry {
@@ -23,10 +30,20 @@ public final class ComponentResolverRegistry {
     // MARK: - Storage
 
     private var resolvers: [Document.ComponentKind: any ComponentResolving] = [:]
+    private var customComponentRegistry: CustomComponentRegistry?
+    private var customComponentResolver: CustomComponentResolver?
 
     // MARK: - Initialization
 
     public init() {}
+
+    // MARK: - Custom Component Support
+
+    /// Set the custom component registry for resolving custom components
+    public func setCustomComponentRegistry(_ registry: CustomComponentRegistry) {
+        self.customComponentRegistry = registry
+        self.customComponentResolver = CustomComponentResolver(registry: registry)
+    }
 
     // MARK: - Registration
 
@@ -55,17 +72,31 @@ public final class ComponentResolverRegistry {
         _ component: Document.Component,
         context: ResolutionContext
     ) throws -> ComponentResolutionResult {
-        guard let resolver = resolvers[component.type] else {
-            throw ComponentResolutionError.unknownKind(component.type)
+        // Try built-in resolvers first
+        if let resolver = resolvers[component.type] {
+            return try resolver.resolve(component, context: context)
         }
-        return try resolver.resolve(component, context: context)
+
+        // Fall back to custom component resolver
+        if let customResolver = customComponentResolver,
+           customResolver.canResolve(component.type) {
+            return try customResolver.resolve(component, context: context)
+        }
+
+        throw ComponentResolutionError.unknownKind(component.type)
     }
 
     /// Checks if a resolver is registered for a component kind
     /// - Parameter kind: The component kind to check
-    /// - Returns: true if a resolver is registered
+    /// - Returns: true if a resolver is registered (built-in or custom)
     public func hasResolver(for kind: Document.ComponentKind) -> Bool {
-        resolvers[kind] != nil
+        if resolvers[kind] != nil {
+            return true
+        }
+        if let customResolver = customComponentResolver {
+            return customResolver.canResolve(kind)
+        }
+        return false
     }
 
     /// Returns all registered component kinds

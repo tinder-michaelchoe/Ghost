@@ -135,6 +135,12 @@ public struct DebugRenderer: Renderer {
         case .spacer:
             return "\(prefix)spacer"
 
+        case .divider(let divider):
+            var props: [String] = []
+            if let id = divider.id { props.append("id: \(id)") }
+            let propsStr = props.isEmpty ? "" : " (\(props.joined(separator: ", ")))"
+            return "\(prefix)divider\(propsStr)"
+
         case .custom(let kind, _):
             return "\(prefix)custom (kind: \(kind.rawValue))"
         }

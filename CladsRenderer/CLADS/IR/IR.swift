@@ -234,6 +234,7 @@ extension IR {
 
 extension IR {
     /// Resolved dimension value - absolute or fractional
+    @frozen
     public enum DimensionValue: Equatable {
         case absolute(CGFloat)
         case fractional(CGFloat)

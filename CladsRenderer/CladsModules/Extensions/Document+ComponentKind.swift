@@ -30,4 +30,7 @@ extension Document.ComponentKind {
 
     /// Value slider component
     public static let slider = Document.ComponentKind(rawValue: "slider")
+
+    /// Divider/separator component
+    public static let divider = Document.ComponentKind(rawValue: "divider")
 }

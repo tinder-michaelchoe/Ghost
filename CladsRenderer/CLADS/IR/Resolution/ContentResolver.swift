@@ -57,7 +57,8 @@ public struct ContentResolver {
         }
 
         // Check for inline data reference (uses DataReference type)
-        if let data = component.data {
+        // Built-in components use "value" key for their content
+        if let data = component.data?["value"] {
             return resolveFromDataReference(data, context: context, viewNode: viewNode)
         }
 
@@ -78,6 +79,11 @@ public struct ContentResolver {
 
         case .binding:
             if let path = dataSource.path {
+                // Check iteration variables first, then state store
+                if let iterValue = context.iterationVariables[path] {
+                    let content = stringValue(from: iterValue)
+                    return ContentResolutionResult(content: content, bindingPath: path)
+                }
                 context.tracker?.recordRead(path)
                 let content = context.stateStore.get(path) as? String ?? ""
                 return ContentResolutionResult(content: content, bindingPath: path)
@@ -85,9 +91,13 @@ public struct ContentResolver {
             if let template = dataSource.template {
                 let paths = extractTemplatePaths(template)
                 for path in paths {
-                    context.tracker?.recordRead(path)
+                    // Only track paths that aren't iteration variables
+                    if context.iterationVariables[path] == nil {
+                        context.tracker?.recordRead(path)
+                    }
                 }
-                let content = context.stateStore.interpolate(template)
+                // Use context.interpolate which handles iteration variables
+                let content = context.interpolate(template)
                 return ContentResolutionResult(content: content, bindingTemplate: template)
             }
         }
@@ -106,6 +116,11 @@ public struct ContentResolver {
 
         case .binding:
             if let path = data.path {
+                // Check iteration variables first, then state store
+                if let iterValue = context.iterationVariables[path] {
+                    let content = stringValue(from: iterValue)
+                    return ContentResolutionResult(content: content, bindingPath: path)
+                }
                 context.tracker?.recordRead(path)
                 let content = context.stateStore.get(path) as? String ?? ""
                 return ContentResolutionResult(content: content, bindingPath: path)
@@ -113,9 +128,13 @@ public struct ContentResolver {
             if let template = data.template {
                 let paths = extractTemplatePaths(template)
                 for path in paths {
-                    context.tracker?.recordRead(path)
+                    // Only track paths that aren't iteration variables
+                    if context.iterationVariables[path] == nil {
+                        context.tracker?.recordRead(path)
+                    }
                 }
-                let content = context.stateStore.interpolate(template)
+                // Use context.interpolate which handles iteration variables
+                let content = context.interpolate(template)
                 return ContentResolutionResult(content: content, bindingTemplate: template)
             }
 
@@ -143,5 +162,17 @@ public struct ContentResolver {
             }
         }
         return paths
+    }
+
+    /// Converts a value to string representation
+    private static func stringValue(from value: Any?) -> String {
+        switch value {
+        case let int as Int: return String(int)
+        case let double as Double: return String(double)
+        case let string as String: return string
+        case let bool as Bool: return String(bool)
+        case nil: return ""
+        default: return String(describing: value)
+        }
     }
 }

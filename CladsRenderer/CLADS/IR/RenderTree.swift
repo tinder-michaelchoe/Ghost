@@ -108,6 +108,7 @@ extension RenderNodeKind {
     public static let image = RenderNodeKind(rawValue: "image")
     public static let gradient = RenderNodeKind(rawValue: "gradient")
     public static let spacer = RenderNodeKind(rawValue: "spacer")
+    public static let divider = RenderNodeKind(rawValue: "divider")
     public static let custom = RenderNodeKind(rawValue: "custom")
 }
 
@@ -146,6 +147,7 @@ public enum RenderNode {
     case image(ImageNode)
     case gradient(GradientNode)
     case spacer
+    case divider(DividerNode)
     /// Custom render node for extensible components
     case custom(kind: RenderNodeKind, node: any CustomRenderNode)
 
@@ -162,6 +164,7 @@ public enum RenderNode {
         case .image: return .image
         case .gradient: return .gradient
         case .spacer: return .spacer
+        case .divider: return .divider
         case .custom(let kind, _): return kind
         }
     }
@@ -490,6 +493,21 @@ public enum GradientColor {
     }
 }
 
+// MARK: - Divider Node
+
+/// A divider/separator component
+public struct DividerNode {
+    public let id: String?
+    public let style: IR.Style
+
+    public init(
+        id: String? = nil,
+        style: IR.Style = IR.Style()
+    ) {
+        self.id = id
+        self.style = style
+    }
+}
 
 // MARK: - Action Definition
 

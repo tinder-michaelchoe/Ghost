@@ -9,7 +9,7 @@ import Foundation
 
 extension Document {
     /// Presentation style for navigation
-    public enum NavigationPresentation: String, Codable {
+    public enum NavigationPresentation: String, Codable, Sendable {
         case push
         case present
         case fullScreen
@@ -20,7 +20,7 @@ extension Document {
 
 extension Document {
     /// Button style for alerts
-    public enum AlertButtonStyle: String, Codable {
+    public enum AlertButtonStyle: String, Codable, Sendable {
         case `default`
         case cancel
         case destructive

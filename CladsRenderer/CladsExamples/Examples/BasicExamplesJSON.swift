@@ -9,7 +9,7 @@ import Foundation
 
 // MARK: - Component Showcase
 
-let componentShowcaseJSON = """
+public let componentShowcaseJSON = """
 {
   "id": "component-showcase",
   "version": "1.0",
@@ -426,7 +426,7 @@ let componentShowcaseJSON = """
 
 // MARK: - Basic Example
 
-let basicExampleJSON = """
+public let basicExampleJSON = """
 {
   "id": "onboarding-prompt",
   "version": "1.0",
@@ -562,7 +562,7 @@ let basicExampleJSON = """
 
 // MARK: - Section Layout
 
-let sectionLayoutJSON = """
+public let sectionLayoutJSON = """
 {
   "id": "section-layout-demo",
   "version": "1.0",
@@ -782,7 +782,7 @@ let sectionLayoutJSON = """
 
 // MARK: - Interests (Flow Layout with Array State)
 
-let interestsJSON = """
+public let interestsJSON = """
 {
   "id": "interests-picker",
   "version": "1.0",
@@ -853,7 +853,7 @@ let interestsJSON = """
               { "type": "label", "text": "Select topics you'd like to follow", "styleId": "subtitleStyle" },
               {
                 "type": "label",
-                "data": { "type": "binding", "template": "${selectedInterests.count} selected" },
+                "data": { "value": { "type": "binding", "template": "${selectedInterests.count} selected" } },
                 "styleId": "countStyle"
               }
             ]

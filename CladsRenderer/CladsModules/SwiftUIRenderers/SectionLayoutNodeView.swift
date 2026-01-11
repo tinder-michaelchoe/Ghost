@@ -12,8 +12,18 @@ import SwiftUI
 
 public struct SectionLayoutNodeSwiftUIRenderer: SwiftUINodeRendering {
     public static let nodeKind = RenderNodeKind.sectionLayout
+    
+    private let sectionLayoutRegistry: SwiftUISectionLayoutRendererRegistry?
 
-    public init() {}
+    public init() {
+        self.sectionLayoutRegistry = nil
+    }
+    
+    /// Initialize with a custom section layout renderer registry.
+    /// - Parameter sectionLayoutRegistry: Registry for section layout renderers. If nil, uses built-in switch.
+    public init(sectionLayoutRegistry: SwiftUISectionLayoutRendererRegistry?) {
+        self.sectionLayoutRegistry = sectionLayoutRegistry
+    }
 
     @MainActor
     public func render(_ node: RenderNode, context: SwiftUIRenderContext) -> AnyView {
@@ -21,7 +31,7 @@ public struct SectionLayoutNodeSwiftUIRenderer: SwiftUINodeRendering {
             return AnyView(EmptyView())
         }
         return AnyView(
-            SectionLayoutView(node: sectionLayoutNode, context: context)
+            SectionLayoutView(node: sectionLayoutNode, context: context, sectionLayoutRegistry: sectionLayoutRegistry)
                 .environmentObject(context.tree.stateStore)
                 .environmentObject(context.actionContext)
         )
@@ -33,12 +43,13 @@ public struct SectionLayoutNodeSwiftUIRenderer: SwiftUINodeRendering {
 struct SectionLayoutView: View {
     let node: SectionLayoutNode
     let context: SwiftUIRenderContext
+    let sectionLayoutRegistry: SwiftUISectionLayoutRendererRegistry?
 
     var body: some View {
         ScrollView {
             LazyVStack(spacing: node.sectionSpacing) {
                 ForEach(Array(node.sections.enumerated()), id: \.offset) { _, section in
-                    SectionView(section: section, context: context)
+                    SectionView(section: section, context: context, sectionLayoutRegistry: sectionLayoutRegistry)
                 }
             }
         }
@@ -50,6 +61,7 @@ struct SectionLayoutView: View {
 struct SectionView: View {
     let section: IR.Section
     let context: SwiftUIRenderContext
+    let sectionLayoutRegistry: SwiftUISectionLayoutRendererRegistry?
 
     var body: some View {
         VStack(alignment: section.config.alignment, spacing: 0) {
@@ -85,6 +97,23 @@ struct SectionView: View {
 
     @ViewBuilder
     private var sectionContent: some View {
+        // Try registry-based rendering first
+        if let registry = sectionLayoutRegistry {
+            let sectionContext = SwiftUISectionRenderContext(parentContext: context)
+            if let renderedView = registry.render(section: section, context: sectionContext) {
+                renderedView
+            } else {
+                // Fall back to built-in rendering if no renderer registered
+                builtInSectionContent
+            }
+        } else {
+            // No registry, use built-in rendering
+            builtInSectionContent
+        }
+    }
+    
+    @ViewBuilder
+    private var builtInSectionContent: some View {
         switch section.layoutType {
         case .horizontal:
             horizontalSection
@@ -111,7 +140,7 @@ struct SectionView: View {
             }
             .scrollTargetLayout()
         }
-        .applySnapBehavior(section.config.snapBehavior)
+        .builtInApplySnapBehavior(section.config.snapBehavior)
     }
 
     @ViewBuilder
@@ -149,7 +178,7 @@ struct SectionView: View {
 
     @ViewBuilder
     private var flowSection: some View {
-        FlowLayout(horizontalSpacing: section.config.itemSpacing, verticalSpacing: section.config.lineSpacing) {
+        BuiltInFlowLayout(horizontalSpacing: section.config.itemSpacing, verticalSpacing: section.config.lineSpacing) {
             ForEach(Array(section.children.enumerated()), id: \.offset) { _, child in
                 renderNode(child)
             }
@@ -157,10 +186,11 @@ struct SectionView: View {
     }
 }
 
-// MARK: - Flow Layout
+// MARK: - Built-in Flow Layout (Fallback)
 
-/// A layout that arranges views in a flowing manner, wrapping to new lines as needed
-struct FlowLayout: Layout {
+/// A layout that arranges views in a flowing manner, wrapping to new lines as needed.
+/// Used by built-in fallback rendering.
+private struct BuiltInFlowLayout: Layout {
     var horizontalSpacing: CGFloat
     var verticalSpacing: CGFloat
 
@@ -230,31 +260,32 @@ struct FlowLayout: Layout {
     }
 }
 
-// MARK: - Horizontal Section Item View
+// MARK: - Horizontal Section Item View (Built-in fallback)
 
-/// A view that wraps section items with optional dimension constraints
-struct HorizontalSectionItemView: View {
+/// A view that wraps section items with optional dimension constraints.
+/// Used by the built-in fallback rendering. The registry-based renderers have their own implementations.
+private struct HorizontalSectionItemView: View {
     let child: RenderNode
     let context: SwiftUIRenderContext
     let dimensions: IR.ItemDimensions?
 
     var body: some View {
         context.render(child)
-            .modifier(ItemDimensionsModifier(dimensions: dimensions))
+            .modifier(BuiltInItemDimensionsModifier(dimensions: dimensions))
     }
 }
 
-// MARK: - Item Dimensions Modifier
+// MARK: - Built-in Item Dimensions Modifier
 
-/// Modifier that applies item dimensions using containerRelativeFrame for fractional widths
-struct ItemDimensionsModifier: ViewModifier {
+/// Modifier that applies item dimensions. Used by built-in fallback rendering.
+private struct BuiltInItemDimensionsModifier: ViewModifier {
     let dimensions: IR.ItemDimensions?
 
     func body(content: Content) -> some View {
         if let dimensions = dimensions {
             content
-                .modifier(WidthModifier(width: dimensions.width))
-                .modifier(HeightModifier(height: dimensions.height, aspectRatio: dimensions.aspectRatio, width: dimensions.width))
+                .modifier(BuiltInWidthModifier(width: dimensions.width))
+                .modifier(BuiltInHeightModifier(height: dimensions.height, aspectRatio: dimensions.aspectRatio, width: dimensions.width))
         } else {
             content
         }
@@ -262,7 +293,7 @@ struct ItemDimensionsModifier: ViewModifier {
 }
 
 /// Applies width dimension (absolute or fractional)
-struct WidthModifier: ViewModifier {
+private struct BuiltInWidthModifier: ViewModifier {
     let width: IR.DimensionValue?
 
     func body(content: Content) -> some View {
@@ -282,7 +313,7 @@ struct WidthModifier: ViewModifier {
 }
 
 /// Applies height dimension (absolute, or computed from aspect ratio)
-struct HeightModifier: ViewModifier {
+private struct BuiltInHeightModifier: ViewModifier {
     let height: IR.DimensionValue?
     let aspectRatio: CGFloat?
     let width: IR.DimensionValue?
@@ -305,11 +336,11 @@ struct HeightModifier: ViewModifier {
     }
 }
 
-// MARK: - Snap Behavior Extension
+// MARK: - Built-in Snap Behavior Extension
 
-extension View {
+private extension View {
     @ViewBuilder
-    func applySnapBehavior(_ behavior: IR.SnapBehavior) -> some View {
+    func builtInApplySnapBehavior(_ behavior: IR.SnapBehavior) -> some View {
         switch behavior {
         case .none:
             self

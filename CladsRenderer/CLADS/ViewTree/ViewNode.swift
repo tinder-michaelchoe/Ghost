@@ -118,6 +118,7 @@ public enum ViewNodeType {
     case image(ImageNodeData)
     case gradient(GradientNodeData)
     case spacer
+    case customComponent(CustomComponentNodeData)
 }
 
 // MARK: - Node Data Types
@@ -289,6 +290,16 @@ public struct GradientNodeData {
     }
 }
 
+public struct CustomComponentNodeData {
+    public var typeName: String
+    public var style: IR.Style
+
+    public init(typeName: String, style: IR.Style = IR.Style()) {
+        self.typeName = typeName
+        self.style = style
+    }
+}
+
 // MARK: - State Path Resolver
 
 /// Utility for resolving dot-notation paths in dictionaries
@@ -326,7 +337,6 @@ public enum StatePathResolver {
             } else {
                 // Create intermediate dictionaries
                 var newDict: [String: Any] = [:]
-                let remainingPath = components[index...].joined(separator: ".")
                 setValueRecursive(in: &newDict, components: Array(components[index...]), value: value)
                 dict[component] = newDict
                 return

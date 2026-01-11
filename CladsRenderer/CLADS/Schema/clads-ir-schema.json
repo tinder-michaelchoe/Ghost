@@ -1,0 +1,1284 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://clads.io/schema/v1/ir.json",
+  "title": "CLADS Intermediate Representation (IR) Schema",
+  "description": "JSON Schema for the resolved render tree output. This is the platform-agnostic IR that renderers consume after the Document has been resolved.",
+  "type": "object",
+  "$ref": "#/$defs/renderTree",
+
+  "$defs": {
+    "renderTree": {
+      "type": "object",
+      "description": "The root of the resolved render tree - all styles resolved, data bound, references validated",
+      "required": ["root", "state", "actions"],
+      "properties": {
+        "root": {
+          "$ref": "#/$defs/rootNode"
+        },
+        "state": {
+          "type": "object",
+          "description": "The resolved state store with all initial values",
+          "additionalProperties": {
+            "$ref": "#/$defs/stateValue"
+          }
+        },
+        "actions": {
+          "type": "object",
+          "description": "Named action definitions ready for execution",
+          "additionalProperties": {
+            "$ref": "#/$defs/actionDefinition"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "rootNode": {
+      "type": "object",
+      "description": "The resolved root container",
+      "required": ["colorScheme", "style", "actions", "children"],
+      "properties": {
+        "backgroundColor": {
+          "$ref": "#/$defs/color",
+          "description": "Background color (hex string with alpha)"
+        },
+        "edgeInsets": {
+          "$ref": "#/$defs/edgeInsets"
+        },
+        "colorScheme": {
+          "$ref": "#/$defs/colorScheme"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "actions": {
+          "$ref": "#/$defs/rootActions"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/renderNode"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "colorScheme": {
+      "type": "string",
+      "enum": ["light", "dark", "system"],
+      "description": "The color scheme for rendering"
+    },
+
+    "rootActions": {
+      "type": "object",
+      "description": "Lifecycle action bindings for the root",
+      "properties": {
+        "onAppear": {
+          "$ref": "#/$defs/actionBinding"
+        },
+        "onDisappear": {
+          "$ref": "#/$defs/actionBinding"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "renderNode": {
+      "description": "A node in the render tree - either a container or a leaf component",
+      "oneOf": [
+        { "$ref": "#/$defs/containerNode" },
+        { "$ref": "#/$defs/sectionLayoutNode" },
+        { "$ref": "#/$defs/textNode" },
+        { "$ref": "#/$defs/buttonNode" },
+        { "$ref": "#/$defs/textFieldNode" },
+        { "$ref": "#/$defs/toggleNode" },
+        { "$ref": "#/$defs/sliderNode" },
+        { "$ref": "#/$defs/imageNode" },
+        { "$ref": "#/$defs/gradientNode" },
+        { "$ref": "#/$defs/spacerNode" },
+        { "$ref": "#/$defs/dividerNode" },
+        { "$ref": "#/$defs/customNode" }
+      ]
+    },
+
+    "containerNode": {
+      "type": "object",
+      "description": "A layout container (VStack, HStack, ZStack)",
+      "required": ["nodeType", "layoutType", "alignment", "spacing", "padding", "style", "children"],
+      "properties": {
+        "nodeType": {
+          "const": "container"
+        },
+        "id": {
+          "type": "string"
+        },
+        "layoutType": {
+          "type": "string",
+          "enum": ["vstack", "hstack", "zstack"],
+          "description": "The container layout direction"
+        },
+        "alignment": {
+          "$ref": "#/$defs/alignment",
+          "description": "Content alignment within the container"
+        },
+        "spacing": {
+          "type": "number",
+          "description": "Spacing between children in points"
+        },
+        "padding": {
+          "$ref": "#/$defs/directionalEdgeInsets"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/renderNode"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "sectionLayoutNode": {
+      "type": "object",
+      "description": "A section-based layout container for heterogeneous sections",
+      "required": ["nodeType", "sectionSpacing", "sections"],
+      "properties": {
+        "nodeType": {
+          "const": "sectionLayout"
+        },
+        "id": {
+          "type": "string"
+        },
+        "sectionSpacing": {
+          "type": "number",
+          "description": "Spacing between sections in points"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/section"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "section": {
+      "type": "object",
+      "description": "A resolved section within a SectionLayoutNode",
+      "required": ["layoutType", "stickyHeader", "config", "children"],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "layoutType": {
+          "$ref": "#/$defs/sectionType"
+        },
+        "header": {
+          "$ref": "#/$defs/renderNode"
+        },
+        "footer": {
+          "$ref": "#/$defs/renderNode"
+        },
+        "stickyHeader": {
+          "type": "boolean"
+        },
+        "config": {
+          "$ref": "#/$defs/sectionConfig"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/renderNode"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "sectionType": {
+      "description": "The layout type for a section",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "horizontal"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "list"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "columns"],
+          "properties": {
+            "type": {
+              "const": "grid"
+            },
+            "columns": {
+              "$ref": "#/$defs/columnConfig"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "const": "flow"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "columnConfig": {
+      "description": "Resolved column configuration for grids",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "count"],
+          "properties": {
+            "type": {
+              "const": "fixed"
+            },
+            "count": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "minWidth"],
+          "properties": {
+            "type": {
+              "const": "adaptive"
+            },
+            "minWidth": {
+              "type": "number",
+              "minimum": 0
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "sectionConfig": {
+      "type": "object",
+      "description": "Resolved configuration for a section",
+      "required": ["alignment", "itemSpacing", "lineSpacing", "contentInsets", "showsIndicators", "isPagingEnabled", "snapBehavior", "showsDividers"],
+      "properties": {
+        "alignment": {
+          "type": "string",
+          "enum": ["leading", "center", "trailing"],
+          "description": "Horizontal alignment of items"
+        },
+        "itemSpacing": {
+          "type": "number",
+          "description": "Spacing between items in points"
+        },
+        "lineSpacing": {
+          "type": "number",
+          "description": "Spacing between lines/rows in points"
+        },
+        "contentInsets": {
+          "$ref": "#/$defs/directionalEdgeInsets"
+        },
+        "itemDimensions": {
+          "$ref": "#/$defs/itemDimensions"
+        },
+        "showsIndicators": {
+          "type": "boolean",
+          "description": "Show scroll indicators (horizontal sections)"
+        },
+        "isPagingEnabled": {
+          "type": "boolean",
+          "description": "Enable paging behavior (horizontal sections)"
+        },
+        "snapBehavior": {
+          "$ref": "#/$defs/snapBehavior"
+        },
+        "showsDividers": {
+          "type": "boolean",
+          "description": "Show dividers between items (list sections)"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "itemDimensions": {
+      "type": "object",
+      "description": "Resolved item dimensions for section items",
+      "properties": {
+        "width": {
+          "$ref": "#/$defs/dimensionValue"
+        },
+        "height": {
+          "$ref": "#/$defs/dimensionValue"
+        },
+        "aspectRatio": {
+          "type": "number",
+          "description": "Width-to-height aspect ratio"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "dimensionValue": {
+      "description": "Resolved dimension value - absolute or fractional",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": {
+              "const": "absolute"
+            },
+            "value": {
+              "type": "number",
+              "description": "Absolute value in points"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": {
+              "const": "fractional"
+            },
+            "value": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Fraction of container size (0.0 to 1.0)"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "snapBehavior": {
+      "type": "string",
+      "enum": ["none", "viewAligned", "paging"],
+      "description": "Scroll snap behavior for horizontal sections"
+    },
+
+    "textNode": {
+      "type": "object",
+      "description": "A text/label component",
+      "required": ["nodeType", "content", "style", "padding", "isDynamic"],
+      "properties": {
+        "nodeType": {
+          "const": "text"
+        },
+        "id": {
+          "type": "string"
+        },
+        "content": {
+          "type": "string",
+          "description": "The resolved text content"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "padding": {
+          "$ref": "#/$defs/directionalEdgeInsets"
+        },
+        "bindingPath": {
+          "type": "string",
+          "description": "State path to read content from dynamically"
+        },
+        "bindingTemplate": {
+          "type": "string",
+          "description": "Template string with ${} placeholders for interpolation"
+        },
+        "isDynamic": {
+          "type": "boolean",
+          "description": "Whether this text node has dynamic content"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "buttonNode": {
+      "type": "object",
+      "description": "A button component",
+      "required": ["nodeType", "label", "styles", "fillWidth"],
+      "properties": {
+        "nodeType": {
+          "const": "button"
+        },
+        "id": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string",
+          "description": "Button text label"
+        },
+        "styles": {
+          "$ref": "#/$defs/buttonStyles"
+        },
+        "isSelectedBinding": {
+          "type": "string",
+          "description": "Expression or state path for selected state"
+        },
+        "fillWidth": {
+          "type": "boolean",
+          "description": "Whether button should fill available width"
+        },
+        "onTap": {
+          "$ref": "#/$defs/actionBinding"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "buttonStyles": {
+      "type": "object",
+      "description": "Resolved styles for different button states",
+      "required": ["normal"],
+      "properties": {
+        "normal": {
+          "$ref": "#/$defs/style"
+        },
+        "selected": {
+          "$ref": "#/$defs/style"
+        },
+        "disabled": {
+          "$ref": "#/$defs/style"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "textFieldNode": {
+      "type": "object",
+      "description": "A text input component",
+      "required": ["nodeType", "placeholder", "style"],
+      "properties": {
+        "nodeType": {
+          "const": "textField"
+        },
+        "id": {
+          "type": "string"
+        },
+        "placeholder": {
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "bindingPath": {
+          "type": "string",
+          "description": "State path to bind the input value to"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "toggleNode": {
+      "type": "object",
+      "description": "A toggle/switch component",
+      "required": ["nodeType", "style"],
+      "properties": {
+        "nodeType": {
+          "const": "toggle"
+        },
+        "id": {
+          "type": "string"
+        },
+        "bindingPath": {
+          "type": "string",
+          "description": "State path to bind the boolean value to"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "sliderNode": {
+      "type": "object",
+      "description": "A slider component",
+      "required": ["nodeType", "minValue", "maxValue", "style"],
+      "properties": {
+        "nodeType": {
+          "const": "slider"
+        },
+        "id": {
+          "type": "string"
+        },
+        "bindingPath": {
+          "type": "string",
+          "description": "State path to bind the numeric value to"
+        },
+        "minValue": {
+          "type": "number",
+          "description": "Minimum slider value"
+        },
+        "maxValue": {
+          "type": "number",
+          "description": "Maximum slider value"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "imageNode": {
+      "type": "object",
+      "description": "An image component",
+      "required": ["nodeType", "source", "style"],
+      "properties": {
+        "nodeType": {
+          "const": "image"
+        },
+        "id": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/imageSource"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        },
+        "onTap": {
+          "$ref": "#/$defs/actionBinding"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "imageSource": {
+      "description": "Image source - system icon, asset, or URL",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "name"],
+          "properties": {
+            "type": {
+              "const": "system"
+            },
+            "name": {
+              "type": "string",
+              "description": "System icon name (SF Symbol on iOS, Material Icon on Android)"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "name"],
+          "properties": {
+            "type": {
+              "const": "asset"
+            },
+            "name": {
+              "type": "string",
+              "description": "Asset catalog image name"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "url"],
+          "properties": {
+            "type": {
+              "const": "url"
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Remote image URL"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "gradientNode": {
+      "type": "object",
+      "description": "A gradient overlay component",
+      "required": ["nodeType", "gradientType", "colors", "startPoint", "endPoint", "style"],
+      "properties": {
+        "nodeType": {
+          "const": "gradient"
+        },
+        "id": {
+          "type": "string"
+        },
+        "gradientType": {
+          "type": "string",
+          "enum": ["linear", "radial"]
+        },
+        "colors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/colorStop"
+          },
+          "description": "Gradient color stops"
+        },
+        "startPoint": {
+          "$ref": "#/$defs/unitPoint"
+        },
+        "endPoint": {
+          "$ref": "#/$defs/unitPoint"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "colorStop": {
+      "type": "object",
+      "description": "A color stop in a gradient",
+      "required": ["color", "location"],
+      "properties": {
+        "color": {
+          "$ref": "#/$defs/gradientColor"
+        },
+        "location": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Position in gradient (0.0 to 1.0)"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "gradientColor": {
+      "description": "Color for gradient - fixed or adaptive to color scheme",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "color"],
+          "properties": {
+            "type": {
+              "const": "fixed"
+            },
+            "color": {
+              "$ref": "#/$defs/color"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "light", "dark"],
+          "properties": {
+            "type": {
+              "const": "adaptive"
+            },
+            "light": {
+              "$ref": "#/$defs/color"
+            },
+            "dark": {
+              "$ref": "#/$defs/color"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "unitPoint": {
+      "type": "object",
+      "description": "A point in the unit coordinate space (0.0 to 1.0)",
+      "required": ["x", "y"],
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "spacerNode": {
+      "type": "object",
+      "description": "A flexible space element",
+      "required": ["nodeType"],
+      "properties": {
+        "nodeType": {
+          "const": "spacer"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "dividerNode": {
+      "type": "object",
+      "description": "A divider/separator component",
+      "required": ["nodeType", "style"],
+      "properties": {
+        "nodeType": {
+          "const": "divider"
+        },
+        "id": {
+          "type": "string"
+        },
+        "style": {
+          "$ref": "#/$defs/style"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "customNode": {
+      "type": "object",
+      "description": "A custom component defined by external modules",
+      "required": ["nodeType", "customType"],
+      "properties": {
+        "nodeType": {
+          "const": "custom"
+        },
+        "customType": {
+          "type": "string",
+          "description": "The custom component type identifier"
+        }
+      },
+      "additionalProperties": true
+    },
+
+    "style": {
+      "type": "object",
+      "description": "A fully resolved style with all inherited values merged",
+      "properties": {
+        "fontFamily": {
+          "type": "string",
+          "description": "Font family name"
+        },
+        "fontSize": {
+          "type": "number",
+          "description": "Font size in points"
+        },
+        "fontWeight": {
+          "type": "string",
+          "enum": ["ultraLight", "thin", "light", "regular", "medium", "semibold", "bold", "heavy", "black"],
+          "description": "Font weight"
+        },
+        "textColor": {
+          "$ref": "#/$defs/color",
+          "description": "Text color"
+        },
+        "textAlignment": {
+          "type": "string",
+          "enum": ["leading", "center", "trailing"],
+          "description": "Text alignment"
+        },
+        "backgroundColor": {
+          "$ref": "#/$defs/color",
+          "description": "Background color"
+        },
+        "cornerRadius": {
+          "type": "number",
+          "description": "Corner radius in points"
+        },
+        "borderWidth": {
+          "type": "number",
+          "description": "Border width in points"
+        },
+        "borderColor": {
+          "$ref": "#/$defs/color",
+          "description": "Border color"
+        },
+        "tintColor": {
+          "$ref": "#/$defs/color",
+          "description": "Tint color for images"
+        },
+        "width": {
+          "type": "number",
+          "description": "Fixed width in points"
+        },
+        "height": {
+          "type": "number",
+          "description": "Fixed height in points"
+        },
+        "minWidth": {
+          "type": "number",
+          "description": "Minimum width in points"
+        },
+        "minHeight": {
+          "type": "number",
+          "description": "Minimum height in points"
+        },
+        "maxWidth": {
+          "type": "number",
+          "description": "Maximum width in points"
+        },
+        "maxHeight": {
+          "type": "number",
+          "description": "Maximum height in points"
+        },
+        "paddingTop": {
+          "type": "number",
+          "description": "Top padding in points"
+        },
+        "paddingBottom": {
+          "type": "number",
+          "description": "Bottom padding in points"
+        },
+        "paddingLeading": {
+          "type": "number",
+          "description": "Leading (start) padding in points"
+        },
+        "paddingTrailing": {
+          "type": "number",
+          "description": "Trailing (end) padding in points"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "color": {
+      "type": "string",
+      "pattern": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{8})$",
+      "description": "Hex color string (e.g., '#FF0000' or '#FF0000FF' with alpha)"
+    },
+
+    "alignment": {
+      "type": "object",
+      "description": "2D alignment for containers",
+      "required": ["horizontal", "vertical"],
+      "properties": {
+        "horizontal": {
+          "type": "string",
+          "enum": ["leading", "center", "trailing"]
+        },
+        "vertical": {
+          "type": "string",
+          "enum": ["top", "center", "bottom"]
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "directionalEdgeInsets": {
+      "type": "object",
+      "description": "Edge insets with leading/trailing (LTR/RTL aware)",
+      "required": ["top", "leading", "bottom", "trailing"],
+      "properties": {
+        "top": {
+          "type": "number"
+        },
+        "leading": {
+          "type": "number"
+        },
+        "bottom": {
+          "type": "number"
+        },
+        "trailing": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "edgeInsets": {
+      "type": "object",
+      "description": "Edge insets for root container with positioning",
+      "properties": {
+        "top": {
+          "$ref": "#/$defs/edgeInset"
+        },
+        "bottom": {
+          "$ref": "#/$defs/edgeInset"
+        },
+        "leading": {
+          "$ref": "#/$defs/edgeInset"
+        },
+        "trailing": {
+          "$ref": "#/$defs/edgeInset"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "edgeInset": {
+      "type": "object",
+      "description": "A single edge inset with positioning mode",
+      "required": ["positioning", "value"],
+      "properties": {
+        "positioning": {
+          "type": "string",
+          "enum": ["safeArea", "absolute"],
+          "description": "Reference for the inset (safe area or absolute screen edge)"
+        },
+        "value": {
+          "type": "number",
+          "description": "Inset value in points"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "actionDefinition": {
+      "description": "A resolved action ready for execution",
+      "oneOf": [
+        { "$ref": "#/$defs/dismissAction" },
+        { "$ref": "#/$defs/setStateAction" },
+        { "$ref": "#/$defs/toggleStateAction" },
+        { "$ref": "#/$defs/showAlertAction" },
+        { "$ref": "#/$defs/sequenceAction" },
+        { "$ref": "#/$defs/navigateAction" },
+        { "$ref": "#/$defs/customAction" },
+        { "$ref": "#/$defs/addToArrayAction" },
+        { "$ref": "#/$defs/removeFromArrayAction" },
+        { "$ref": "#/$defs/toggleInArrayAction" }
+      ]
+    },
+
+    "dismissAction": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "const": "dismiss"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "setStateAction": {
+      "type": "object",
+      "required": ["type", "path", "value"],
+      "properties": {
+        "type": {
+          "const": "setState"
+        },
+        "path": {
+          "type": "string",
+          "description": "Dot-notation path to state property"
+        },
+        "value": {
+          "$ref": "#/$defs/stateSetValue",
+          "description": "Value to set (literal or expression)"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "toggleStateAction": {
+      "type": "object",
+      "required": ["type", "path"],
+      "properties": {
+        "type": {
+          "const": "toggleState"
+        },
+        "path": {
+          "type": "string",
+          "description": "Dot-notation path to boolean state property"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "showAlertAction": {
+      "type": "object",
+      "required": ["type", "config"],
+      "properties": {
+        "type": {
+          "const": "showAlert"
+        },
+        "config": {
+          "$ref": "#/$defs/alertConfig"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "alertConfig": {
+      "type": "object",
+      "required": ["title", "buttons"],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "message": {
+          "$ref": "#/$defs/alertMessage"
+        },
+        "buttons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/alertButton"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "alertMessage": {
+      "description": "Alert message - static or template",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": {
+              "const": "static"
+            },
+            "value": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": {
+              "const": "template"
+            },
+            "value": {
+              "type": "string",
+              "description": "Template with ${} placeholders"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "alertButton": {
+      "type": "object",
+      "required": ["label", "style"],
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "style": {
+          "type": "string",
+          "enum": ["default", "cancel", "destructive"]
+        },
+        "action": {
+          "type": "string",
+          "description": "Action ID to execute on tap"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "sequenceAction": {
+      "type": "object",
+      "required": ["type", "steps"],
+      "properties": {
+        "type": {
+          "const": "sequence"
+        },
+        "steps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/actionDefinition"
+          },
+          "description": "Actions to execute in sequence"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "navigateAction": {
+      "type": "object",
+      "required": ["type", "destination", "presentation"],
+      "properties": {
+        "type": {
+          "const": "navigate"
+        },
+        "destination": {
+          "type": "string",
+          "description": "Navigation destination identifier"
+        },
+        "presentation": {
+          "type": "string",
+          "enum": ["push", "present", "fullScreen"],
+          "description": "Navigation presentation style"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "addToArrayAction": {
+      "type": "object",
+      "required": ["type", "path", "value"],
+      "properties": {
+        "type": {
+          "const": "addToArray"
+        },
+        "path": {
+          "type": "string",
+          "description": "Dot-notation path to array state property"
+        },
+        "value": {
+          "$ref": "#/$defs/stateValue",
+          "description": "Value to add to array"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "removeFromArrayAction": {
+      "type": "object",
+      "required": ["type", "path", "value"],
+      "properties": {
+        "type": {
+          "const": "removeFromArray"
+        },
+        "path": {
+          "type": "string",
+          "description": "Dot-notation path to array state property"
+        },
+        "value": {
+          "$ref": "#/$defs/stateValue",
+          "description": "Value to remove from array"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "toggleInArrayAction": {
+      "type": "object",
+      "required": ["type", "path", "value"],
+      "properties": {
+        "type": {
+          "const": "toggleInArray"
+        },
+        "path": {
+          "type": "string",
+          "description": "Dot-notation path to array state property"
+        },
+        "value": {
+          "$ref": "#/$defs/stateValue",
+          "description": "Value to toggle in array"
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "customAction": {
+      "type": "object",
+      "required": ["type"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "not": {
+            "enum": ["dismiss", "setState", "toggleState", "showAlert", "sequence", "navigate", "addToArray", "removeFromArray", "toggleInArray"]
+          },
+          "description": "Custom action type identifier"
+        },
+        "parameters": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/stateValue"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+
+    "stateSetValue": {
+      "description": "Value for setState - literal or expression",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["type", "value"],
+          "properties": {
+            "type": {
+              "const": "literal"
+            },
+            "value": {
+              "$ref": "#/$defs/stateValue"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["type", "expression"],
+          "properties": {
+            "type": {
+              "const": "expression"
+            },
+            "expression": {
+              "type": "string",
+              "description": "Expression to evaluate at runtime"
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+
+    "actionBinding": {
+      "description": "Reference to an action - can be action ID string or inline action definition",
+      "oneOf": [
+        {
+          "type": "string",
+          "description": "Action ID reference"
+        },
+        {
+          "$ref": "#/$defs/actionDefinition"
+        }
+      ]
+    },
+
+    "stateValue": {
+      "description": "A state value - can be any JSON primitive, array, or object",
+      "oneOf": [
+        { "type": "null" },
+        { "type": "boolean" },
+        { "type": "integer" },
+        { "type": "number" },
+        { "type": "string" },
+        {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/stateValue"
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/stateValue"
+          }
+        }
+      ]
+    }
+  }
+}

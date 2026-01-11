@@ -23,7 +23,7 @@ extension Document {
     /// ```
     ///
     /// The `type` field determines which action variant is decoded.
-    public enum Action: Codable {
+    public enum Action: Codable, Sendable {
         case dismiss
         case setState(SetStateAction)
         case toggleState(ToggleStateAction)
@@ -106,7 +106,7 @@ extension Document {
     /// { "type": "setState", "path": "user.name", "value": "John" }
     /// { "type": "setState", "path": "counter", "value": { "$expr": "counter + 1" } }
     /// ```
-    public struct SetStateAction: Codable {
+    public struct SetStateAction: Codable, Sendable {
         public let path: String
         public let value: SetValue
 
@@ -143,7 +143,7 @@ extension Document {
     /// ```json
     /// { "type": "toggleState", "path": "selected.technology" }
     /// ```
-    public struct ToggleStateAction: Codable {
+    public struct ToggleStateAction: Codable, Sendable {
         public let path: String
 
         public init(path: String) {
@@ -179,7 +179,7 @@ extension Document {
     /// true              // literal bool
     /// { "$expr": "x+1" } // expression
     /// ```
-    public enum SetValue: Codable {
+    public enum SetValue: Codable, Sendable {
         case literal(StateValue)
         case expression(String)
 
@@ -228,7 +228,7 @@ extension Document {
     ///   ]
     /// }
     /// ```
-    public struct ShowAlertAction: Codable {
+    public struct ShowAlertAction: Codable, Sendable {
         public let title: String
         public let message: AlertMessageContent?
         public let buttons: [AlertButton]?
@@ -270,7 +270,7 @@ extension Document {
     /// "Simple message"                                    // static
     /// { "type": "binding", "template": "Hello ${name}" }  // template
     /// ```
-    public enum AlertMessageContent: Codable {
+    public enum AlertMessageContent: Codable, Sendable {
         case `static`(String)
         case template(String)
 
@@ -323,7 +323,7 @@ extension Document {
     /// { "label": "OK" }
     /// { "label": "Delete", "style": "destructive", "action": "confirmDelete" }
     /// ```
-    public struct AlertButton: Codable {
+    public struct AlertButton: Codable, Sendable {
         public let label: String
         public let style: AlertButtonStyle?
         public let action: String?
@@ -346,7 +346,7 @@ extension Document {
     /// { "type": "navigate", "destination": "details", "presentation": "push" }
     /// { "type": "navigate", "destination": "settings", "presentation": "present" }
     /// ```
-    public struct NavigateAction: Codable {
+    public struct NavigateAction: Codable, Sendable {
         public let destination: String
         public let presentation: NavigationPresentation?
 
@@ -389,7 +389,7 @@ extension Document {
     ///   ]
     /// }
     /// ```
-    public struct SequenceAction: Codable {
+    public struct SequenceAction: Codable, Sendable {
         public let steps: [Action]
 
         public init(steps: [Action]) {
@@ -424,7 +424,7 @@ extension Document {
     /// ```json
     /// { "type": "analytics.track", "event": "button_clicked", "properties": {...} }
     /// ```
-    public struct CustomAction: Codable {
+    public struct CustomAction: Codable, Sendable {
         public let type: String
         public let parameters: [String: StateValue]
 

@@ -86,6 +86,17 @@ struct CladsExamplesView: View {
                         )
                     }
                 }
+
+                Section("Tinder") {
+                    ForEach(Example.tinderExamples) { example in
+                        ExampleRow(
+                            example: example,
+                            selectedExample: $selectedExample,
+                            fullScreenExample: $fullScreenExample,
+                            jsonViewerExample: $jsonViewerExample
+                        )
+                    }
+                }
             }
             .navigationTitle("CLADS Examples")
             .sheet(item: $selectedExample) { example in
@@ -99,6 +110,10 @@ struct CladsExamplesView: View {
                         WeatherDashboardExampleView(weatherService: weatherService)
                     case .deeplinks:
                         DeeplinkExampleView()
+                    case .photoTouchUp:
+                        PhotoTouchUpExampleView()
+                    case .feedbackSurvey:
+                        FeedbackSurveyExampleView()
                     default:
                         ExampleSheetView(example: example)
                     }
@@ -276,6 +291,8 @@ enum Example: String, CaseIterable, Identifiable {
     // Layouts (L)
     case vstackHstack
     case zstack
+    case nested
+    case sectionLayout
     case sectionLayoutList
     case sectionLayoutGrid
     case sectionLayoutFlow
@@ -309,6 +326,10 @@ enum Example: String, CaseIterable, Identifiable {
     case weatherDashboard
     case deeplinks
 
+    // Tinder Examples
+    case photoTouchUp
+    case feedbackSurvey
+
     var id: String { rawValue }
 
     var title: String {
@@ -324,6 +345,8 @@ enum Example: String, CaseIterable, Identifiable {
         // Layouts
         case .vstackHstack: return "VStack & HStack"
         case .zstack: return "ZStack"
+        case .nested: return "Nested"
+        case .sectionLayout: return "Section Layout"
         case .sectionLayoutList: return "Section: List"
         case .sectionLayoutGrid: return "Section: Grid"
         case .sectionLayoutFlow: return "Section: Flow"
@@ -352,6 +375,9 @@ enum Example: String, CaseIterable, Identifiable {
         case .musicPlayer: return "Music Player"
         case .weatherDashboard: return "Weather Dashboard"
         case .deeplinks: return "Deeplinks"
+        // Tinder
+        case .photoTouchUp: return "Photo Touch Up"
+        case .feedbackSurvey: return "Feedback Survey"
         }
     }
 
@@ -368,6 +394,8 @@ enum Example: String, CaseIterable, Identifiable {
         // Layouts
         case .vstackHstack: return "Vertical & horizontal stacks"
         case .zstack: return "Layered overlays"
+        case .nested: return "VStack with nested HStack"
+        case .sectionLayout: return "Combined section layouts"
         case .sectionLayoutList: return "Vertical list with dividers"
         case .sectionLayoutGrid: return "Multi-column grid"
         case .sectionLayoutFlow: return "Wrapping flow layout"
@@ -396,6 +424,9 @@ enum Example: String, CaseIterable, Identifiable {
         case .musicPlayer: return "Player controls, queue & progress"
         case .weatherDashboard: return "Forecast with gradient backgrounds"
         case .deeplinks: return "Tab navigation & sheet presentation"
+        // Tinder
+        case .photoTouchUp: return "Before/after photo comparison with custom components"
+        case .feedbackSurvey: return "Radio button survey with dismiss and alert"
         }
     }
 
@@ -412,6 +443,8 @@ enum Example: String, CaseIterable, Identifiable {
         // Layouts
         case .vstackHstack: return "square.split.2x1"
         case .zstack: return "square.stack"
+        case .nested: return "rectangle.on.rectangle"
+        case .sectionLayout: return "rectangle.split.3x1"
         case .sectionLayoutList: return "list.bullet"
         case .sectionLayoutGrid: return "square.grid.2x2"
         case .sectionLayoutFlow: return "rectangle.3.group"
@@ -440,6 +473,9 @@ enum Example: String, CaseIterable, Identifiable {
         case .musicPlayer: return "music.note.list"
         case .weatherDashboard: return "cloud.sun.fill"
         case .deeplinks: return "link"
+        // Tinder
+        case .photoTouchUp: return "wand.and.stars"
+        case .feedbackSurvey: return "text.bubble"
         }
     }
 
@@ -456,6 +492,8 @@ enum Example: String, CaseIterable, Identifiable {
         // Layouts - Purple shades
         case .vstackHstack: return .purple
         case .zstack: return .purple
+        case .nested: return .purple
+        case .sectionLayout: return .purple
         case .sectionLayoutList: return .purple
         case .sectionLayoutGrid: return .purple
         case .sectionLayoutFlow: return .purple
@@ -484,6 +522,9 @@ enum Example: String, CaseIterable, Identifiable {
         case .musicPlayer: return .teal
         case .weatherDashboard: return .indigo
         case .deeplinks: return .blue
+        // Tinder - Red/Orange (flame colors)
+        case .photoTouchUp: return Color(red: 0.99, green: 0.35, blue: 0.37)
+        case .feedbackSurvey: return Color(red: 0.99, green: 0.35, blue: 0.37)
         }
     }
 
@@ -500,6 +541,8 @@ enum Example: String, CaseIterable, Identifiable {
         // Layouts
         case .vstackHstack: return vstackHstackJSON
         case .zstack: return zstackJSON
+        case .nested: return nestedJSON
+        case .sectionLayout: return sectionLayoutJSON
         case .sectionLayoutList: return sectionListJSON
         case .sectionLayoutGrid: return sectionGridJSON
         case .sectionLayoutFlow: return sectionFlowJSON
@@ -528,18 +571,29 @@ enum Example: String, CaseIterable, Identifiable {
         case .musicPlayer: return musicPlayerJSON
         case .weatherDashboard: return weatherDashboardJSON
         case .deeplinks: return deeplinkExampleJSON
+        // Tinder
+        case .photoTouchUp: return PhotoTouchUpJSON.bottomSheet
+        case .feedbackSurvey: return FeedbackSurveyJSON.bottomSheet
         }
     }
 
     var presentation: PresentationStyle {
         switch self {
         // Most basic examples work well with medium detent
-        case .labels, .buttons, .textFields, .toggles, .sliders, .images, .gradients:
+        case .labels, .buttons, .textFields, .toggles, .sliders, .images, .gradients, .sectionLayoutHorizontal:
             return .detent(.medium)
+        case .sectionLayoutGrid:
+            return .detent(.fraction(0.3))
         case .vstackHstack, .zstack:
             return .detent(.medium)
-        case .sectionLayoutList, .sectionLayoutGrid, .sectionLayoutFlow, .sectionLayoutHorizontal:
+        case .nested:
             return .fullSize
+        case .sectionLayout:
+            return .fullSize
+        case .sectionLayoutList:
+            return .fullSize
+        case .sectionLayoutFlow:
+            return .detent(.medium)
         case .setState, .toggleState, .showAlert, .dismiss, .navigate, .sequence, .arrayActions:
             return .detent(.medium)
         case .staticData, .bindingData, .expressionData, .stateInterpolation:
@@ -553,6 +607,9 @@ enum Example: String, CaseIterable, Identifiable {
         case .musicPlayer: return .fullSize
         case .weatherDashboard: return .fullSize
         case .deeplinks: return .fullSize
+        // Tinder - fixed height sheets
+        case .photoTouchUp: return .fixed(height: 600)
+        case .feedbackSurvey: return .detent(.large)
         }
     }
 
@@ -563,7 +620,7 @@ enum Example: String, CaseIterable, Identifiable {
     }
 
     static var layoutExamples: [Example] {
-        [.vstackHstack, .zstack, .sectionLayoutList, .sectionLayoutGrid, .sectionLayoutFlow, .sectionLayoutHorizontal]
+        [.vstackHstack, .zstack, .nested, .sectionLayout, .sectionLayoutList, .sectionLayoutGrid, .sectionLayoutFlow, .sectionLayoutHorizontal]
     }
 
     static var actionExamples: [Example] {
@@ -580,6 +637,10 @@ enum Example: String, CaseIterable, Identifiable {
 
     static var complexExamples: [Example] {
         [.dadJokes, .taskManager, .shoppingCart, .musicPlayer, .weatherDashboard, .deeplinks]
+    }
+
+    static var tinderExamples: [Example] {
+        [.photoTouchUp, .feedbackSurvey]
     }
 }
 

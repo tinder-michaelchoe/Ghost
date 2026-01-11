@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tree:*)",
+      "Bash(xcodebuild:*)",
+      "WebFetch(domain:nuthatch.lastelm.software)",
+      "WebSearch",
+      "WebFetch(domain:dev.iachieved.it)",
+      "WebFetch(domain:www.donnywals.com)",
+      "WebFetch(domain:api.weather.gov)",
+      "WebFetch(domain:weather-gov.github.io)"
+    ]
+  }
+}

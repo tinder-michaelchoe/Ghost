@@ -25,14 +25,27 @@ public struct CladsRendererView: View {
     ///   - actionRegistry: Registry for action handlers (may include merged custom actions)
     ///   - componentRegistry: Registry for component resolvers
     ///   - swiftuiRendererRegistry: Registry for SwiftUI renderers
+    ///   - customComponents: Array of custom component types to register
     ///   - actionDelegate: Delegate for handling custom actions
     public init(
         document: Document.Definition,
         actionRegistry: ActionRegistry,
         componentRegistry: ComponentResolverRegistry,
         swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
+        customComponents: [any CustomComponent.Type] = [],
         actionDelegate: CladsActionDelegate? = nil
     ) {
+        // Set up custom components if provided
+        if !customComponents.isEmpty {
+            let customRegistry = CustomComponentRegistry()
+            customRegistry.register(customComponents)
+            componentRegistry.setCustomComponentRegistry(customRegistry)
+
+            // Register the custom component SwiftUI renderer
+            let customRenderer = CustomComponentSwiftUIRenderer(customComponentRegistry: customRegistry)
+            swiftuiRendererRegistry.register(customRenderer)
+        }
+
         self.swiftuiRendererRegistry = swiftuiRendererRegistry
 
         // Resolve Document (AST) into RenderTree (IR)
@@ -91,6 +104,7 @@ extension CladsRendererView {
         actionRegistry: ActionRegistry,
         componentRegistry: ComponentResolverRegistry,
         swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
+        customComponents: [any CustomComponent.Type] = [],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
     ) {
@@ -102,6 +116,7 @@ extension CladsRendererView {
             actionRegistry: actionRegistry,
             componentRegistry: componentRegistry,
             swiftuiRendererRegistry: swiftuiRendererRegistry,
+            customComponents: customComponents,
             actionDelegate: actionDelegate,
             debugMode: debugMode
         )
@@ -113,9 +128,21 @@ extension CladsRendererView {
         actionRegistry: ActionRegistry,
         componentRegistry: ComponentResolverRegistry,
         swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
+        customComponents: [any CustomComponent.Type] = [],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool
     ) {
+        // Set up custom components if provided
+        if !customComponents.isEmpty {
+            let customRegistry = CustomComponentRegistry()
+            customRegistry.register(customComponents)
+            componentRegistry.setCustomComponentRegistry(customRegistry)
+
+            // Register the custom component SwiftUI renderer
+            let customRenderer = CustomComponentSwiftUIRenderer(customComponentRegistry: customRegistry)
+            swiftuiRendererRegistry.register(customRenderer)
+        }
+
         self.swiftuiRendererRegistry = swiftuiRendererRegistry
 
         // Resolve Document (AST) into RenderTree (IR)
@@ -172,6 +199,9 @@ public struct CladsRendererBindingConfiguration<State: Codable> {
     /// Registry for SwiftUI renderers
     public var swiftuiRendererRegistry: SwiftUINodeRendererRegistry
 
+    /// Custom component types to register
+    public var customComponents: [any CustomComponent.Type]
+
     /// Delegate for handling custom actions
     public weak var actionDelegate: CladsActionDelegate?
 
@@ -185,6 +215,7 @@ public struct CladsRendererBindingConfiguration<State: Codable> {
         actionRegistry: ActionRegistry,
         componentRegistry: ComponentResolverRegistry,
         swiftuiRendererRegistry: SwiftUINodeRendererRegistry,
+        customComponents: [any CustomComponent.Type] = [],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
     ) {
@@ -194,8 +225,20 @@ public struct CladsRendererBindingConfiguration<State: Codable> {
         self.actionRegistry = actionRegistry
         self.componentRegistry = componentRegistry
         self.swiftuiRendererRegistry = swiftuiRendererRegistry
+        self.customComponents = customComponents
         self.actionDelegate = actionDelegate
         self.debugMode = debugMode
+
+        // Set up custom components if provided
+        if !customComponents.isEmpty {
+            let customRegistry = CustomComponentRegistry()
+            customRegistry.register(customComponents)
+            componentRegistry.setCustomComponentRegistry(customRegistry)
+
+            // Register the custom component SwiftUI renderer
+            let customRenderer = CustomComponentSwiftUIRenderer(customComponentRegistry: customRegistry)
+            swiftuiRendererRegistry.register(customRenderer)
+        }
     }
 }
 

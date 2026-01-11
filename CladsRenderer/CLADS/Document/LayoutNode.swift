@@ -101,7 +101,7 @@ extension Document {
 
 extension Document {
     /// Padding specification
-    public struct Padding: Codable {
+    public struct Padding: Codable, Sendable {
         public let top: CGFloat?
         public let bottom: CGFloat?
         public let leading: CGFloat?
@@ -137,7 +137,7 @@ extension Document {
 
 extension Document {
     /// Local state declaration for a component or layout
-    public struct LocalStateDeclaration: Codable {
+    public struct LocalStateDeclaration: Codable, Sendable {
         /// Initial values for local state
         public let initialValues: [String: StateValue]
 

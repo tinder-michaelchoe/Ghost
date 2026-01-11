@@ -3,7 +3,7 @@
 //  CladsModules
 //
 //  Convenience initializers for CladsRendererView that use default registries.
-//  Custom actions are merged into the action registry internally.
+//  Custom actions and custom components are merged/registered internally.
 //
 
 import CLADS
@@ -15,25 +15,28 @@ extension CladsRendererView {
     /// - Parameters:
     ///   - document: The document definition to render
     ///   - customActions: View-specific action closures, keyed by action ID
+    ///   - customComponents: Custom component types to register
     ///   - actionDelegate: Delegate for handling custom actions
     ///
     /// Example:
     /// ```swift
     /// CladsRendererView(document: document)
     ///
-    /// // With custom actions
+    /// // With custom actions and components
     /// CladsRendererView(
     ///     document: document,
     ///     customActions: [
     ///         "submitOrder": { params, context in
     ///             await OrderService.submit(orderId)
     ///         }
-    ///     ]
+    ///     ],
+    ///     customComponents: [MyCustomComponent.self]
     /// )
     /// ```
     public init(
         document: Document.Definition,
         customActions: [String: ActionClosure] = [:],
+        customComponents: [any CustomComponent.Type] = [],
         actionDelegate: CladsActionDelegate? = nil
     ) {
         // Merge custom actions into the registry
@@ -44,14 +47,32 @@ extension CladsRendererView {
             actionRegistry: registry,
             componentRegistry: .default,
             swiftuiRendererRegistry: .default,
+            customComponents: customComponents,
             actionDelegate: actionDelegate
         )
     }
 
     /// Initialize from a JSON string using default registries.
+    ///
+    /// - Parameters:
+    ///   - jsonString: JSON string defining the document
+    ///   - customActions: View-specific action closures, keyed by action ID
+    ///   - customComponents: Custom component types to register
+    ///   - actionDelegate: Delegate for handling custom actions
+    ///   - debugMode: Enable debug output
+    ///
+    /// Example:
+    /// ```swift
+    /// CladsRendererView(
+    ///     jsonString: myJSON,
+    ///     customActions: ["refresh": { _, _ in await refresh() }],
+    ///     customComponents: [PhotoComparisonComponent.self]
+    /// )
+    /// ```
     public init?(
         jsonString: String,
         customActions: [String: ActionClosure] = [:],
+        customComponents: [any CustomComponent.Type] = [],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
     ) {
@@ -67,6 +88,7 @@ extension CladsRendererView {
             actionRegistry: registry,
             componentRegistry: .default,
             swiftuiRendererRegistry: .default,
+            customComponents: customComponents,
             actionDelegate: actionDelegate,
             debugMode: debugMode
         )
@@ -76,6 +98,7 @@ extension CladsRendererView {
     public init(
         document: Document.Definition,
         customActions: [String: ActionClosure] = [:],
+        customComponents: [any CustomComponent.Type] = [],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool
     ) {
@@ -87,6 +110,7 @@ extension CladsRendererView {
             actionRegistry: registry,
             componentRegistry: .default,
             swiftuiRendererRegistry: .default,
+            customComponents: customComponents,
             actionDelegate: actionDelegate,
             debugMode: debugMode
         )
@@ -102,6 +126,7 @@ extension CladsRendererBindingConfiguration {
         onStateChange: ((_ path: String, _ oldValue: Any?, _ newValue: Any?) -> Void)? = nil,
         onAction: ((_ actionId: String, _ parameters: [String: Any]) -> Void)? = nil,
         customActions: [String: ActionClosure] = [:],
+        customComponents: [any CustomComponent.Type] = [],
         actionDelegate: CladsActionDelegate? = nil,
         debugMode: Bool = false
     ) {
@@ -115,6 +140,7 @@ extension CladsRendererBindingConfiguration {
             actionRegistry: registry,
             componentRegistry: .default,
             swiftuiRendererRegistry: .default,
+            customComponents: customComponents,
             actionDelegate: actionDelegate,
             debugMode: debugMode
         )

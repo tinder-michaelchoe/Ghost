@@ -45,7 +45,7 @@ extension Document {
 
 extension Document {
     /// A UI component (label, button, textfield, etc.)
-    public struct Component: Codable {
+    public struct Component: Codable, Sendable {
 
         /// An action binding - either an inline action or a reference to a document-level action.
         ///
@@ -55,7 +55,7 @@ extension Document {
         /// { "type": "dismiss" }                  // Inline dismiss action
         /// { "type": "setState", "path": "x" }    // Inline setState action
         /// ```
-        public enum ActionBinding: Codable {
+        public enum ActionBinding: Codable, Sendable {
             case reference(String)
             case inline(Action)
 
@@ -92,7 +92,7 @@ extension Document {
         ///   "onValueChanged": { "type": "setState", "path": "text", "value": { "$expr": "value" } }
         /// }
         /// ```
-        public struct Actions: Codable {
+        public struct Actions: Codable, Sendable {
             public let onTap: ActionBinding?
             public let onValueChanged: ActionBinding?
 
@@ -112,7 +112,7 @@ extension Document {
         ///   "disabled": "pillButtonDisabled"
         /// }
         /// ```
-        public struct ComponentStyles: Codable {
+        public struct ComponentStyles: Codable, Sendable {
             public let normal: String?
             public let selected: String?
             public let disabled: String?
@@ -139,7 +139,30 @@ extension Document {
         public let localBind: String?     // Bind to local state (without "local." prefix)
         public let fillWidth: Bool?
         public let actions: Actions?
-        public let data: DataReference?
+
+        /// Dictionary of data references for component content.
+        /// Built-in components use `data["value"]` for their content.
+        /// Custom components can use any keys for their specific data needs.
+        ///
+        /// Built-in component example:
+        /// ```json
+        /// {
+        ///   "data": {
+        ///     "value": { "type": "binding", "path": "user.name" }
+        ///   }
+        /// }
+        /// ```
+        ///
+        /// Custom component example:
+        /// ```json
+        /// {
+        ///   "data": {
+        ///     "temperature": { "type": "binding", "path": "weather.temp" },
+        ///     "condition": { "type": "static", "value": "Sunny" }
+        ///   }
+        /// }
+        /// ```
+        public let data: [String: DataReference]?
 
         /// Local state declaration for this component
         public let state: LocalStateDeclaration?
@@ -174,7 +197,7 @@ extension Document {
             localBind: String? = nil,
             fillWidth: Bool? = nil,
             actions: Actions? = nil,
-            data: DataReference? = nil,
+            data: [String: DataReference]? = nil,
             state: LocalStateDeclaration? = nil,
             minValue: Double? = nil,
             maxValue: Double? = nil,
@@ -236,7 +259,6 @@ extension Document {
             localBind = try container.decodeIfPresent(String.self, forKey: .localBind)
             fillWidth = try container.decodeIfPresent(Bool.self, forKey: .fillWidth)
             actions = try container.decodeIfPresent(Actions.self, forKey: .actions)
-            data = try container.decodeIfPresent(DataReference.self, forKey: .data)
             state = try container.decodeIfPresent(LocalStateDeclaration.self, forKey: .state)
             minValue = try container.decodeIfPresent(Double.self, forKey: .minValue)
             maxValue = try container.decodeIfPresent(Double.self, forKey: .maxValue)
@@ -244,6 +266,9 @@ extension Document {
             gradientColors = try container.decodeIfPresent([GradientColorConfig].self, forKey: .gradientColors)
             gradientStart = try container.decodeIfPresent(String.self, forKey: .gradientStart)
             gradientEnd = try container.decodeIfPresent(String.self, forKey: .gradientEnd)
+
+            // Decode `data` as a dictionary of DataReferences
+            data = try container.decodeIfPresent([String: DataReference].self, forKey: .data)
 
             // Capture additional properties using dynamic keys
             let dynamicContainer = try decoder.container(keyedBy: DynamicCodingKey.self)
@@ -286,7 +311,7 @@ struct DynamicCodingKey: CodingKey {
 
 extension Document {
     /// Gradient color configuration in JSON
-    public struct GradientColorConfig: Codable {
+    public struct GradientColorConfig: Codable, Sendable {
         public let color: String?        // Hex color for fixed
         public let lightColor: String?   // Hex color for light mode (adaptive)
         public let darkColor: String?    // Hex color for dark mode (adaptive)
@@ -305,7 +330,7 @@ extension Document {
 
 extension Document {
     /// Reference to a data source or inline data
-    public struct DataReference: Codable {
+    public struct DataReference: Codable, Sendable {
         public let type: DataReferenceType
         public let value: String?
         public let path: String?
@@ -336,7 +361,7 @@ extension Document {
     /// { "system": "star.fill" }                 // SF Symbol
     /// { "url": "https://example.com/img.png" }  // Remote URL
     /// ```
-    public struct ImageSource: Codable, Equatable {
+    public struct ImageSource: Codable, Equatable, Sendable {
         /// SF Symbol name (mutually exclusive with `url`)
         public let system: String?
         /// Remote image URL (mutually exclusive with `system`)

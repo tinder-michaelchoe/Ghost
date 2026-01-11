@@ -57,7 +57,8 @@ public struct ContentResolver {
         }
 
         // Check for inline data reference (uses DataReference type)
-        if let data = component.data {
+        // Built-in components use "value" key for their content
+        if let data = component.data?["value"] {
             return resolveFromDataReference(data, context: context, viewNode: viewNode)
         }
 

@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xcodebuild:*)",
+      "Bash(xcrun xcresulttool:*)",
+      "Bash(curl:*)",
+      "WebSearch",
+      "Bash(grep:*)",
+      "Bash(xargs sed:*)",
+      "Bash(find:*)",
+      "Bash(xargs:*)",
+      "Bash(ruby -e:*)",
+      "Bash(ls:*)",
+      "Bash(git add:*)",
+      "Bash(CladsRenderer/CLADS/Actions/ActionHandler.swift )",
+      "Bash(CladsRenderer/CLADS/Actions/ActionRegistry.swift )",
+      "Bash(CladsRenderer/CLADS/Renderers/CladsUIKitView.swift )",
+      "Bash(CladsRenderer/CLADS/Rendering/CladsRendererView.swift )",
+      "Bash(CladsRenderer/CladsModules/ActionHandlers/ArrayActionHandlers.swift )",
+      "Bash(CladsRenderer/CladsModules/ActionHandlers/DismissActionHandler.swift )",
+      "Bash(CladsRenderer/CladsModules/ActionHandlers/NavigateActionHandler.swift )",
+      "Bash(CladsRenderer/CladsModules/ActionHandlers/SequenceActionHandler.swift )",
+      "Bash(CladsRenderer/CladsModules/ActionHandlers/SetStateActionHandler.swift )",
+      "Bash(CladsRenderer/CladsModules/ActionHandlers/ShowAlertActionHandler.swift )",
+      "Bash(CladsRenderer/CladsModules/Extensions/CladsRendererView+Convenience.swift )",
+      "Bash(CladsRenderer/CladsModules/Extensions/CladsUIKitView+Convenience.swift )",
+      "Bash(CladsRenderer/CladsRendererFramework/Actions/ActionRegistry.swift )",
+      "Bash(CladsRenderer/CladsRendererFramework/Actions/Handlers/DismissActionHandler.swift )",
+      "Bash(CladsRenderer/CladsRendererFramework/Actions/Handlers/NavigateActionHandler.swift )",
+      "Bash(CladsRenderer/CladsRendererFramework/Actions/Handlers/SequenceActionHandler.swift )",
+      "Bash(CladsRenderer/CladsRendererFramework/Actions/Handlers/SetStateActionHandler.swift )",
+      "Bash(CladsRenderer/CladsRendererFramework/Actions/Handlers/ShowAlertActionHandler.swift)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nSimplify action system: consolidate customActions into ActionRegistry\n\n- Move customActions parameter from core CLADS to CladsModules convenience layer\n- Add ClosureActionHandler to wrap closures as ActionHandler instances\n- Add ActionRegistry.merging\\(customActions:\\) to create merged registries\n- Fix executeAction\\(id:\\) to extract parameters from action definitions for delegate calls\n- Remove unused Initializable protocol and type-based registration\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(swift -e:*)",
+      "Bash(git commit:*)",
+      "Bash(xcrun simctl:*)",
+      "Bash(git restore:*)"
+    ]
+  }
+}

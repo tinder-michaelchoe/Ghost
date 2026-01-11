@@ -62,8 +62,8 @@ public struct ImageComponentResolver: ComponentResolving {
             }
         }
 
-        // Fallback: Check the data property for image source (legacy support)
-        if let data = component.data {
+        // Fallback: Check the data["value"] property for image source (legacy support)
+        if let data = component.data?["value"] {
             switch data.type {
             case .static:
                 if let value = data.value {

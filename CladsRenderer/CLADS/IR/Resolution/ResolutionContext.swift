@@ -161,7 +161,16 @@ public final class ResolutionContext {
                 // Handle boolean results from array expressions like contains()
                 value = arrayResult
             } else {
-                value = stateStore.get(expression) ?? stateStore.evaluate(expression: expression)
+                // For simple keypaths, just get the value (returns nil if not found)
+                // For complex expressions (with operators), evaluate them
+                let isComplexExpression = expression.contains(where: { "+-?:".contains($0) }) ||
+                                          expression.contains(".contains(") ||
+                                          expression.contains(".count")
+                if isComplexExpression {
+                    value = stateStore.get(expression) ?? stateStore.evaluate(expression: expression)
+                } else {
+                    value = stateStore.get(expression)
+                }
             }
 
             let replacement = stringValue(from: value)

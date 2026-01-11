@@ -10,7 +10,7 @@ import UIKit
 // MARK: - Render Context
 
 /// Context for UIKit node rendering, providing shared dependencies
-public final nonisolated(unsafe) class UIKitRenderContext {
+public final class UIKitRenderContext: @unchecked Sendable {
     public let actionContext: ActionContext
     public let stateStore: StateStore
     public let colorScheme: RenderColorScheme

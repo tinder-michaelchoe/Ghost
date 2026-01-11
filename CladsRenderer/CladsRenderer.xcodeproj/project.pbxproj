@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6C4255372F1423800065764C /* CladsExamples.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 806245042F048FE60055EA41 /* CladsExamples.framework */; };
+		6C4255382F1423800065764C /* CladsExamples.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 806245042F048FE60055EA41 /* CladsExamples.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		803AE5532F09FC7600E3F1E8 /* CladsModules.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 803AE5482F09FC7600E3F1E8 /* CladsModules.framework */; };
 		803AE55D2F09FC7600E3F1E8 /* CladsModules.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 803AE5482F09FC7600E3F1E8 /* CladsModules.framework */; };
 		803AE55E2F09FC7600E3F1E8 /* CladsModules.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 803AE5482F09FC7600E3F1E8 /* CladsModules.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -23,6 +25,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		6C4255392F1423800065764C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 806245032F048FE60055EA41;
+			remoteInfo = CladsExamples;
+		};
 		800AE79B2EFE26CB00F18C75 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 800AE7852EFE26C900F18C75 /* Project object */;
@@ -117,6 +126,7 @@
 			dstSubfolderSpec = 10;
 			files = (
 				803AE55E2F09FC7600E3F1E8 /* CladsModules.framework in Embed Frameworks */,
+				6C4255382F1423800065764C /* CladsExamples.framework in Embed Frameworks */,
 				806245422F0490560055EA41 /* CLADS.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
@@ -197,6 +207,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				803AE55D2F09FC7600E3F1E8 /* CladsModules.framework in Frameworks */,
+				6C4255372F1423800065764C /* CladsExamples.framework in Frameworks */,
 				806245412F0490560055EA41 /* CLADS.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -340,6 +351,7 @@
 			dependencies = (
 				806245402F0490560055EA41 /* PBXTargetDependency */,
 				803AE55C2F09FC7600E3F1E8 /* PBXTargetDependency */,
+				6C42553A2F1423800065764C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				800AE78F2EFE26C900F18C75 /* CladsRenderer */,
@@ -705,6 +717,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		6C42553A2F1423800065764C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 806245032F048FE60055EA41 /* CladsExamples */;
+			targetProxy = 6C4255392F1423800065764C /* PBXContainerItemProxy */;
+		};
 		800AE79C2EFE26CB00F18C75 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 800AE78C2EFE26C900F18C75 /* CladsRenderer */;

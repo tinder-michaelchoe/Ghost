@@ -5,6 +5,7 @@
 
 import CLADS
 import CladsExamples
+import CladsModules
 import SwiftUI
 
 struct ContentView: View {
@@ -32,12 +33,6 @@ struct ContentView: View {
                     switch example {
                     case .dadJokes:
                         DadJokesExampleView()
-                    case .tacoTruck:
-                        TacoTruckExampleView()
-                    case .movieNight:
-                        MovieNightExampleView()
-                    case .birds:
-                        BirdsExampleView()
                     default:
                         ExampleSheetView(example: example)
                     }
@@ -48,12 +43,6 @@ struct ContentView: View {
                 switch example {
                 case .dadJokes:
                     DadJokesExampleView()
-                case .tacoTruck:
-                    TacoTruckExampleView()
-                case .movieNight:
-                    MovieNightExampleView()
-                case .birds:
-                    BirdsExampleView()
                 default:
                     ExampleSheetView(example: example)
                 }
@@ -133,9 +122,6 @@ enum Example: String, CaseIterable, Identifiable {
     case sectionLayout
     case interests
     case dadJokes
-    case tacoTruck
-    case movieNight
-    case birds
 
     var id: String { rawValue }
 
@@ -146,9 +132,6 @@ enum Example: String, CaseIterable, Identifiable {
         case .sectionLayout: return "Section Layout"
         case .interests: return "Interests"
         case .dadJokes: return "Dad Jokes"
-        case .tacoTruck: return "Taco Truck"
-        case .movieNight: return "Movie Night"
-        case .birds: return "Birds"
         }
     }
 
@@ -159,9 +142,6 @@ enum Example: String, CaseIterable, Identifiable {
         case .sectionLayout: return "Horizontal, grid, and list"
         case .interests: return "Flow layout with selectable pills"
         case .dadJokes: return "Custom actions with REST API"
-        case .tacoTruck: return "Typed state, callbacks, binding API"
-        case .movieNight: return "UIKit renderer with delegate"
-        case .birds: return "Horizontal cards with API"
         }
     }
 
@@ -172,9 +152,6 @@ enum Example: String, CaseIterable, Identifiable {
         case .sectionLayout: return "square.grid.2x2"
         case .interests: return "heart.circle"
         case .dadJokes: return "face.smiling"
-        case .tacoTruck: return "fork.knife"
-        case .movieNight: return "film"
-        case .birds: return "bird"
         }
     }
 
@@ -185,9 +162,6 @@ enum Example: String, CaseIterable, Identifiable {
         case .sectionLayout: return .purple
         case .interests: return .pink
         case .dadJokes: return .yellow
-        case .tacoTruck: return .orange
-        case .movieNight: return .red
-        case .birds: return .cyan
         }
     }
 
@@ -198,9 +172,6 @@ enum Example: String, CaseIterable, Identifiable {
         case .sectionLayout: return sectionLayoutJSON
         case .interests: return interestsJSON
         case .dadJokes: return nil  // Custom view handles JSON
-        case .tacoTruck: return nil  // Custom view handles JSON
-        case .movieNight: return nil  // Custom view handles JSON
-        case .birds: return nil  // Dynamic JSON built at runtime
         }
     }
 
@@ -211,9 +182,6 @@ enum Example: String, CaseIterable, Identifiable {
         case .sectionLayout: return .fullScreen
         case .interests: return .detent(.medium)
         case .dadJokes: return .detent(.medium)
-        case .tacoTruck: return .fullSize
-        case .movieNight: return .fullScreen
-        case .birds: return .fullScreen
         }
     }
 
@@ -222,7 +190,7 @@ enum Example: String, CaseIterable, Identifiable {
     }
 
     static var advancedExamples: [Example] {
-        [.dadJokes, .tacoTruck, .movieNight, .birds]
+        [.dadJokes]
     }
 }
 

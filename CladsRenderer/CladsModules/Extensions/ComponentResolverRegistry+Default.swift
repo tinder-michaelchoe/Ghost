@@ -24,5 +24,6 @@ extension ComponentResolverRegistry {
         register(SliderComponentResolver())
         register(ImageComponentResolver())
         register(GradientComponentResolver())
+        register(DividerComponentResolver())
     }
 }

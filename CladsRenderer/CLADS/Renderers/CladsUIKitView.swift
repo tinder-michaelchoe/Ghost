@@ -304,7 +304,7 @@ public final class CladsUIKitView: UIView {
 
         // Update the view based on its type
         switch node.nodeType {
-        case .text(let data):
+        case .text:
             if let label = view as? UILabel {
                 // Re-resolve content with current state
                 let content = resolveTextContent(for: node)
@@ -375,6 +375,8 @@ public final class CladsUIKitView: UIView {
             view = renderGradient(gradient)
         case .spacer:
             view = renderSpacer()
+        case .divider(let divider):
+            view = renderDivider(divider)
         case .custom(let kind, _):
             // Use the UIKit renderer registry for custom nodes
             let context = UIKitRenderContext(actionContext: actionContext, stateStore: renderTree.stateStore, colorScheme: renderTree.root.colorScheme, registry: rendererRegistry)
@@ -579,6 +581,24 @@ public final class CladsUIKitView: UIView {
         return spacer
     }
 
+    private func renderDivider(_ divider: DividerNode) -> UIView {
+        let dividerView = UIView()
+        dividerView.translatesAutoresizingMaskIntoConstraints = false
+
+        // Set background color
+        if let color = divider.style.backgroundColor {
+            dividerView.backgroundColor = UIColor(color)
+        } else {
+            dividerView.backgroundColor = .separator
+        }
+
+        // Set height constraint
+        let height = divider.style.height ?? 1
+        dividerView.heightAnchor.constraint(equalToConstant: height).isActive = true
+
+        return dividerView
+    }
+
     private func renderGradient(_ gradient: GradientNode) -> UIView {
         let gradientView = GradientView(
             node: gradient,
@@ -713,7 +733,7 @@ public final class CladsUIKitView: UIView {
                 let divider = UIView()
                 divider.backgroundColor = .separator
                 divider.translatesAutoresizingMaskIntoConstraints = false
-                divider.heightAnchor.constraint(equalToConstant: 1 / UIScreen.main.scale).isActive = true
+                divider.heightAnchor.constraint(equalToConstant: 1 / (divider.traitCollection.displayScale > 0 ? divider.traitCollection.displayScale : 1)).isActive = true
                 stackView.addArrangedSubview(divider)
             }
         }
