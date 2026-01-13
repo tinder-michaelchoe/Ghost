@@ -29,7 +29,55 @@ public final class ServiceContainer: ServiceContainerType {
     /// Stores edges that were rejected due to cycle detection (service -> dependency that would cause cycle)
     private var rejectedCyclicEdges: [(service: String, dependency: String)] = []
 
-    public init() {}
+    public init() {
+        log("🏗️ ServiceContainer initialized")
+    }
+    
+    // MARK: - Logging
+    
+    private func log(_ message: String) {
+        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
+        print("[ServiceContainer] [\(timestamp)] \(message)")
+    }
+    
+    /// Dumps all registered services and their dependencies for debugging.
+    /// Shows the complete service graph from this centralized orchestrator.
+    public func dumpRegisteredServices() {
+        lock.lock()
+        defer { lock.unlock() }
+        
+        print("")
+        print("╔══════════════════════════════════════════════════════════════════╗")
+        print("║              SERVICE CONTAINER - REGISTERED SERVICES             ║")
+        print("╠══════════════════════════════════════════════════════════════════╣")
+        print("║ Total Services: \(registeredServices.count.description.padding(toLength: 49, withPad: " ", startingAt: 0))║")
+        print("╠══════════════════════════════════════════════════════════════════╣")
+        
+        // Sort services for consistent output
+        let sortedServices = registeredServices.sorted()
+        
+        for service in sortedServices {
+            let deps = declaredDependencies[service] ?? []
+            let isInstantiated = instances[service] != nil
+            let statusIcon = isInstantiated ? "✅" : "⏳"
+            
+            print("║ \(statusIcon) \(service.padding(toLength: 62, withPad: " ", startingAt: 0))║")
+            
+            if !deps.isEmpty {
+                for (index, dep) in deps.enumerated() {
+                    let isLast = index == deps.count - 1
+                    let prefix = isLast ? "└──" : "├──"
+                    let depStatus = instances[dep] != nil ? "✅" : "⏳"
+                    print("║    \(prefix) \(depStatus) \(dep.padding(toLength: 55, withPad: " ", startingAt: 0))║")
+                }
+            }
+        }
+        
+        print("╠══════════════════════════════════════════════════════════════════╣")
+        print("║ Legend: ✅ = Instantiated, ⏳ = Registered (not yet resolved)    ║")
+        print("╚══════════════════════════════════════════════════════════════════╝")
+        print("")
+    }
 
     // MARK: - ServiceRegistry
 
@@ -44,6 +92,7 @@ public final class ServiceContainer: ServiceContainerType {
         registeredServices.insert(key)
         dependencyGraph.addNode(key)
         factories[key] = { factory() }
+        log("📦 Registered: \(key) (no dependencies)")
     }
 
     /// Register a service with explicit dependencies using parameter packs.
@@ -77,6 +126,8 @@ public final class ServiceContainer: ServiceContainerType {
                 rejectedCyclicEdges.append((service: key, dependency: depKey))
             }
         }
+        
+        log("📦 Registered: \(key) → dependencies: [\(depKeys.joined(separator: ", "))]")
 
         // Store factory that resolves dependencies and calls the provided factory
         factories[key] = { [weak self] in
@@ -97,7 +148,21 @@ public final class ServiceContainer: ServiceContainerType {
     public func resolve<T>(_ type: T.Type) -> T? {
         lock.lock()
         defer { lock.unlock() }
-        return resolveUnlocked(type)
+        let key = String(describing: type)
+        let startTime = CFAbsoluteTimeGetCurrent()
+        let wasCached = instances[key] != nil
+        let result = resolveUnlocked(type)
+        let duration = (CFAbsoluteTimeGetCurrent() - startTime) * 1000
+        
+        if wasCached {
+            log("🔍 Resolved (cached): \(key) in \(String(format: "%.2f", duration))ms")
+        } else if result != nil {
+            log("🔍 Resolved (new): \(key) in \(String(format: "%.2f", duration))ms")
+        } else {
+            log("⚠️ Resolution failed: \(key) - not registered")
+        }
+        
+        return result
     }
 
     /// Resolve a service by type (internal).

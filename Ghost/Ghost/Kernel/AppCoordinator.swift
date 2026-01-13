@@ -44,5 +44,31 @@ final class AppCoordinator {
     func runPhase(_ phase: LifecyclePhase) async {
         await lifecycleManager.runPhase(phase)
     }
+    
+    // MARK: - Debug / Analytics
+    
+    /// Dumps the complete state of all orchestrators for debugging and analytics.
+    /// This demonstrates the power of centralized orchestration - we can see
+    /// all registered objects and their relationships from one place.
+    func dumpAllOrchestrators() {
+        print("")
+        print("╔══════════════════════════════════════════════════════════════════╗")
+        print("║          🔮 GHOST APP - ORCHESTRATOR STATE DUMP 🔮               ║")
+        print("║                                                                  ║")
+        print("║  Centralized visibility into all registered components,         ║")
+        print("║  services, and their dependencies.                              ║")
+        print("╚══════════════════════════════════════════════════════════════════╝")
+        
+        // Dump ServiceContainer (services and dependencies)
+        if let container = serviceManager.serviceContainer as? ServiceContainer {
+            container.dumpRegisteredServices()
+        }
+        
+        // Dump UIRegistry (UI contributions)
+        uiManager.uiRegistry.dumpContributions()
+        
+        // Dump LifecycleManager (lifecycle participants)
+        lifecycleManager.dumpParticipants()
+    }
 }
 

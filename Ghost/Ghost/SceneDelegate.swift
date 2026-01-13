@@ -46,13 +46,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Step 3: Initialize module system asynchronously
         Task {
-            await initializeApp(windowScene: windowScene)
-
-            // Step 4: Configure all listeners with the service resolver
-            configureListeners()
-
-            // Step 5: Notify SceneDelegate listeners (after services are registered and configured)
-            _ = listenerCollection.notifyWillConnect(scene, session: session, options: connectionOptions)
+            await initializeApp(
+                windowScene: windowScene,
+                scene: scene,
+                session: session,
+                connectionOptions: connectionOptions
+            )
         }
     }
 
@@ -100,23 +99,33 @@ extension SceneDelegate {
         listenerCollection.configureAll(with: resolver)
     }
 
-    private func initializeApp(windowScene: UIWindowScene) async {
+    private func initializeApp(
+        windowScene: UIWindowScene,
+        scene: UIScene,
+        session: UISceneSession,
+        connectionOptions: UIScene.ConnectionOptions
+    ) async {
         guard let coordinator else {
             return
         }
         
         do {
-            // Initialize app through coordinator (orchestrates: services → context → UI → lifecycle)
-            let context = try await coordinator.initialize(manifest: AppManifest.self)
-            
-            // Run lifecycle phases (coordinator manages context internally)
+            // Step 1: Initialize (services → UI providers → lifecycle participants)
+            _ = try await coordinator.initialize(manifest: AppManifest.self)
+
             await coordinator.runPhase(.prewarm)
             await coordinator.runPhase(.launch)
+
+            // Step 2: Configure listeners with service resolver (NOW services are available)
+            configureListeners()
             
-            // Build UI
+            // Step 3: Notify scene listeners about willConnect (BEFORE phases run)
+            _ = listenerCollection.notifyWillConnect(scene, session: session, options: connectionOptions)
+            
+            // Step 4: Run lifecycle phases
             await coordinator.runPhase(.sceneConnect)
             
-            // Get main view contribution (direct access to UI manager)
+            // Step 5: Build UI
             let mainViewContributions = coordinator.uiManager.contributions(for: AppUISurface.mainView)
             print("🔍 Found \(mainViewContributions.count) contribution(s)")
 
@@ -125,7 +134,6 @@ extension SceneDelegate {
                 return
             }
 
-            // Build the main view controller from resolved contribution
             let anyVC = resolved.makeViewController()
             guard let rootViewController = anyVC.build() as? UIViewController else {
                 print("⚠️ Failed to build main view controller")
@@ -138,8 +146,15 @@ extension SceneDelegate {
                 window?.makeKeyAndVisible()
             }
             
-            // Run post-UI phase
+            // Step 6: Run post-UI phase
             await coordinator.runPhase(.postUI)
+            
+            // Step 7: Dump all orchestrator states for debugging/analytics
+            // This showcases centralized visibility into all registered components
+            coordinator.dumpAllOrchestrators()
+            
+            // Also dump the listener collections
+            listenerCollection.dumpListeners()
             
             print("✅ App initialized successfully")
         } catch {

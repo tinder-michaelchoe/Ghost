@@ -21,8 +21,20 @@ final class UIRegistry: UIRegistryContributing, UIRegistryValidating, @unchecked
 
     /// Pending validations (contribution ID -> dependency types)
     private var pendingValidations: [(contributionId: String, dependencyType: Any.Type)] = []
+    
+    /// Tracks contribution metadata for logging
+    private var contributionMetadata: [(surface: String, contributionId: String, dependencies: [String])] = []
 
-    init() {}
+    init() {
+        log("🏗️ UIRegistry initialized")
+    }
+    
+    // MARK: - Logging
+    
+    private func log(_ message: String) {
+        let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
+        print("[UIRegistry] [\(timestamp)] \(message)")
+    }
 
     /// Set the service resolver for dependency resolution.
     /// Must be called before contributions with dependencies are registered.
@@ -48,12 +60,17 @@ final class UIRegistry: UIRegistryContributing, UIRegistryValidating, @unchecked
         contribution: C,
         factory: @escaping @MainActor @Sendable () -> UIViewController
     ) {
+        let surfaceName = String(describing: surface)
+        let contributionId = contribution.id.rawValue
+        log("🎨 Contributing UIKit view: \(contributionId) → surface: \(surfaceName) (no dependencies)")
+        
         let resolved = ResolvedContribution(
             contribution: contribution,
             viewFactory: { AnyViewController { factory() } }
         )
         queue.sync {
             resolvedContributions[AnyHashable(surface), default: []].append(resolved)
+            contributionMetadata.append((surface: surfaceName, contributionId: contributionId, dependencies: []))
         }
     }
 
@@ -64,6 +81,10 @@ final class UIRegistry: UIRegistryContributing, UIRegistryValidating, @unchecked
         contribution: C,
         @ViewBuilder factory: @escaping @MainActor @Sendable () -> V
     ) {
+        let surfaceName = String(describing: surface)
+        let contributionId = contribution.id.rawValue
+        log("🎨 Contributing SwiftUI view: \(contributionId) → surface: \(surfaceName) (no dependencies)")
+        
         let resolved = ResolvedContribution(
             contribution: contribution,
             viewFactory: {
@@ -72,6 +93,7 @@ final class UIRegistry: UIRegistryContributing, UIRegistryValidating, @unchecked
         )
         queue.sync {
             resolvedContributions[AnyHashable(surface), default: []].append(resolved)
+            contributionMetadata.append((surface: surfaceName, contributionId: contributionId, dependencies: []))
         }
     }
 
@@ -83,6 +105,12 @@ final class UIRegistry: UIRegistryContributing, UIRegistryValidating, @unchecked
         dependencies: (repeat (each D).Type),
         factory: @escaping @MainActor @Sendable (repeat each D) -> UIViewController
     ) {
+        let surfaceName = String(describing: surface)
+        let contributionId = contribution.id.rawValue
+        var depNames: [String] = []
+        repeat depNames.append(String(describing: each dependencies))
+        log("🎨 Contributing UIKit view: \(contributionId) → surface: \(surfaceName) → deps: [\(depNames.joined(separator: ", "))]")
+        
         // Record pending validations
         queue.sync {
             repeat pendingValidations.append((contribution.id.rawValue, (each D).self))
@@ -102,6 +130,7 @@ final class UIRegistry: UIRegistryContributing, UIRegistryValidating, @unchecked
 
         queue.sync {
             resolvedContributions[AnyHashable(surface), default: []].append(resolved)
+            contributionMetadata.append((surface: surfaceName, contributionId: contributionId, dependencies: depNames))
         }
     }
 
@@ -113,6 +142,12 @@ final class UIRegistry: UIRegistryContributing, UIRegistryValidating, @unchecked
         dependencies: (repeat (each D).Type),
         @ViewBuilder factory: @escaping @MainActor @Sendable (repeat each D) -> V
     ) {
+        let surfaceName = String(describing: surface)
+        let contributionId = contribution.id.rawValue
+        var depNames: [String] = []
+        repeat depNames.append(String(describing: each dependencies))
+        log("🎨 Contributing SwiftUI view: \(contributionId) → surface: \(surfaceName) → deps: [\(depNames.joined(separator: ", "))]")
+        
         // Record pending validations
         queue.sync {
             repeat pendingValidations.append((contribution.id.rawValue, (each D).self))
@@ -131,6 +166,7 @@ final class UIRegistry: UIRegistryContributing, UIRegistryValidating, @unchecked
 
         queue.sync {
             resolvedContributions[AnyHashable(surface), default: []].append(resolved)
+            contributionMetadata.append((surface: surfaceName, contributionId: contributionId, dependencies: depNames))
         }
     }
 
@@ -152,6 +188,47 @@ final class UIRegistry: UIRegistryContributing, UIRegistryValidating, @unchecked
     func allContributions() -> [AnyHashable: [ResolvedContribution]] {
         queue.sync {
             resolvedContributions
+        }
+    }
+    
+    /// Dumps all registered UI contributions for debugging.
+    /// Shows the complete contribution list from this centralized orchestrator.
+    func dumpContributions() {
+        queue.sync {
+            print("")
+            print("╔══════════════════════════════════════════════════════════════════╗")
+            print("║              UI REGISTRY - REGISTERED CONTRIBUTIONS              ║")
+            print("╠══════════════════════════════════════════════════════════════════╣")
+            print("║ Total Contributions: \(contributionMetadata.count.description.padding(toLength: 44, withPad: " ", startingAt: 0))║")
+            print("╠══════════════════════════════════════════════════════════════════╣")
+            
+            // Group by surface
+            let grouped = Dictionary(grouping: contributionMetadata, by: { $0.surface })
+            let sortedSurfaces = grouped.keys.sorted()
+            
+            for surface in sortedSurfaces {
+                print("║ 📱 Surface: \(surface.padding(toLength: 53, withPad: " ", startingAt: 0))║")
+                
+                let contributions = grouped[surface] ?? []
+                for (index, contrib) in contributions.enumerated() {
+                    let isLast = index == contributions.count - 1
+                    let prefix = isLast ? "└──" : "├──"
+                    print("║    \(prefix) \(contrib.contributionId.padding(toLength: 57, withPad: " ", startingAt: 0))║")
+                    
+                    if !contrib.dependencies.isEmpty {
+                        for (depIndex, dep) in contrib.dependencies.enumerated() {
+                            let depIsLast = depIndex == contrib.dependencies.count - 1
+                            let depPrefix = depIsLast ? "└──" : "├──"
+                            let indent = isLast ? "    " : "│   "
+                            print("║    \(indent)   \(depPrefix) → \(dep.padding(toLength: 49, withPad: " ", startingAt: 0))║")
+                        }
+                    }
+                }
+                print("║                                                                  ║")
+            }
+            
+            print("╚══════════════════════════════════════════════════════════════════╝")
+            print("")
         }
     }
 }
